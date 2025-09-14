@@ -7,7 +7,13 @@
 	},
 	"files": {
 		"ignoreUnknown": false,
-		"includes": ["app/**/*", "nuxt.config.ts", "package.json", "tsconfig.json"]
+		"includes": [
+			"app/**/*",
+			"lib/**/*",
+			"nuxt.config.ts",
+			"package.json",
+			"tsconfig.json"
+		]
 	},
 	"formatter": {
 		"enabled": true,
@@ -24,7 +30,7 @@
 	},
 	"javascript": {
 		"formatter": {
-			"quoteStyle": "double"
+			"quoteStyle": "single"
 		}
 	},
 	"assist": {

@@ -1,6 +1,58 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
-  compatibilityDate: '2025-07-15',
-  devtools: { enabled: true },
-  modules: ['@nuxt/image', '@nuxt/scripts', '@nuxt/ui']
-})
+	compatibilityDate: '2025-07-15',
+	devtools: { enabled: true },
+	modules: ['@nuxt/image', '@nuxt/scripts', '@nuxt/ui', '@prisma/nuxt'],
+	vite: {
+		resolve: {
+			alias: {
+				'.prisma/client/index-browser':
+					'./node_modules/.prisma/client/index-browser.js',
+			},
+		},
+	},
+	// typescript: {
+	// 	strict: true,
+	// 	typeCheck: true,
+	// },
+	runtimeConfig: {
+		// Private keys (only available on server-side)
+		jwtSecret: '',
+		databaseUrl: '',
+		r2BucketName: '',
+		r2AccessKeyId: '',
+		r2SecretAccessKey: '',
+		r2Endpoint: '',
+		cloudflareAccountId: '',
+		cloudflareImagesToken: '',
+
+		// SMTP settings
+		resendKey: '',
+
+		// Public keys (exposed to client-side)
+		public: {
+			apiBase: '',
+			siteUrl: '',
+			r2PublicUrl: '',
+			cloudflareImagesUrl: '',
+		},
+	},
+	app: {
+		head: {
+			titleTemplate: '%s - BitShift',
+			meta: [
+				{ name: 'viewport', content: 'width=device-width, initial-scale=1' },
+				{ name: 'theme-color', content: '#000000' },
+			],
+			link: [
+				{ rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' },
+				{ rel: 'preconnect', href: 'https://fonts.googleapis.com' },
+				{
+					rel: 'preconnect',
+					href: 'https://fonts.gstatic.com',
+					crossorigin: '',
+				},
+			],
+		},
+	},
+});
