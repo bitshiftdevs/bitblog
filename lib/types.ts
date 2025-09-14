@@ -1,3 +1,5 @@
+// packages/shared/src/types.ts
+
 export type PostStatus = 'DRAFT' | 'SCHEDULED' | 'PUBLISHED' | 'ARCHIVED';
 export type PostVisibility = 'PUBLIC' | 'PRIVATE' | 'UNLISTED';
 export type CommentStatus = 'PENDING' | 'APPROVED' | 'REJECTED' | 'SPAM';
@@ -226,11 +228,44 @@ export interface Invitation {
 }
 
 export interface SiteSettings {
-	id: string;
-	key: string;
-	value: any;
-	updatedAt: string;
+	id?: string;
+	key?: string;
+	value?: any;
+	updatedAt?: string;
 	updatedById?: string;
+	general?: {
+		title?: string;
+		description?: string;
+		logo?: string;
+		favicon?: string;
+	};
+	seo?: {
+		defaultTitle?: string;
+		defaultDescription?: string;
+		defaultImage?: string;
+	};
+	social?: {
+		twitter?: string;
+		facebook?: string;
+		instagram?: string;
+		linkedin?: string;
+		github?: string;
+	};
+	comments?: {
+		enabled?: boolean;
+		requireApproval?: boolean;
+		allowGuestComments?: boolean;
+		enableNotifications?: boolean;
+	};
+	analytics?: {
+		googleAnalyticsId?: string;
+		facebookPixelId?: string;
+	};
+	email?: {
+		fromName?: string;
+		fromEmail?: string;
+		replyTo?: string;
+	};
 }
 
 // API Response types
