@@ -39,23 +39,23 @@
 const showBackToTop = ref(false);
 
 const handleScroll = () => {
-	showBackToTop.value = window.scrollY > 300;
+  showBackToTop.value = window.scrollY > 300;
 };
 
 const scrollToTop = () => {
-	window.scrollTo({
-		top: 0,
-		behavior: 'smooth',
-	});
+  window.scrollTo({
+    top: 0,
+    behavior: 'smooth',
+  });
 };
 
 // Add scroll listener
 onMounted(() => {
-	window.addEventListener('scroll', handleScroll);
+  window.addEventListener('scroll', handleScroll);
 });
 
 onUnmounted(() => {
-	window.removeEventListener('scroll', handleScroll);
+  window.removeEventListener('scroll', handleScroll);
 });
 
 // // SEO defaults for public pages

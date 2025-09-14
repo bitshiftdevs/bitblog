@@ -386,4 +386,45 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## 🙋 Support
 
-- 📖
+- 📖 [Documentation](./docs/)
+- 🐛 [Issue Tracker](https://github.com/your-org/multi-admin-blog-platform/issues)
+- 💬 [Discussions](https://github.com/your-org/multi-admin-blog-platform/discussions)
+- 📧 Email: <support@yourdomain.com>
+
+## 🗺️ Roadmap
+
+### Phase 1 (Current)
+
+- [x] Core blog functionality
+- [x] Multi-admin system
+- [x] Rich text editor
+- [x] SEO optimization
+- [x] Basic analytics
+
+### Phase 2 (Next)
+
+- [ ] Advanced search (Meilisearch)
+- [ ] Real-time collaborative editing
+- [ ] Advanced analytics dashboard
+- [ ] Plugin system
+- [ ] Multi-language support
+
+### Phase 3 (Future)
+
+- [ ] Membership/paywall system
+- [ ] Newsletter integration
+- [ ] Advanced comment system
+- [ ] Mobile app (React Native)
+- [ ] AI-powered features
+
+## 🏆 Acknowledgments
+
+- [Nuxt](https://nuxt.com/) - The Intuitive Vue Framework
+- [TipTap](https://tiptap.dev/) - The headless editor framework
+- [Prisma](https://www.prisma.io/) - Next-generation ORM
+- [Cloudflare](https://cloudflare.com/) - Edge platform
+- [Tailwind CSS](https://tailwindcss.com/) - Utility-first CSS framework
+
+---
+
+Built with ❤️ by [BitShift](https://github.com/bitshiftdevs)
