@@ -1,3 +1,95 @@
+<script setup lang="ts">
+import { useAuthStore } from '~/stores/auth';
+import { useSiteStore } from '~/stores/site';
+
+const authStore = useAuthStore();
+const siteStore = useSiteStore();
+
+const user = computed(() => authStore.user);
+const canAccessAdmin = computed(() => authStore.canAccessAdmin);
+const siteSettings = computed(() => siteStore.settings);
+
+const mobileMenuOpen = ref(false);
+
+// Close mobile menu on route change
+const route = useRoute();
+watch(
+  () => route.path,
+  () => {
+    mobileMenuOpen.value = false;
+  },
+);
+
+// Logout handler
+const handleLogout = async () => {
+  await authStore.logout();
+  mobileMenuOpen.value = false;
+  await navigateTo('/');
+};
+
+// Category dropdown items
+const { data: categories } = await useFetch('/api/categories', {
+  query: { limit: 10 },
+});
+
+const categoryItems = computed(() => {
+  if (!categories.value?.data?.items) return [];
+
+  return [
+    [
+      {
+        label: 'All Categories',
+        to: '/categories',
+        icon: 'i-heroicons-folder-open',
+      },
+    ],
+    ...categories.value.data.items.map((category) => ({
+      label: category.name,
+      to: `/categories/${category.slug}`,
+      badge: category._count?.posts,
+    })),
+  ];
+});
+
+// User menu items
+const userMenuItems = computed(() => [
+  [
+    {
+      label: user.value?.name || 'Profile',
+      avatar: { src: user.value?.avatarUrl },
+      disabled: true,
+    },
+  ],
+  [
+    {
+      label: 'Profile',
+      icon: 'i-heroicons-user',
+      to: '/profile',
+    },
+  ],
+  ...(canAccessAdmin.value
+    ? [
+        {
+          label: 'Admin Dashboard',
+          icon: 'i-heroicons-cog-6-tooth',
+          to: '/admin',
+        },
+      ]
+    : []),
+  [
+    {
+      label: 'Sign Out',
+      icon: 'i-heroicons-arrow-right-on-rectangle',
+      click: handleLogout,
+    },
+  ],
+]);
+
+// Load site settings on mount
+onMounted(() => {
+  siteStore.loadSettings();
+});
+</script>
 <template>
   <header
     class="bg-white dark:bg-gray-800 shadow-sm border-b border-gray-200 dark:border-gray-700"
@@ -47,7 +139,7 @@
             Posts
           </NuxtLink>
 
-          <UDropdown
+          <UDropdownMenu
             :items="categoryItems"
             :popper="{ placement: 'bottom-start' }"
           >
@@ -59,7 +151,7 @@
             >
               Categories
             </UButton>
-          </UDropdown>
+          </UDropdownMenu>
 
           <NuxtLink
             to="/tags"
@@ -99,7 +191,7 @@
           </template>
 
           <template v-else>
-            <UDropdown
+            <UDropdownMenu
               :items="userMenuItems"
               :popper="{ placement: 'bottom-end' }"
             >
@@ -109,7 +201,7 @@
                 size="sm"
                 class="cursor-pointer"
               />
-            </UDropdown>
+            </UDropdownMenu>
           </template>
 
           <!-- Mobile menu button -->
@@ -226,96 +318,3 @@
     </div>
   </header>
 </template>
-
-<script setup lang="ts">
-import { useAuthStore } from '~/stores/auth';
-import { useSiteStore } from '~/stores/site';
-
-const authStore = useAuthStore();
-const siteStore = useSiteStore();
-
-const user = computed(() => authStore.user);
-const canAccessAdmin = computed(() => authStore.canAccessAdmin);
-const siteSettings = computed(() => siteStore.settings);
-
-const mobileMenuOpen = ref(false);
-
-// Close mobile menu on route change
-const route = useRoute();
-watch(
-  () => route.path,
-  () => {
-    mobileMenuOpen.value = false;
-  },
-);
-
-// Logout handler
-const handleLogout = async () => {
-  await authStore.logout();
-  mobileMenuOpen.value = false;
-  await navigateTo('/');
-};
-
-// Category dropdown items
-const { data: categories } = await useFetch('/api/categories', {
-  query: { limit: 10 },
-});
-
-const categoryItems = computed(() => {
-  if (!categories.value?.data?.items) return [];
-
-  return [
-    [
-      {
-        label: 'All Categories',
-        to: '/categories',
-        icon: 'i-heroicons-folder-open',
-      },
-    ],
-    ...categories.value.data.items.map((category) => ({
-      label: category.name,
-      to: `/categories/${category.slug}`,
-      badge: category._count?.posts,
-    })),
-  ];
-});
-
-// User menu items
-const userMenuItems = computed(() => [
-  [
-    {
-      label: user.value?.name || 'Profile',
-      avatar: { src: user.value?.avatarUrl },
-      disabled: true,
-    },
-  ],
-  [
-    {
-      label: 'Profile',
-      icon: 'i-heroicons-user',
-      to: '/profile',
-    },
-  ],
-  ...(canAccessAdmin.value
-    ? [
-        {
-          label: 'Admin Dashboard',
-          icon: 'i-heroicons-cog-6-tooth',
-          to: '/admin',
-        },
-      ]
-    : []),
-  [
-    {
-      label: 'Sign Out',
-      icon: 'i-heroicons-arrow-right-on-rectangle',
-      click: handleLogout,
-    },
-  ],
-]);
-
-// Load site settings on mount
-onMounted(() => {
-  siteStore.loadSettings();
-});
-</script>

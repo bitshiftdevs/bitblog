@@ -1,10 +1,7 @@
 <template>
   <UApp>
-    <!-- Loading indicator -->
-    <UNotifications />
-
     <!-- Global modals -->
-    <UModals />
+    <UModal />
 
     <!-- Main app layout -->
     <NuxtLayout>
