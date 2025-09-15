@@ -11,7 +11,7 @@
           >
             Welcome to
             <span class="text-primary-600 dark:text-primary-400">{{
-              siteSettings?.title || "Blog Platform"
+              siteSettings?.title || "BitBlog"
             }}</span>
           </h1>
 

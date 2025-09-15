@@ -44,7 +44,7 @@ interface SiteState {
 export const useSiteStore = defineStore('site', {
   state: (): SiteState => ({
     settings: {
-      title: 'Blog Platform',
+      title: 'BitBlog',
       description: 'A modern multi-admin blog platform',
       commentSettings: {
         enabled: true,
@@ -59,7 +59,7 @@ export const useSiteStore = defineStore('site', {
 
   getters: {
     siteTitle: (state): string => {
-      return state.settings.title || 'Blog Platform';
+      return state.settings.title || 'BitBlog';
     },
 
     siteDescription: (state): string => {
@@ -83,7 +83,7 @@ export const useSiteStore = defineStore('site', {
         title:
           state.settings.seoSettings?.defaultTitle ||
           state.settings.title ||
-          'Blog Platform',
+          'BitBlog',
         description:
           state.settings.seoSettings?.defaultDescription ||
           state.settings.description ||
@@ -268,7 +268,7 @@ export const useSiteStore = defineStore('site', {
     // Reset to defaults
     resetSettings() {
       this.settings = {
-        title: 'Blog Platform',
+        title: 'BitBlog',
         description: 'A modern multi-admin blog platform',
         commentSettings: {
           enabled: true,

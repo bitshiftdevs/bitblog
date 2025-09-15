@@ -1,4 +1,4 @@
-# Multi-Admin Blog Platform
+# Multi-Admin BitBlog
 
 A modern, SEO-first, multi-admin blog platform with a rich block-style editor, role-based admin UI, fast public site (SSG/ISR), headless API, media storage, search, analytics, and built for Cloudflare hosting.
 

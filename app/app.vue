@@ -24,12 +24,12 @@
 // Global meta tags
 useHead({
   titleTemplate: (title) => {
-    return title ? `${title} - Blog Platform` : 'Blog Platform';
+    return title ? `${title} - BitBlog` : 'BitBlog';
   },
   meta: [
     { name: 'description', content: 'A modern multi-admin blog platform' },
     { property: 'og:type', content: 'website' },
-    { property: 'og:site_name', content: 'Blog Platform' },
+    { property: 'og:site_name', content: 'BitBlog' },
     { name: 'twitter:card', content: 'summary_large_image' },
   ],
 });

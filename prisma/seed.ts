@@ -457,7 +457,7 @@ async function main() {
     {
       key: "general",
       value: {
-        title: "Blog Platform",
+        title: "BitBlog",
         description: "A modern multi-admin blog platform",
         logo: null,
         favicon: null,
@@ -466,7 +466,7 @@ async function main() {
     {
       key: "seo",
       value: {
-        defaultTitle: "Blog Platform - Share Your Stories",
+        defaultTitle: "BitBlog - Share Your Stories",
         defaultDescription:
           "Discover amazing stories, insights, and knowledge from our community of writers.",
         defaultImage: "/og-image.png",

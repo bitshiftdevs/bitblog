@@ -18,7 +18,7 @@
             >
               <UIcon name="i-heroicons-pencil-square" class="h-5 w-5 text-white" />
             </div>
-            <span class="text-xl font-bold">{{ siteSettings?.title || 'Blog Platform' }}</span>
+            <span class="text-xl font-bold">{{ siteSettings?.title || 'BitBlog' }}</span>
           </div>
           
           <p class="text-gray-300 mb-6 max-w-md">
@@ -107,7 +107,7 @@
       <!-- Bottom bar -->
       <div class="border-t border-gray-800 mt-8 pt-8 flex flex-col sm:flex-row justify-between items-center">
         <p class="text-gray-400 text-sm">
-          © {{ new Date().getFullYear() }} {{ siteSettings?.title || 'Blog Platform' }}. All rights reserved.
+          © {{ new Date().getFullYear() }} {{ siteSettings?.title || 'BitBlog' }}. All rights reserved.
         </p>
         
         <div class="flex items-center space-x-4 mt-4 sm:mt-0">

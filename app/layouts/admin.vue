@@ -107,7 +107,7 @@ onUnmounted(() => {
 // SEO for admin pages
 useSeoMeta({
   title: 'Admin Dashboard',
-  description: 'Blog Platform Admin Dashboard',
+  description: 'BitBlog Admin Dashboard',
   robots: 'noindex, nofollow',
 });
 </script>

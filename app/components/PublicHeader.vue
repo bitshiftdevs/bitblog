@@ -25,7 +25,7 @@
                 class="h-5 w-5 text-white"
               />
             </div>
-            <span>{{ siteSettings?.title || "Blog Platform" }}</span>
+            <span>{{ siteSettings?.title || "BitBlog" }}</span>
           </NuxtLink>
         </div>
 
