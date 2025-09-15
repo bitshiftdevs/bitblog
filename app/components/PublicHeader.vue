@@ -53,7 +53,7 @@
           >
             <UButton
               variant="ghost"
-              color="gray"
+              color="primary"
               trailing-icon="i-heroicons-chevron-down-20-solid"
               class="text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white"
             >
@@ -243,79 +243,79 @@ const mobileMenuOpen = ref(false);
 // Close mobile menu on route change
 const route = useRoute();
 watch(
-	() => route.path,
-	() => {
-		mobileMenuOpen.value = false;
-	},
+  () => route.path,
+  () => {
+    mobileMenuOpen.value = false;
+  },
 );
 
 // Logout handler
 const handleLogout = async () => {
-	await authStore.logout();
-	mobileMenuOpen.value = false;
-	await navigateTo('/');
+  await authStore.logout();
+  mobileMenuOpen.value = false;
+  await navigateTo('/');
 };
 
 // Category dropdown items
 const { data: categories } = await useFetch('/api/categories', {
-	query: { limit: 10 },
+  query: { limit: 10 },
 });
 
 const categoryItems = computed(() => {
-	if (!categories.value?.data?.items) return [];
+  if (!categories.value?.data?.items) return [];
 
-	return [
-		[
-			{
-				label: 'All Categories',
-				to: '/categories',
-				icon: 'i-heroicons-folder-open',
-			},
-		],
-		...categories.value.data.items.map((category) => ({
-			label: category.name,
-			to: `/categories/${category.slug}`,
-			badge: category._count?.posts,
-		})),
-	];
+  return [
+    [
+      {
+        label: 'All Categories',
+        to: '/categories',
+        icon: 'i-heroicons-folder-open',
+      },
+    ],
+    ...categories.value.data.items.map((category) => ({
+      label: category.name,
+      to: `/categories/${category.slug}`,
+      badge: category._count?.posts,
+    })),
+  ];
 });
 
 // User menu items
 const userMenuItems = computed(() => [
-	[
-		{
-			label: user.value?.name || 'Profile',
-			avatar: { src: user.value?.avatarUrl },
-			disabled: true,
-		},
-	],
-	[
-		{
-			label: 'Profile',
-			icon: 'i-heroicons-user',
-			to: '/profile',
-		},
-	],
-	...(canAccessAdmin.value
-		? [
-				{
-					label: 'Admin Dashboard',
-					icon: 'i-heroicons-cog-6-tooth',
-					to: '/admin',
-				},
-			]
-		: []),
-	[
-		{
-			label: 'Sign Out',
-			icon: 'i-heroicons-arrow-right-on-rectangle',
-			click: handleLogout,
-		},
-	],
+  [
+    {
+      label: user.value?.name || 'Profile',
+      avatar: { src: user.value?.avatarUrl },
+      disabled: true,
+    },
+  ],
+  [
+    {
+      label: 'Profile',
+      icon: 'i-heroicons-user',
+      to: '/profile',
+    },
+  ],
+  ...(canAccessAdmin.value
+    ? [
+        {
+          label: 'Admin Dashboard',
+          icon: 'i-heroicons-cog-6-tooth',
+          to: '/admin',
+        },
+      ]
+    : []),
+  [
+    {
+      label: 'Sign Out',
+      icon: 'i-heroicons-arrow-right-on-rectangle',
+      click: handleLogout,
+    },
+  ],
 ]);
 
 // Load site settings on mount
 onMounted(() => {
-	siteStore.loadSettings();
+  siteStore.loadSettings();
 });
 </script>

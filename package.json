@@ -20,7 +20,7 @@
   "dependencies": {
     "@nuxt/image": "1.11.0",
     "@nuxt/scripts": "0.11.13",
-    "@nuxt/ui": "3.3.3",
+    "@nuxt/ui": "4.0.0-alpha.1",
     "@pinia/nuxt": "0.11.2",
     "@prisma/client": "6.16.1",
     "@prisma/nuxt": "^0.3.0",

@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <UApp>
     <!-- Loading indicator -->
     <UNotifications />
 
@@ -17,7 +17,7 @@
       animation="carousel"
       class="fixed top-0 left-0 right-0 z-50"
     />
-  </div>
+  </UApp>
 </template>
 
 <script setup lang="ts">

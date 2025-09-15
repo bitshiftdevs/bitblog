@@ -1,66 +1,67 @@
 @import "tailwindcss";
+@import "@nuxt/ui";
 
 html {
-	scroll-behavior: smooth;
+  scroll-behavior: smooth;
 }
 
 body {
-	font-family:
-		"Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-	line-height: 1.6;
-	color: rgb(var(--color-gray-900));
-	background-color: rgb(var(--color-gray-50));
+  font-family:
+    "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  line-height: 1.6;
+  color: rgb(var(--color-gray-900));
+  background-color: rgb(var(--color-gray-50));
 
-	.dark & {
-		color: rgb(var(--color-gray-100));
-		background-color: rgb(var(--color-gray-900));
-	}
+  .dark & {
+    color: rgb(var(--color-gray-100));
+    background-color: rgb(var(--color-gray-900));
+  }
 }
 
 * {
-	transition:
-		background-color 0.2s ease,
-		border-color 0.2s ease,
-		color 0.2s ease;
+  transition:
+    background-color 0.2s ease,
+    border-color 0.2s ease,
+    color 0.2s ease;
 }
 
 ::-webkit-scrollbar {
-	width: 6px;
-	height: 6px;
+  width: 6px;
+  height: 6px;
 }
 
 ::-webkit-scrollbar-track {
-	background: rgb(var(--color-gray-100));
+  background: rgb(var(--color-gray-100));
 
-	.dark & {
-		background: rgb(var(--color-gray-800));
-	}
+  .dark & {
+    background: rgb(var(--color-gray-800));
+  }
 }
 
 ::-webkit-scrollbar-thumb {
-	background: rgb(var(--color-gray-400));
-	border-radius: 3px;
+  background: rgb(var(--color-gray-400));
+  border-radius: 3px;
 
-	&:hover {
-		background: rgb(var(--color-gray-500));
-	}
+  &:hover {
+    background: rgb(var(--color-gray-500));
+  }
 
-	.dark & {
-		background: rgb(var(--color-gray-600));
+  .dark & {
+    background: rgb(var(--color-gray-600));
 
-		&:hover {
-			background: rgb(var(--color-gray-500));
-		}
-	}
+    &:hover {
+      background: rgb(var(--color-gray-500));
+    }
+  }
 }
 
 :focus-visible {
-	outline: 2px solid rgb(var(--color-primary-500));
-	outline-offset: 2px;
+  outline: 2px solid rgb(var(--color-primary-500));
+  outline-offset: 2px;
 }
 
 ::selection {
-	background-color: rgba(var(--color-primary-500), 0.2);
+  background-color: rgba(var(--color-primary-500), 0.2);
 }
 
 h1,
@@ -69,70 +70,70 @@ h3,
 h4,
 h5,
 h6 {
-	font-weight: 600;
-	line-height: 1.25;
-	letter-spacing: -0.025em;
+  font-weight: 600;
+  line-height: 1.25;
+  letter-spacing: -0.025em;
 }
 
 a {
-	color: rgb(var(--color-primary-600));
-	text-decoration: none;
+  color: rgb(var(--color-primary-600));
+  text-decoration: none;
 
-	&:hover {
-		color: rgb(var(--color-primary-700));
-		text-decoration: underline;
-	}
+  &:hover {
+    color: rgb(var(--color-primary-700));
+    text-decoration: underline;
+  }
 
-	.dark & {
-		color: rgb(var(--color-primary-400));
+  .dark & {
+    color: rgb(var(--color-primary-400));
 
-		&:hover {
-			color: rgb(var(--color-primary-300));
-		}
-	}
+    &:hover {
+      color: rgb(var(--color-primary-300));
+    }
+  }
 }
 
 img {
-	max-width: 100%;
-	height: auto;
+  max-width: 100%;
+  height: auto;
 }
 
 @media print {
-	* {
-		background: transparent !important;
-		color: black !important;
-		box-shadow: none !important;
-		text-shadow: none !important;
-	}
+  * {
+    background: transparent !important;
+    color: black !important;
+    box-shadow: none !important;
+    text-shadow: none !important;
+  }
 
-	a,
-	a:visited {
-		text-decoration: underline;
-	}
+  a,
+  a:visited {
+    text-decoration: underline;
+  }
 
-	a[href]:after {
-		content: " (" attr(href) ")";
-	}
+  a[href]:after {
+    content: " (" attr(href) ")";
+  }
 
-	abbr[title]:after {
-		content: " (" attr(title) ")";
-	}
+  abbr[title]:after {
+    content: " (" attr(title) ")";
+  }
 
-	.no-print,
-	nav,
-	aside,
-	.sidebar {
-		display: none !important;
-	}
+  .no-print,
+  nav,
+  aside,
+  .sidebar {
+    display: none !important;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
-	*,
-	*::before,
-	*::after {
-		animation-duration: 0.01ms !important;
-		animation-iteration-count: 1 !important;
-		transition-duration: 0.01ms !important;
-		scroll-behavior: auto !important;
-	}
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }
