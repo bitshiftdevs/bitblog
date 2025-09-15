@@ -1,4 +1,3 @@
-<!-- apps/web/pages/index.vue -->
 <template>
   <div class="min-h-screen">
     <!-- Hero Section -->
@@ -252,7 +251,7 @@
 <script setup lang="ts">
 import { useAuthStore } from '~/stores/auth';
 import { useSiteStore } from '~/stores/site';
-import type { PostSummary, Category, User } from '@blog-platform/shared/types';
+import type { PostSummary, Category, User } from '~~/lib/types';
 
 // Meta tags
 useSeoMeta({
@@ -328,7 +327,7 @@ const formatNumber = (num: number): string => {
 };
 
 // Load site settings
-onMounted(() => {
-  siteStore.loadSettings();
-});
+// onMounted(() => {
+//   siteStore.loadSettings();
+// });
 </script>

@@ -1,4 +1,3 @@
-<!-- apps/web/app.vue -->
 <template>
   <div>
     <!-- Loading indicator -->

@@ -23,6 +23,16 @@ export default defineNuxtConfig({
       },
     },
   },
+  nitro: {
+    preset: 'cloudflareWorker',
+    experimental: { wasm: true },
+  },
+  serverDir: './server/',
+  image: {
+    cloudflare: {
+      //TODO: add base url
+    },
+  },
   css: ['~/assets/css/global.css'],
   vue: {
     propsDestructure: true,
@@ -34,7 +44,7 @@ export default defineNuxtConfig({
   runtimeConfig: {
     // Private keys (only available on server-side)
     jwtSecret: '',
-    databaseUrl: '',
+    databaseUrl: 'postgresql://kratosgado:28935617@localhost:5432/bitblog',
     r2BucketName: '',
     r2AccessKeyId: '',
     r2SecretAccessKey: '',
