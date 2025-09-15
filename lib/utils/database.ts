@@ -18,14 +18,14 @@ const initializePrisma = () => {
       },
     },
     log:
-      process.env.NODE_ENV === 'development'
+      config.nodeEnv === 'development'
         ? ['query', 'error', 'warn']
         : ['error'],
   });
 };
 
 // Singleton pattern for Prisma Client
-if (process.env.NODE_ENV === 'production') {
+if (useRuntimeConfig().nodeEnv === 'production') {
   prisma = initializePrisma();
 } else {
   if (!global.__prisma) {

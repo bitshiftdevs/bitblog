@@ -48,17 +48,16 @@ A modern, SEO-first, multi-admin blog platform with a rich block-style editor, r
 ### Project Structure
 
 ```
-├── apps/
-│   ├── web/          # Nuxt 3 frontend application
-│   │   ├── components/
-│   │   ├── layouts/
-│   │   ├── pages/
-│   │   ├── stores/
-│   │   └── middleware/
-│   └── api/          # Nitro backend application
-│       ├── server/
-│       ├── prisma/
-│       └── wrangler.toml
+├── app/          # Nuxt 3 frontend application
+│   │── components/
+│   │── layouts/
+│   │── pages/
+│   │── stores/
+│   │── middleware/
+│── server/          # Nitro backend application
+│   ├── api/
+│   ├── prisma/
+│   └── wrangler.toml
 ├── packages/
 │   ├── shared/       # Shared types and schemas
 │   └── ui/          # Shared UI components
@@ -72,7 +71,7 @@ A modern, SEO-first, multi-admin blog platform with a rich block-style editor, r
 ### Prerequisites
 
 - Node.js 20+
-- pnpm 9+
+- pnpm 10+
 - PostgreSQL database
 - Cloudflare account (for production)
 

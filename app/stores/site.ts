@@ -1,261 +1,293 @@
 // apps/web/stores/site.ts
-import { defineStore } from 'pinia';
-import type { SiteSettings } from '../../lib/types';
+import { defineStore } from 'pinia'
+import type { SiteSettings } from '~~/lib/types'
 
 interface SiteState {
-	settings: SiteSettings | null;
-	isLoading: boolean;
-	lastUpdated: string | null;
-}
-
-interface SiteSettingsData {
-	general?: {
-		title?: string;
-		description?: string;
-		logo?: string;
-		favicon?: string;
-	};
-	seo?: {
-		defaultTitle?: string;
-		defaultDescription?: string;
-		defaultImage?: string;
-	};
-	social?: {
-		twitter?: string;
-		facebook?: string;
-		instagram?: string;
-		linkedin?: string;
-		github?: string;
-	};
-	comments?: {
-		enabled?: boolean;
-		requireApproval?: boolean;
-		allowGuestComments?: boolean;
-		enableNotifications?: boolean;
-	};
-	analytics?: {
-		googleAnalyticsId?: string;
-		facebookPixelId?: string;
-	};
-	email?: {
-		fromName?: string;
-		fromEmail?: string;
-		replyTo?: string;
-	};
+  settings: {
+    title?: string
+    description?: string
+    logo?: string
+    favicon?: string
+    primaryColor?: string
+    socialLinks?: {
+      twitter?: string
+      facebook?: string
+      instagram?: string
+      linkedin?: string
+      github?: string
+    }
+    seoSettings?: {
+      defaultTitle?: string
+      defaultDescription?: string
+      defaultImage?: string
+    }
+    analyticsSettings?: {
+      googleAnalyticsId?: string
+      facebookPixelId?: string
+    }
+    emailSettings?: {
+      fromName?: string
+      fromEmail?: string
+      replyTo?: string
+    }
+    commentSettings?: {
+      enabled?: boolean
+      requireApproval?: boolean
+      allowGuestComments?: boolean
+      enableNotifications?: boolean
+    }
+  }
+  isLoading: boolean
+  lastUpdated?: string
 }
 
 export const useSiteStore = defineStore('site', {
-	state: (): SiteState => ({
-		settings: null,
-		isLoading: false,
-		lastUpdated: null,
-	}),
+  state: (): SiteState => ({
+    settings: {
+      title: 'Blog Platform',
+      description: 'A modern multi-admin blog platform',
+      commentSettings: {
+        enabled: true,
+        requireApproval: true,
+        allowGuestComments: true,
+        enableNotifications: true,
+      }
+    },
+    isLoading: false,
+    lastUpdated: undefined,
+  }),
 
-	getters: {
-		title: (state): string => {
-			return state.settings?.general?.title || 'Blog Platform';
-		},
+  getters: {
+    siteTitle: (state): string => {
+      return state.settings.title || 'Blog Platform'
+    },
 
-		description: (state): string => {
-			return (
-				state.settings?.general?.description ||
-				'A modern multi-admin blog platform'
-			);
-		},
+    siteDescription: (state): string => {
+      return state.settings.description || 'A modern multi-admin blog platform'
+    },
 
-		logo: (state): string | null => {
-			return state.settings?.general?.logo || null;
-		},
+    siteLogo: (state): string | undefined => {
+      return state.settings.logo
+    },
 
-		favicon: (state): string | null => {
-			return state.settings?.general?.favicon || null;
-		},
+    primaryColor: (state): string => {
+      return state.settings.primaryColor || '#3b82f6'
+    },
 
-		seoDefaults: (state) => {
-			return {
-				title:
-					state.settings?.seo?.defaultTitle ||
-					'Blog Platform - Share Your Stories',
-				description:
-					state.settings?.seo?.defaultDescription ||
-					'Discover amazing stories, insights, and knowledge from our community of writers.',
-				image: state.settings?.seo?.defaultImage || '/og-image.png',
-			};
-		},
+    socialLinks: (state) => {
+      return state.settings.socialLinks || {}
+    },
 
-		socialLinks: (state) => {
-			return state.settings?.social || {};
-		},
+    seoDefaults: (state) => {
+      return {
+        title: state.settings.seoSettings?.defaultTitle || state.settings.title || 'Blog Platform',
+        description: state.settings.seoSettings?.defaultDescription || state.settings.description || 'A modern multi-admin blog platform',
+        image: state.settings.seoSettings?.defaultImage || '/og-image.png',
+      }
+    },
 
-		commentSettings: (state) => {
-			return {
-				enabled: state.settings?.comments?.enabled ?? true,
-				requireApproval: state.settings?.comments?.requireApproval ?? true,
-				allowGuestComments:
-					state.settings?.comments?.allowGuestComments ?? true,
-				enableNotifications:
-					state.settings?.comments?.enableNotifications ?? true,
-				...state.settings?.comments,
-			};
-		},
+    commentConfig: (state) => {
+      return state.settings.commentSettings || {
+        enabled: true,
+        requireApproval: true,
+        allowGuestComments: true,
+        enableNotifications: true,
+      }
+    },
 
-		analyticsSettings: (state) => {
-			return state.settings?.analytics || {};
-		},
+    isCommentsEnabled: (state): boolean => {
+      return state.settings.commentSettings?.enabled ?? true
+    },
 
-		emailSettings: (state) => {
-			return state.settings?.email || {};
-		},
-	},
+    analyticsConfig: (state) => {
+      return state.settings.analyticsSettings || {}
+    },
+  },
 
-	actions: {
-		async loadSettings() {
-			if (this.isLoading) return;
+  actions: {
+    async loadSettings() {
+      if (this.isLoading) return
 
-			this.isLoading = true;
+      this.isLoading = true
+      
+      try {
+        // Check if settings are cached and still fresh (5 minutes)
+        if (this.lastUpdated) {
+          const lastUpdatedTime = new Date(this.lastUpdated).getTime()
+          const now = new Date().getTime()
+          const fiveMinutes = 5 * 60 * 1000
+          
+          if (now - lastUpdatedTime < fiveMinutes) {
+            return // Use cached settings
+          }
+        }
 
-			try {
-				const { data } = await $fetch<{ data: SiteSettingsData }>(
-					'/api/settings',
-				);
+        const { data } = await $fetch<{ data: Record<string, any> }>('/api/settings')
+        
+        if (data) {
+          // Merge all settings from different keys
+          const mergedSettings = Object.values(data).reduce((acc, setting) => {
+            return { ...acc, ...setting.value }
+          }, {})
+          
+          this.settings = { ...this.settings, ...mergedSettings }
+          this.lastUpdated = new Date().toISOString()
+        }
+      } catch (error) {
+        console.error('Failed to load site settings:', error)
+        // Keep using default/cached settings on error
+      } finally {
+        this.isLoading = false
+      }
+    },
 
-				// Transform the settings data into our expected format
-				this.settings = {
-					general: data.general || {},
-					seo: data.seo || {},
-					social: data.social || {},
-					comments: data.comments || {},
-					analytics: data.analytics || {},
-					email: data.email || {},
-				};
+    async updateSettings(settings: Partial<SiteState['settings']>) {
+      try {
+        await $fetch('/api/admin/settings', {
+          method: 'PUT',
+          body: settings,
+        })
 
-				this.lastUpdated = new Date().toISOString();
-			} catch (error) {
-				console.error('Failed to load site settings:', error);
-				// Set default settings on error
-				this.settings = {
-					general: {
-						title: 'Blog Platform',
-						description: 'A modern multi-admin blog platform',
-					},
-					seo: {
-						defaultTitle: 'Blog Platform - Share Your Stories',
-						defaultDescription:
-							'Discover amazing stories, insights, and knowledge from our community of writers.',
-						defaultImage: '/og-image.png',
-					},
-					social: {},
-					comments: {
-						enabled: true,
-						requireApproval: true,
-						allowGuestComments: true,
-						enableNotifications: true,
-					},
-					analytics: {},
-					email: {},
-				};
-			} finally {
-				this.isLoading = false;
-			}
-		},
+        // Update local state
+        this.settings = { ...this.settings, ...settings }
+        this.lastUpdated = new Date().toISOString()
 
-		async updateSettings(settingsData: Partial<SiteSettingsData>) {
-			try {
-				const { data } = await $fetch<{ data: SiteSettingsData }>(
-					'/api/settings',
-					{
-						method: 'PUT',
-						body: settingsData,
-					},
-				);
+        return true
+      } catch (error) {
+        console.error('Failed to update site settings:', error)
+        throw error
+      }
+    },
 
-				// Update local state
-				this.settings = {
-					...this.settings,
-					...data,
-				};
+    async updateSingleSetting(key: string, value: any) {
+      try {
+        await $fetch(`/api/admin/settings/${key}`, {
+          method: 'PUT',
+          body: { value },
+        })
 
-				this.lastUpdated = new Date().toISOString();
+        // Update local state
+        this.settings = { ...this.settings, [key]: value }
+        this.lastUpdated = new Date().toISOString()
 
-				return data;
-			} catch (error) {
-				console.error('Failed to update site settings:', error);
-				throw error;
-			}
-		},
+        return true
+      } catch (error) {
+        console.error(`Failed to update setting ${key}:`, error)
+        throw error
+      }
+    },
 
-		async updateGeneralSettings(generalSettings: SiteSettingsData['general']) {
-			return this.updateSettings({ general: generalSettings });
-		},
+    // Theme helpers
+    applyTheme() {
+      if (process.client && this.primaryColor) {
+        // Update CSS custom properties for primary color
+        const root = document.documentElement
+        
+        // Convert hex to RGB for CSS custom properties
+        const hex = this.primaryColor.replace('#', '')
+        const r = parseInt(hex.substr(0, 2), 16)
+        const g = parseInt(hex.substr(2, 2), 16)
+        const b = parseInt(hex.substr(4, 2), 16)
+        
+        root.style.setProperty('--color-primary-500', `${r} ${g} ${b}`)
+        
+        // Generate variations (simplified)
+        const variations = {
+          50: `${Math.min(255, r + 200)} ${Math.min(255, g + 200)} ${Math.min(255, b + 200)}`,
+          100: `${Math.min(255, r + 150)} ${Math.min(255, g + 150)} ${Math.min(255, b + 150)}`,
+          200: `${Math.min(255, r + 100)} ${Math.min(255, g + 100)} ${Math.min(255, b + 100)}`,
+          300: `${Math.min(255, r + 50)} ${Math.min(255, g + 50)} ${Math.min(255, b + 50)}`,
+          400: `${Math.max(0, r - 25)} ${Math.max(0, g - 25)} ${Math.max(0, b - 25)}`,
+          600: `${Math.max(0, r - 50)} ${Math.max(0, g - 50)} ${Math.max(0, b - 50)}`,
+          700: `${Math.max(0, r - 100)} ${Math.max(0, g - 100)} ${Math.max(0, b - 100)}`,
+          800: `${Math.max(0, r - 150)} ${Math.max(0, g - 150)} ${Math.max(0, b - 150)}`,
+          900: `${Math.max(0, r - 200)} ${Math.max(0, g - 200)} ${Math.max(0, b - 200)}`,
+        }
+        
+        Object.entries(variations).forEach(([shade, value]) => {
+          root.style.setProperty(`--color-primary-${shade}`, value)
+        })
+      }
+    },
 
-		async updateSeoSettings(seoSettings: SiteSettingsData['seo']) {
-			return this.updateSettings({ seo: seoSettings });
-		},
+    // Analytics helpers
+    trackPageView(path: string, title?: string) {
+      if (process.client && this.analyticsConfig.googleAnalyticsId) {
+        // Google Analytics 4
+        if (typeof gtag !== 'undefined') {
+          gtag('config', this.analyticsConfig.googleAnalyticsId, {
+            page_path: path,
+            page_title: title,
+          })
+        }
+      }
 
-		async updateSocialSettings(socialSettings: SiteSettingsData['social']) {
-			return this.updateSettings({ social: socialSettings });
-		},
+      if (process.client && this.analyticsConfig.facebookPixelId) {
+        // Facebook Pixel
+        if (typeof fbq !== 'undefined') {
+          fbq('track', 'PageView')
+        }
+      }
+    },
 
-		async updateCommentSettings(commentSettings: SiteSettingsData['comments']) {
-			return this.updateSettings({ comments: commentSettings });
-		},
+    // SEO helpers
+    generateMetaTags(pageData: {
+      title?: string
+      description?: string
+      image?: string
+      type?: string
+      url?: string
+    }) {
+      const defaults = this.seoDefaults
+      
+      return {
+        title: pageData.title || defaults.title,
+        description: pageData.description || defaults.description,
+        ogTitle: pageData.title || defaults.title,
+        ogDescription: pageData.description || defaults.description,
+        ogImage: pageData.image || defaults.image,
+        ogType: pageData.type || 'website',
+        ogUrl: pageData.url,
+        twitterCard: 'summary_large_image',
+        twitterTitle: pageData.title || defaults.title,
+        twitterDescription: pageData.description || defaults.description,
+        twitterImage: pageData.image || defaults.image,
+      }
+    },
 
-		async updateAnalyticsSettings(
-			analyticsSettings: SiteSettingsData['analytics'],
-		) {
-			return this.updateSettings({ analytics: analyticsSettings });
-		},
+    // Reset to defaults
+    resetSettings() {
+      this.settings = {
+        title: 'Blog Platform',
+        description: 'A modern multi-admin blog platform',
+        commentSettings: {
+          enabled: true,
+          requireApproval: true,
+          allowGuestComments: true,
+          enableNotifications: true,
+        }
+      }
+      this.lastUpdated = undefined
+    },
 
-		async updateEmailSettings(emailSettings: SiteSettingsData['email']) {
-			return this.updateSettings({ email: emailSettings });
-		},
+    // Clear cache
+    clearCache() {
+      this.lastUpdated = undefined
+    },
+  },
+})
 
-		// Clear settings (useful for logout or reset)
-		clearSettings() {
-			this.settings = null;
-			this.lastUpdated = null;
-		},
-
-		// Get a specific setting value with fallback
-		getSetting(path: string, defaultValue: any = null): any {
-			if (!this.settings) return defaultValue;
-
-			const keys = path.split('.');
-			let current: any = this.settings;
-
-			for (const key of keys) {
-				if (current && typeof current === 'object' && key in current) {
-					current = current[key];
-				} else {
-					return defaultValue;
-				}
-			}
-
-			return current !== undefined ? current : defaultValue;
-		},
-
-		// Check if settings are loaded and fresh (within last 5 minutes)
-		areSettingsFresh(): boolean {
-			if (!this.settings || !this.lastUpdated) return false;
-
-			const lastUpdate = new Date(this.lastUpdated);
-			const now = new Date();
-			const fiveMinutesAgo = new Date(now.getTime() - 5 * 60 * 1000);
-
-			return lastUpdate > fiveMinutesAgo;
-		},
-
-		// Force refresh settings if they're stale
-		async refreshIfStale() {
-			if (!this.areSettingsFresh()) {
-				await this.loadSettings();
-			}
-		},
-	},
-});
-
-// Auto-load settings on client-side
+// Auto-load settings on client side
 if (process.client) {
-	const siteStore = useSiteStore();
-	siteStore.loadSettings();
+  const siteStore = useSiteStore()
+  
+  // Load settings on store creation
+  siteStore.loadSettings()
+  
+  // Apply theme when settings change
+  watch(
+    () => siteStore.primaryColor,
+    () => siteStore.applyTheme(),
+    { immediate: true }
+  )
 }

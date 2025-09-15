@@ -1,10 +1,10 @@
-// apps/api/server/api/auth/login.post.ts
+// server/api/auth/login.post.ts
 import { z } from "zod";
 import * as argon2 from "argon2";
 import { SignJWT } from "jose";
 import { nanoid } from "nanoid";
-import { prisma, createAuditLog } from "~/utils/database";
-import { LoginSchema } from "@blog-platform/shared/schemas";
+import { LoginSchema } from "~~/lib/schemas";
+import { prisma } from "~~/lib/utils/database";
 
 export default defineEventHandler(async (event) => {
   try {
@@ -18,7 +18,7 @@ export default defineEventHandler(async (event) => {
     // Find user by email
     const user = await prisma.user.findUnique({
       where: {
-        email: email.toLowerCase().trim(),
+        email,
       },
       include: {
         roles: {
