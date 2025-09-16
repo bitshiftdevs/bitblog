@@ -18,18 +18,17 @@ export default defineNuxtConfig({
     plugins: [tailwindcss()],
     resolve: {
       alias: {
-        '.prisma/client/index-browser':
-          './node_modules/.prisma/client/index-browser.js',
+        '.prisma/client/index-browser': './lib/gen/prisma/browser.ts',
       },
     },
     define: {
       __VUE_PROD_HYDRATION_MISMATCH_DETAILS__: false,
     },
   },
-  // nitro: {
-  //   preset: 'cloudflareWorker',
-  //   experimental: { wasm: true },
-  // },
+  nitro: {
+    preset: 'cloudflareWorker',
+    experimental: { wasm: true },
+  },
   experimental: { typedPages: true, viewTransition: true },
   serverDir: './server/',
   image: {

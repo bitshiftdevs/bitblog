@@ -71,13 +71,3 @@ const formattedValue = computed(() => {
   return props.value.toString();
 });
 </script>
-
-<!-- apps/web/server/api/rss.xml.get.ts -->
-<template>
-  <!-- This will be handled by the API endpoint -->
-</template>
-
-<script>
-// This file creates the RSS feed
-// The actual implementation is in the API
-</script>

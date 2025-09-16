@@ -1,5 +1,4 @@
-// apps/api/server/utils/database.ts
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient } from '../gen/prisma/client';
 
 let prisma: PrismaClient;
 
@@ -18,9 +17,7 @@ const initializePrisma = () => {
       },
     },
     log:
-      config.nodeEnv === 'development'
-        ? ['query', 'error', 'warn']
-        : ['error'],
+      config.nodeEnv === 'development' ? ['query', 'error', 'warn'] : ['error'],
   });
 };
 

@@ -172,8 +172,6 @@
 </template>
 
 <script setup lang="ts">
-import { format } from 'date-fns';
-
 definePageMeta({
   layout: 'admin',
 });
@@ -228,7 +226,11 @@ const pendingComments = computed(
 );
 
 const formatDate = (dateString: string): string => {
-  return format(new Date(dateString), 'MMM d, yyyy');
+  return new Intl.DateTimeFormat('en-US', {
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric',
+  }).format(new Date(dateString));
 };
 
 const getStatusColor = (status: string) => {
