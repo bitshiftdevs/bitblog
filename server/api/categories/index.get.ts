@@ -1,11 +1,11 @@
 // apps/api/server/api/categories/index.get.ts
 import { z } from "zod";
 import {
-  prisma,
   createPaginationOptions,
   createPaginationResult,
 } from "~~/lib/utils/database";
 import { PaginationSchema } from "~~/lib/schemas";
+import prisma from "~~/server/db";
 
 const QuerySchema = PaginationSchema.extend({
   includePostCount: z.boolean().optional().default(true),

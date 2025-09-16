@@ -1,6 +1,6 @@
 // apps/api/server/api/contact.post.ts
 import { z } from "zod";
-import { Resend } from "resend";
+import { sendEmailViaAPI } from "../utils/email";
 
 const ContactSchema = z.object({
   name: z.string().min(1).max(100),
@@ -18,23 +18,16 @@ export default defineEventHandler(async (event) => {
 
     // Create transporter (if SMTP is configured)
     if (config.resendKey) {
-      const resend = new Resend(config.resendKey);
-
-      // Send email
-      await resend.emails.send({
-        from: `"${config.smtpFromName}" <${config.smtpFromEmail}>`,
-        to: config.smtpFromEmail, // Send to admin
-        subject: `Contact Form: ${subject}`,
-        html: `
+      const html = `
           <h2>New Contact Form Submission</h2>
           <p><strong>Name:</strong> ${name}</p>
           <p><strong>Email:</strong> ${email}</p>
           <p><strong>Subject:</strong> ${subject}</p>
           <p><strong>Message:</strong></p>
           <p>${message.replace(/\n/g, "<br>")}</p>
-        `,
-        replyTo: email,
-      });
+        `;
+
+      await sendEmailViaAPI(email, html, subject);
     }
 
     return {

@@ -3,10 +3,10 @@
     class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden hover:shadow-md transition-shadow duration-200"
   >
     <!-- Featured Image -->
-    <div v-if="post.featuredImage" class="aspect-video overflow-hidden">
+    <div class="aspect-video overflow-hidden">
       <NuxtLink :to="`/posts/${post.slug}`">
         <img
-          :src="post.featuredImage"
+          :src="post.featuredImage || '/favicon.ico'"
           :alt="post.title"
           class="w-full h-full object-cover hover:scale-105 transition-transform duration-200"
         />

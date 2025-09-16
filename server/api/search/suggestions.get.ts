@@ -1,6 +1,6 @@
 // apps/api/server/api/search/suggestions.get.ts
 import { z } from "zod";
-import { prisma } from "~~/lib/utils/database";
+import prisma from "~~/server/db";
 
 const QuerySchema = z.object({
   q: z.string().min(1),

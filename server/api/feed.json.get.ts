@@ -1,6 +1,6 @@
 // apps/api/server/api/feed.json.get.ts
 import { Feed } from "feed";
-import { prisma } from "~~/lib/utils/database";
+import prisma from "~~/server/db";
 
 export default defineEventHandler(async (event) => {
   try {

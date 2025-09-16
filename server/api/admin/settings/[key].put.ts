@@ -1,52 +1,53 @@
-
-import { z } from 'zod'
-import { prisma, createAuditLog } from '~~/lib/utils/database'
-import { verifyJWT } from '~~/server/utils/auth'
+import { z } from "zod";
+import { createAuditLog } from "~~/lib/utils/database";
+import prisma from "~~/server/db";
+import { verifyJWT } from "~~/server/utils/auth";
 
 const UpdateSingleSettingSchema = z.object({
-  value: z.any()
-})
+  value: z.any(),
+});
 
 export default defineEventHandler(async (event) => {
   try {
     // Verify authentication and permissions
-    const user = await verifyJWT(event)
+    const user = await verifyJWT(event);
     if (!user) {
       throw createError({
         statusCode: 401,
-        statusMessage: 'Unauthorized'
-      })
+        statusMessage: "Unauthorized",
+      });
     }
 
     // Check permissions
-    const hasPermission = user.permissions?.includes('settings.write') || 
-                         user.permissions?.includes('admin')
-    
+    const hasPermission =
+      user.permissions?.includes("settings.write") ||
+      user.permissions?.includes("admin");
+
     if (!hasPermission) {
       throw createError({
         statusCode: 403,
-        statusMessage: 'Insufficient permissions'
-      })
+        statusMessage: "Insufficient permissions",
+      });
     }
 
-    const key = getRouterParam(event, 'key')
+    const key = getRouterParam(event, "key");
     if (!key) {
       throw createError({
         statusCode: 400,
-        statusMessage: 'Setting key is required'
-      })
+        statusMessage: "Setting key is required",
+      });
     }
 
-    const body = await readBody(event)
-    const { value } = UpdateSingleSettingSchema.parse(body)
+    const body = await readBody(event);
+    const { value } = UpdateSingleSettingSchema.parse(body);
 
-    const clientIP = getClientIP(event) || 'unknown'
-    const userAgent = getHeader(event, 'user-agent') || 'unknown'
+    const clientIP = getClientIP(event) || "unknown";
+    const userAgent = getHeader(event, "user-agent") || "unknown";
 
     // Get previous value for audit log
     const previousSetting = await prisma.siteSettings.findUnique({
-      where: { key }
-    })
+      where: { key },
+    });
 
     // Update setting
     const setting = await prisma.siteSettings.upsert({
@@ -59,23 +60,23 @@ export default defineEventHandler(async (event) => {
         key,
         value,
         updatedById: user.sub,
-      }
-    })
+      },
+    });
 
     // Log the change
     await createAuditLog({
-      entity: 'site_settings',
+      entity: "site_settings",
       entityId: setting.id,
-      action: previousSetting ? 'update' : 'create',
-      details: { 
-        key, 
-        previousValue: previousSetting?.value || null, 
-        newValue: value 
+      action: previousSetting ? "update" : "create",
+      details: {
+        key,
+        previousValue: previousSetting?.value || null,
+        newValue: value,
       },
       userId: user.sub,
       ipAddress: clientIP,
       userAgent,
-    })
+    });
 
     return {
       success: true,
@@ -83,28 +84,29 @@ export default defineEventHandler(async (event) => {
         key: setting.key,
         value: setting.value,
         updatedAt: setting.updatedAt.toISOString(),
-      }
-    }
-
+      },
+    };
   } catch (error) {
-    console.error(`Error updating setting ${getRouterParam(event, 'key')}:`, error)
-    
+    console.error(
+      `Error updating setting ${getRouterParam(event, "key")}:`,
+      error,
+    );
+
     if (error instanceof z.ZodError) {
       throw createError({
         statusCode: 400,
-        statusMessage: 'Invalid setting data',
-        data: error.errors
-      })
+        statusMessage: "Invalid setting data",
+        data: error.errors,
+      });
     }
-    
+
     if (error.statusCode) {
-      throw error
+      throw error;
     }
 
     throw createError({
       statusCode: 500,
-      statusMessage: 'Failed to update setting'
-    })
+      statusMessage: "Failed to update setting",
+    });
   }
-})
-
+});

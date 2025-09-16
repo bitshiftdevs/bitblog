@@ -1,5 +1,6 @@
 // apps/api/server/api/posts/[slug].get.ts
-import { prisma } from "~/../lib/utils/database";
+
+import prisma from "~~/server/db";
 
 export default defineEventHandler(async (event) => {
   try {

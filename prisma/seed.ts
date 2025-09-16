@@ -1,12 +1,10 @@
-// apps/api/prisma/seed.ts
-import { PrismaClient } from "@prisma/client";
 import * as argon2 from "argon2";
-import { nanoid } from "nanoid";
-
-const prisma = new PrismaClient();
+import { getDb } from "../server/db";
 
 async function main() {
   console.log("🌱 Seeding database...");
+  const prisma = getDb({ connectionString: process.env.DATABASE_URL! });
+  console.time("Seeding complete 🌱");
 
   // Create roles
   console.log("Creating roles...");
@@ -124,15 +122,18 @@ async function main() {
     {
       name: "John Smith",
       email: "john@blogplatform.com",
+      avatarUrl: "https://i.pravatar.cc/150?img=3",
       bio: "Technology enthusiast and software developer",
     },
     {
       name: "Sarah Johnson",
+      avatarUrl: "https://i.pravatar.cc/150?img=7",
       email: "sarah@blogplatform.com",
       bio: "Design expert and UX researcher",
     },
     {
       name: "Mike Chen",
+      avatarUrl: "https://i.pravatar.cc/150?img=9",
       email: "mike@blogplatform.com",
       bio: "Data scientist and machine learning expert",
     },
@@ -240,6 +241,8 @@ async function main() {
     {
       title: "Getting Started with TypeScript",
       slug: "getting-started-with-typescript",
+      featuredImage:
+        "https://nuxt.com/assets/blog/nuxt-icon/icons-showcase.png",
       excerpt:
         "Learn the basics of TypeScript and how it can improve your JavaScript development experience.",
       content: {
@@ -291,6 +294,8 @@ async function main() {
     {
       title: "Modern CSS Layout Techniques",
       slug: "modern-css-layout-techniques",
+      featuredImage:
+        "https://nuxt.com/assets/blog/nuxt-icon/icons-showcase.png",
       excerpt:
         "Explore modern CSS layout methods including Grid, Flexbox, and Container Queries.",
       content: {
@@ -323,6 +328,8 @@ async function main() {
     {
       title: "Building Scalable React Applications",
       slug: "building-scalable-react-applications",
+      featuredImage:
+        "https://nuxt.com/assets/blog/nuxt-icon/icons-showcase.png",
       excerpt:
         "Best practices for structuring and scaling React applications in production environments.",
       content: {
@@ -511,13 +518,10 @@ async function main() {
   console.log(
     "Authors: john@blogplatform.com, sarah@blogplatform.com, mike@blogplatform.com / author123",
   );
+  console.timeEnd("Seeding complete 🌱");
 }
 
-main()
-  .catch((e) => {
-    console.error("❌ Seeding failed:", e);
-    process.exit(1);
-  })
-  .finally(async () => {
-    await prisma.$disconnect();
-  });
+main().catch((e) => {
+  console.error("❌ Seeding failed:", e);
+  process.exit(1);
+});

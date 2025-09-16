@@ -1,37 +1,4 @@
-import { PrismaClient } from '../gen/prisma/client';
-
-let prisma: PrismaClient;
-
-declare global {
-  var __prisma: PrismaClient | undefined;
-}
-
-// Initialize Prisma Client
-const initializePrisma = () => {
-  const config = useRuntimeConfig();
-
-  return new PrismaClient({
-    datasources: {
-      db: {
-        url: config.databaseUrl,
-      },
-    },
-    log:
-      config.nodeEnv === 'development' ? ['query', 'error', 'warn'] : ['error'],
-  });
-};
-
-// Singleton pattern for Prisma Client
-if (useRuntimeConfig().nodeEnv === 'production') {
-  prisma = initializePrisma();
-} else {
-  if (!global.__prisma) {
-    global.__prisma = initializePrisma();
-  }
-  prisma = global.__prisma;
-}
-
-export { prisma };
+import prisma from '../../server/db';
 
 // Database connection test
 export async function testDatabaseConnection(): Promise<boolean> {

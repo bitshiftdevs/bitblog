@@ -1,5 +1,5 @@
 // apps/api/server/api/admin/dashboard.get.ts
-import { prisma } from "~~/lib/utils/database";
+import prisma from "~~/server/db";
 import { verifyJWT } from "~~/server/utils/auth";
 
 export default defineEventHandler(async (event) => {

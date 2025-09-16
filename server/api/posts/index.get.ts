@@ -1,12 +1,12 @@
 // apps/api/server/api/posts/index.get.ts
 import { z } from "zod";
 import {
-  prisma,
   createPaginationOptions,
   createPaginationResult,
   createSearchFilter,
 } from "~/../lib/utils/database";
 import { PostFiltersSchema, PaginationSchema } from "~/../lib/schemas";
+import prisma from "~~/server/db";
 
 const QuerySchema = PostFiltersSchema.merge(PaginationSchema).extend({
   includeDrafts: z.boolean().optional(),

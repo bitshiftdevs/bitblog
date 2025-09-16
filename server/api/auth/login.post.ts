@@ -4,7 +4,7 @@ import * as argon2 from "argon2";
 import { SignJWT } from "jose";
 import { nanoid } from "nanoid";
 import { LoginSchema } from "~~/lib/schemas";
-import { prisma } from "~~/lib/utils/database";
+import prisma from "~~/server/db";
 
 export default defineEventHandler(async (event) => {
   try {

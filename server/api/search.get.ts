@@ -1,12 +1,12 @@
 // apps/api/server/api/search.get.ts
 import { z } from "zod";
 import {
-  prisma,
   createPaginationOptions,
   createPaginationResult,
   createSearchFilter,
 } from "~~/lib/utils/database";
 import { SearchSchema } from "~~/lib/schemas";
+import prisma from "../db";
 
 export default defineEventHandler(async (event) => {
   try {

@@ -1,5 +1,5 @@
 // apps/api/server/api/authors/[id].get.ts
-import { prisma } from "~~/lib/utils/database";
+import prisma from "~~/server/db";
 
 export default defineEventHandler(async (event) => {
   try {

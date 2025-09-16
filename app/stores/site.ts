@@ -286,18 +286,3 @@ export const useSiteStore = defineStore('site', {
     },
   },
 });
-
-// Auto-load settings on client side
-onNuxtReady(() => {
-  const siteStore = useSiteStore();
-
-  // Load settings on store creation
-  siteStore.loadSettings();
-
-  // Apply theme when settings change
-  watch(
-    () => siteStore.primaryColor,
-    () => siteStore.applyTheme(),
-    { immediate: true },
-  );
-});
