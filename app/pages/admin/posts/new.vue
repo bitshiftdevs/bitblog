@@ -26,19 +26,19 @@
       <div class="lg:col-span-3 space-y-6">
         <!-- Title -->
         <UCard>
-          <UFormGroup label="Title" required>
+          <UFormField label="Title" required>
             <UInput
               v-model="form.title"
               placeholder="Enter post title..."
               size="lg"
               :disabled="isSaving || isPublishing"
             />
-          </UFormGroup>
+          </UFormField>
         </UCard>
 
         <!-- Slug -->
         <UCard>
-          <UFormGroup label="URL Slug">
+          <UFormField label="URL Slug">
             <UInput
               v-model="form.slug"
               placeholder="post-url-slug"
@@ -49,19 +49,19 @@
                 Preview: /posts/{{ form.slug || "post-url-slug" }}
               </span>
             </template>
-          </UFormGroup>
+          </UFormField>
         </UCard>
 
         <!-- Excerpt -->
         <UCard>
-          <UFormGroup label="Excerpt">
+          <UFormField label="Excerpt">
             <UTextarea
               v-model="form.excerpt"
               placeholder="Brief description of your post..."
               :rows="3"
               :disabled="isSaving || isPublishing"
             />
-          </UFormGroup>
+          </UFormField>
         </UCard>
 
         <!-- Content Editor -->
@@ -99,31 +99,31 @@
 
           <div class="space-y-4">
             <!-- Status -->
-            <UFormGroup label="Status">
+            <UFormField label="Status">
               <USelectMenu
                 v-model="form.status"
                 :options="statusOptions"
                 :disabled="isSaving || isPublishing"
               />
-            </UFormGroup>
+            </UFormField>
 
             <!-- Visibility -->
-            <UFormGroup label="Visibility">
+            <UFormField label="Visibility">
               <USelectMenu
                 v-model="form.visibility"
                 :options="visibilityOptions"
                 :disabled="isSaving || isPublishing"
               />
-            </UFormGroup>
+            </UFormField>
 
             <!-- Publish Date -->
-            <UFormGroup v-if="form.status === 'SCHEDULED'" label="Publish Date">
+            <UFormField v-if="form.status === 'SCHEDULED'" label="Publish Date">
               <UInput
                 v-model="form.scheduledAt"
                 type="datetime-local"
                 :disabled="isSaving || isPublishing"
               />
-            </UFormGroup>
+            </UFormField>
           </div>
         </UCard>
 
@@ -214,22 +214,22 @@
           </template>
 
           <div class="space-y-4">
-            <UFormGroup label="SEO Title">
+            <UFormField label="SEO Title">
               <UInput
                 v-model="form.seoTitle"
                 placeholder="SEO optimized title..."
                 :disabled="isSaving || isPublishing"
               />
-            </UFormGroup>
+            </UFormField>
 
-            <UFormGroup label="Meta Description">
+            <UFormField label="Meta Description">
               <UTextarea
                 v-model="form.seoDescription"
                 placeholder="Meta description for search engines..."
                 :rows="3"
                 :disabled="isSaving || isPublishing"
               />
-            </UFormGroup>
+            </UFormField>
           </div>
         </UCard>
       </div>

@@ -10,7 +10,7 @@
             class="text-4xl md:text-6xl font-bold text-gray-900 dark:text-white mb-6"
           >
             Welcome to
-            <span class="text-primary-600 dark:text-primary-400">{{
+            <span class="text-primary dark:text-primary">{{
               siteSettings?.title || "BitBlog"
             }}</span>
           </h1>

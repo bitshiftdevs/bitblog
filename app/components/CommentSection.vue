@@ -14,16 +14,16 @@
 
         <form @submit.prevent="submitComment" class="space-y-4">
           <div v-if="!user" class="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <UFormGroup label="Name" required>
+            <UFormField label="Name" required>
               <UInput
                 v-model="commentForm.guestName"
                 placeholder="Your name"
                 required
                 :disabled="isSubmitting"
               />
-            </UFormGroup>
+            </UFormField>
 
-            <UFormGroup label="Email" required>
+            <UFormField label="Email" required>
               <UInput
                 v-model="commentForm.guestEmail"
                 type="email"
@@ -31,10 +31,10 @@
                 required
                 :disabled="isSubmitting"
               />
-            </UFormGroup>
+            </UFormField>
           </div>
 
-          <UFormGroup label="Comment" required>
+          <UFormField label="Comment" required>
             <UTextarea
               v-model="commentForm.content"
               placeholder="Write your comment..."
@@ -42,7 +42,7 @@
               required
               :disabled="isSubmitting"
             />
-          </UFormGroup>
+          </UFormField>
 
           <div class="flex justify-between items-center">
             <p v-if="!user" class="text-sm text-gray-500 dark:text-gray-400">

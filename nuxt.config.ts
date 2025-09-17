@@ -17,8 +17,22 @@ export default defineNuxtConfig({
     runMigration: false,
   },
   pinia: {
-    // autoImports: ['defineStore', ['defineStore', 'definePiniaStore']],
     storesDirs: ['stores'],
+  },
+  ui: {
+    theme: {
+      colors: [
+        'primary',
+        'secondary',
+        'accent',
+        'neutral',
+        'base',
+        'info',
+        'success',
+        'warning',
+        'error',
+      ],
+    },
   },
   vite: {
     plugins: [tailwindcss()],

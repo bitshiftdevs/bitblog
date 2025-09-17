@@ -23,7 +23,7 @@
       <UCard class="p-6">
         <form @submit.prevent="handleRegister" class="space-y-6">
           <div>
-            <UFormGroup label="Full name" required>
+            <UFormField label="Full name" required>
               <UInput
                 v-model="form.name"
                 placeholder="Enter your full name"
@@ -31,11 +31,11 @@
                 :disabled="isLoading"
                 icon="i-heroicons-user"
               />
-            </UFormGroup>
+            </UFormField>
           </div>
 
           <div>
-            <UFormGroup label="Email address" required>
+            <UFormField label="Email address" required>
               <UInput
                 v-model="form.email"
                 type="email"
@@ -44,11 +44,11 @@
                 :disabled="isLoading"
                 icon="i-heroicons-envelope"
               />
-            </UFormGroup>
+            </UFormField>
           </div>
 
           <div>
-            <UFormGroup label="Password" required>
+            <UFormField label="Password" required>
               <UInput
                 v-model="form.password"
                 type="password"
@@ -57,11 +57,11 @@
                 :disabled="isLoading"
                 icon="i-heroicons-lock-closed"
               />
-            </UFormGroup>
+            </UFormField>
           </div>
 
           <div>
-            <UFormGroup label="Confirm password" required>
+            <UFormField label="Confirm password" required>
               <UInput
                 v-model="form.confirmPassword"
                 type="password"
@@ -70,7 +70,7 @@
                 :disabled="isLoading"
                 icon="i-heroicons-lock-closed"
               />
-            </UFormGroup>
+            </UFormField>
           </div>
 
           <div>

@@ -38,11 +38,9 @@
         class="h-12 w-12 text-gray-400 mx-auto mb-4"
       />
       <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-2">
-        No posts yet
+        No Authors yet
       </h3>
-      <p class="text-gray-500 dark:text-gray-400">
-        No posts have been tagged with "{{ tag.name }}" yet.
-      </p>
+      <p class="text-gray-500 dark:text-gray-400">Might be loading.</p>
     </div>
   </div>
 
@@ -57,37 +55,11 @@
 </template>
 
 <script setup lang="ts">
-const route = useRoute();
-const slug = route.params.slug as string;
-const currentPage = ref(1);
-
-// Fetch tag
-const { data: tagData } = await useFetch(`/api/tags/${slug}`);
-const tag = computed(() => tagData.value?.data);
-
-// Fetch posts with tag
-const { data: postsData, pending } = await useFetch('/api/posts', {
-  query: computed(() => ({
-    tagId: tag.value?.id,
-    page: currentPage.value,
-    limit: 12,
-    status: 'PUBLISHED',
-    visibility: 'PUBLIC',
-  })),
-});
-
-const posts = computed(() => postsData.value?.data?.items || []);
-const pagination = computed(() => postsData.value?.data?.pagination || {});
-
-// SEO
 useSeoMeta({
-  title: computed(() => `Posts tagged "${tag.value?.name}"`),
-  description: computed(
-    () => tag.value?.description || `Posts tagged with ${tag.value?.name}`,
-  ),
+  title: 'Authors',
+  description: 'Meet our talented writers and contributors',
 });
 
-if (!tag.value) {
-  throw createError({ statusCode: 404, statusMessage: 'Tag not found' });
-}
+const { data: authorsData, pending } = await useFetch('/api/authors');
+const authors = computed(() => authorsData.value?.data?.items || []);
 </script>

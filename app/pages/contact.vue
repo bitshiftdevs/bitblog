@@ -1,4 +1,53 @@
-<!-- apps/web/pages/contact.vue -->
+<script setup lang="ts">
+useSeoMeta({
+  title: 'Contact Us',
+  description: "Get in touch with our team. We'd love to hear from you.",
+});
+
+const toast = useToast();
+
+const isSubmitting = ref(false);
+const form = reactive({
+  name: '',
+  email: '',
+  subject: '',
+  message: '',
+});
+
+const submitForm = async () => {
+  isSubmitting.value = true;
+
+  try {
+    await $fetch('/api/contact', {
+      method: 'POST',
+      body: form,
+    });
+
+    toast.add({
+      title: 'Message sent!',
+      description: "Thank you for your message. We'll get back to you soon.",
+      color: 'success',
+    });
+
+    // Reset form
+    Object.assign(form, {
+      name: '',
+      email: '',
+      subject: '',
+      message: '',
+    });
+  } catch (error: any) {
+    toast.add({
+      title: 'Failed to send message',
+      description: error.data?.message || 'Please try again later.',
+      color: 'error',
+    });
+  } finally {
+    isSubmitting.value = false;
+  }
+};
+</script>
+
 <template>
   <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
     <div class="max-w-2xl mx-auto">
@@ -13,18 +62,18 @@
       </p>
 
       <UCard class="p-8">
-        <form @submit.prevent="submitForm" class="space-y-6">
+        <UForm :state="form" @submit.prevent="submitForm" class="space-y-6">
           <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <UFormGroup label="Name" required>
+            <UFormField label="Name" required>
               <UInput
                 v-model="form.name"
                 placeholder="Your name"
                 required
                 :disabled="isSubmitting"
               />
-            </UFormGroup>
+            </UFormField>
 
-            <UFormGroup label="Email" required>
+            <UFormField label="Email" required>
               <UInput
                 v-model="form.email"
                 type="email"
@@ -32,19 +81,19 @@
                 required
                 :disabled="isSubmitting"
               />
-            </UFormGroup>
+            </UFormField>
           </div>
 
-          <UFormGroup label="Subject" required>
+          <UFormField label="Subject" required>
             <UInput
               v-model="form.subject"
               placeholder="What's this about?"
               required
               :disabled="isSubmitting"
             />
-          </UFormGroup>
+          </UFormField>
 
-          <UFormGroup label="Message" required>
+          <UFormField label="Message" required>
             <UTextarea
               v-model="form.message"
               placeholder="Your message..."
@@ -52,12 +101,12 @@
               required
               :disabled="isSubmitting"
             />
-          </UFormGroup>
+          </UFormField>
 
           <UButton type="submit" :loading="isSubmitting" block size="lg">
             Send Message
           </UButton>
-        </form>
+        </UForm>
       </UCard>
 
       <!-- Contact Information -->
@@ -104,53 +153,3 @@
     </div>
   </div>
 </template>
-
-<script setup lang="ts">
-useSeoMeta({
-  title: 'Contact Us',
-  description: "Get in touch with our team. We'd love to hear from you.",
-});
-
-const toast = useToast();
-
-const isSubmitting = ref(false);
-const form = reactive({
-  name: '',
-  email: '',
-  subject: '',
-  message: '',
-});
-
-const submitForm = async () => {
-  isSubmitting.value = true;
-
-  try {
-    await $fetch('/api/contact', {
-      method: 'POST',
-      body: form,
-    });
-
-    toast.add({
-      title: 'Message sent!',
-      description: "Thank you for your message. We'll get back to you soon.",
-      color: 'green',
-    });
-
-    // Reset form
-    Object.assign(form, {
-      name: '',
-      email: '',
-      subject: '',
-      message: '',
-    });
-  } catch (error: any) {
-    toast.add({
-      title: 'Failed to send message',
-      description: error.data?.message || 'Please try again later.',
-      color: 'red',
-    });
-  } finally {
-    isSubmitting.value = false;
-  }
-};
-</script>
