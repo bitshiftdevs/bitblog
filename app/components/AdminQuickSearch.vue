@@ -4,7 +4,7 @@
     <UInput
       v-model="searchQuery"
       placeholder="Quick search..."
-      icon="i-lucide-magnifying-glass"
+      icon="i-lucide-search"
       size="sm"
       class="w-64"
       @focus="showResults = true"
@@ -47,6 +47,8 @@
 </template>
 
 <script setup lang="ts">
+import { useDebounceFn } from '@vueuse/core';
+
 const searchQuery = ref('');
 const showResults = ref(false);
 const searchResults = ref<

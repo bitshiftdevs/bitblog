@@ -1,4 +1,3 @@
-<!-- apps/web/pages/admin/index.vue -->
 <template>
   <div class="space-y-6">
     <!-- Page Header -->
@@ -18,7 +17,7 @@
       <StatCard
         title="Total Posts"
         :value="stats.posts?.total || 0"
-        icon="i-lucide-document-text"
+        icon="i-lucide-file-text"
         color="blue"
       />
       <StatCard
@@ -36,7 +35,7 @@
       <StatCard
         title="Comments"
         :value="stats.comments?.total || 0"
-        icon="i-lucide-chat-bubble-left"
+        icon="i-lucide-message-circle"
         color="purple"
         :badge="
           stats.comments?.pending > 0 ? stats.comments.pending : undefined
@@ -136,7 +135,7 @@
           variant="outline"
           class="justify-center h-20 flex-col"
         >
-          <UIcon name="i-lucide-plus" class="h-6 w-6 mb-2" />
+          <UIcon name="i-lucide-file-pen" class="h-6 w-6 mb-2" />
           New Post
         </UButton>
 
@@ -145,7 +144,7 @@
           variant="outline"
           class="justify-center h-20 flex-col"
         >
-          <UIcon name="i-lucide-photo" class="h-6 w-6 mb-2" />
+          <UIcon name="i-lucide-image" class="h-6 w-6 mb-2" />
           Upload Media
         </UButton>
 
@@ -163,7 +162,7 @@
           variant="outline"
           class="justify-center h-20 flex-col"
         >
-          <UIcon name="i-lucide-cog-6-tooth" class="h-6 w-6 mb-2" />
+          <UIcon name="i-lucide-settings" class="h-6 w-6 mb-2" />
           Settings
         </UButton>
       </div>

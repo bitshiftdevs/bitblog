@@ -1,6 +1,9 @@
 <!-- apps/web/components/AdminNotifications.vue -->
 <template>
-  <UDropdown :items="notificationItems" :popper="{ placement: 'bottom-end' }">
+  <UDropdownMenu
+    :items="notificationItems"
+    :popper="{ placement: 'bottom-end' }"
+  >
     <UButton
       variant="ghost"
       size="sm"
@@ -14,7 +17,7 @@
         class="absolute -top-1 -right-1 h-2 w-2 bg-red-500 rounded-full"
       />
     </UButton>
-  </UDropdown>
+  </UDropdownMenu>
 </template>
 
 <script setup lang="ts">
@@ -103,7 +106,7 @@ const getNotificationIcon = (type: string) => {
     case 'comment':
       return 'i-lucide-chat-bubble-left';
     case 'post':
-      return 'i-lucide-document-text';
+      return 'i-lucide-file-text';
     case 'user':
       return 'i-lucide-user';
     default:

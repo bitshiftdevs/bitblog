@@ -82,7 +82,7 @@
 
         <div v-else class="text-center py-12">
           <UIcon
-            name="i-lucide-document-text"
+            name="i-lucide-file-text"
             class="h-12 w-12 text-gray-400 mx-auto mb-4"
           />
           <p class="text-gray-500 dark:text-gray-400">
@@ -140,7 +140,7 @@
     </section>
 
     <!-- Newsletter Signup -->
-    <section class="py-16 bg-primary-600 dark:bg-primary-800">
+    <section class="py-16 bg-seconday-600 dark:bg-sky-900">
       <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
         <h2 class="text-3xl font-bold text-white mb-4">Stay Updated</h2>
         <p class="text-primary-100 mb-8 text-lg">

@@ -1,4 +1,3 @@
-<!-- apps/web/components/AdminSidebar.vue -->
 <template>
   <!-- Mobile sidebar overlay -->
   <div
@@ -19,7 +18,7 @@
           <div
             class="h-8 w-8 bg-primary-600 rounded-md flex items-center justify-center"
           >
-            <UIcon name="i-lucide-cog-6-tooth" class="h-5 w-5 text-white" />
+            <UIcon name="i-lucide-settings" class="h-5 w-5 text-white" />
           </div>
           <span class="text-white font-semibold">Admin Panel</span>
         </NuxtLink>
@@ -27,7 +26,7 @@
         <UButton
           variant="ghost"
           size="sm"
-          icon="i-lucide-x-mark"
+          icon="i-lucide-x"
           class="lg:hidden text-gray-400 hover:text-white"
           @click="$emit('close')"
         />
@@ -47,14 +46,14 @@
         <SidebarSection title="Content">
           <SidebarItem
             to="/admin/posts"
-            icon="i-lucide-document-text"
+            icon="i-lucide-notebook-text"
             label="Posts"
             :badge="postStats.draft > 0 ? postStats.draft : undefined"
           />
 
           <SidebarItem
             to="/admin/pages"
-            icon="i-lucide-document"
+            icon="i-lucide-file-text"
             label="Pages"
           />
 
@@ -71,7 +70,7 @@
         <SidebarSection title="Media">
           <SidebarItem
             to="/admin/media"
-            icon="i-lucide-photo"
+            icon="i-lucide-image"
             label="Media Library"
           />
         </SidebarSection>
@@ -80,14 +79,14 @@
         <SidebarSection title="Engagement">
           <SidebarItem
             to="/admin/comments"
-            icon="i-lucide-chat-bubble-left-right"
+            icon="i-lucide-message-circle-dashed"
             label="Comments"
             :badge="commentStats.pending > 0 ? commentStats.pending : undefined"
           />
 
           <SidebarItem
             to="/admin/newsletter"
-            icon="i-lucide-envelope"
+            icon="i-lucide-mail-check"
             label="Newsletter"
           />
         </SidebarSection>
@@ -120,13 +119,13 @@
         <SidebarSection title="Analytics">
           <SidebarItem
             to="/admin/analytics"
-            icon="i-lucide-chart-bar"
+            icon="i-lucide-bar-chart-3"
             label="Analytics"
           />
 
           <SidebarItem
             to="/admin/reports"
-            icon="i-lucide-document-chart-bar"
+            icon="i-lucide-file-chart-line"
             label="Reports"
           />
         </SidebarSection>
@@ -135,7 +134,7 @@
         <SidebarSection v-if="canManageSettings" title="Settings">
           <SidebarItem
             to="/admin/settings"
-            icon="i-lucide-cog-6-tooth"
+            icon="i-lucide-settings"
             label="Site Settings"
           />
 
@@ -179,14 +178,17 @@
             <p class="text-xs text-gray-400 truncate">{{ user?.email }}</p>
           </div>
 
-          <UDropdown :items="userMenuItems" :popper="{ placement: 'top-end' }">
+          <UDropdownMenu
+            :items="userMenuItems"
+            :popper="{ placement: 'top-end' }"
+          >
             <UButton
               variant="ghost"
               size="sm"
               icon="i-lucide-ellipsis-vertical"
               class="text-gray-400 hover:text-white"
             />
-          </UDropdown>
+          </UDropdownMenu>
         </div>
       </div>
     </div>

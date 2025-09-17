@@ -22,8 +22,8 @@ export default defineEventHandler(async (event) => {
 
     // Create feed
     const feed = new Feed({
-      title: general.title || "Blog Platform",
-      description: general.description || "A modern multi-admin blog platform",
+      title: general.title || "BitBlog",
+      description: general.description || "Blog Platform RSS Feed",
       id: siteUrl,
       link: siteUrl,
       language: "en",
@@ -31,7 +31,7 @@ export default defineEventHandler(async (event) => {
       favicon: general.favicon
         ? `${siteUrl}${general.favicon}`
         : `${siteUrl}/favicon.ico`,
-      copyright: `All rights reserved ${new Date().getFullYear()}, ${general.title || "Blog Platform"}`,
+      copyright: `All rights reserved ${new Date().getFullYear()}, ${general.title || "BitBlog"}`,
       updated: new Date(),
       generator: "Blog Platform RSS Generator",
       feedLinks: {

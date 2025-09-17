@@ -43,10 +43,10 @@
           <AdminQuickSearch />
 
           <!-- Theme toggle -->
-          <ThemeToggle />
+          <UColorModeSwitch />
 
           <!-- User menu -->
-          <UDropdown
+          <UDropdownMenu
             :items="userMenuItems"
             :popper="{ placement: 'bottom-end' }"
           >
@@ -57,7 +57,7 @@
               }}</span>
               <UIcon name="i-lucide-chevron-down" class="h-4 w-4" />
             </UButton>
-          </UDropdown>
+          </UDropdownMenu>
         </div>
       </div>
     </div>

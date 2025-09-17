@@ -1,372 +1,260 @@
-<template>
-  <div class="flex flex-wrap items-center gap-1 p-2 bg-gray-50 dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
-    <!-- Text formatting -->
-    <div class="flex items-center border-r border-gray-200 dark:border-gray-600 pr-2 mr-2">
-      <UButton
-        variant="ghost"
-        size="sm"
-        icon="i-lucide-bold"
-        :class="{ 'bg-gray-200 dark:bg-gray-700': editor.isActive('bold') }"
-        @click="editor.chain().focus().toggleBold().run()"
-        title="Bullet List"
-      />
-      <UButton
-        variant="ghost"
-        size="sm"
-        icon="i-lucide-numbered-list"
-        :class="{ 'bg-gray-200 dark:bg-gray-700': editor.isActive('orderedList') }"
-        @click="editor.chain().focus().toggleOrderedList().run()"
-        title="Numbered List"
-      />
-      <UButton
-        variant="ghost"
-        size="sm"
-        icon="i-lucide-check-square"
-        :class="{ 'bg-gray-200 dark:bg-gray-700': editor.isActive('taskList') }"
-        @click="editor.chain().focus().toggleTaskList().run()"
-        title="Task List"
-      />
-      <UButton
-        variant="ghost"
-        size="sm"
-        icon="i-lucide-chat-bubble-left-right"
-        :class="{ 'bg-gray-200 dark:bg-gray-700': editor.isActive('blockquote') }"
-        @click="editor.chain().focus().toggleBlockquote().run()"
-        title="Quote"
-      />
-    </div>
-
-    <!-- Media and embeds -->
-    <div class="flex items-center border-r border-gray-200 dark:border-gray-600 pr-2 mr-2">
-      <UButton
-        variant="ghost"
-        size="sm"
-        icon="i-lucide-photo"
-        @click="openImageDialog"
-        title="Insert Image"
-      />
-      <UButton
-        variant="ghost"
-        size="sm"
-        icon="i-lucide-link"
-        :class="{ 'bg-gray-200 dark:bg-gray-700': editor.isActive('link') }"
-        @click="openLinkDialog"
-        title="Insert Link"
-      />
-      <UButton
-        variant="ghost"
-        size="sm"
-        icon="i-lucide-play"
-        @click="openYouTubeDialog"
-        title="Insert YouTube Video"
-      />
-      <UButton
-        variant="ghost"
-        size="sm"
-        icon="i-lucide-table-cells"
-        @click="insertTable"
-        title="Insert Table"
-      />
-    </div>
-
-    <!-- Code -->
-    <div class="flex items-center border-r border-gray-200 dark:border-gray-600 pr-2 mr-2">
-      <UButton
-        variant="ghost"
-        size="sm"
-        icon="i-lucide-code-bracket-square"
-        :class="{ 'bg-gray-200 dark:bg-gray-700': editor.isActive('codeBlock') }"
-        @click="editor.chain().focus().toggleCodeBlock().run()"
-        title="Code Block"
-      />
-    </div>
-
-    <!-- Alignment and formatting -->
-    <div class="flex items-center border-r border-gray-200 dark:border-gray-600 pr-2 mr-2">
-      <UButton
-        variant="ghost"
-        size="sm"
-        icon="i-lucide-minus"
-        @click="editor.chain().focus().setHorizontalRule().run()"
-        title="Horizontal Rule"
-      />
-      <UButton
-        variant="ghost"
-        size="sm"
-        icon="i-lucide-arrow-uturn-left"
-        :disabled="!editor.can().undo()"
-        @click="editor.chain().focus().undo().run()"
-        title="Undo (Ctrl+Z)"
-      />
-      <UButton
-        variant="ghost"
-        size="sm"
-        icon="i-lucide-arrow-uturn-right"
-        :disabled="!editor.can().redo()"
-        @click="editor.chain().focus().redo().run()"
-        title="Redo (Ctrl+Y)"
-      />
-    </div>
-
-    <!-- Dialogs -->
-    <ImageDialog 
-      v-model="imageDialogOpen" 
-      @insert="insertImage"
-    />
-    
-    <LinkDialog 
-      v-model="linkDialogOpen" 
-      :current-url="currentLinkUrl"
-      @insert="insertLink"
-      @remove="removeLink"
-    />
-
-    <YouTubeDialog 
-      v-model="youtubeDialogOpen" 
-      @insert="insertYouTube"
-    />
-  </div>
-</template>
-
-<script setup lang="ts">
-import type { Editor } from '@tiptap/vue-3';
-
-interface Props {
-  editor: Editor;
-}
-
-const props = defineProps<Props>();
-
-// Dialog states
-const imageDialogOpen = ref(false);
-const linkDialogOpen = ref(false);
-const youtubeDialogOpen = ref(false);
-
-// Current heading display
-const currentHeading = computed(() => {
-  if (props.editor.isActive('heading', { level: 1 })) return 'H1';
-  if (props.editor.isActive('heading', { level: 2 })) return 'H2';
-  if (props.editor.isActive('heading', { level: 3 })) return 'H3';
-  if (props.editor.isActive('heading', { level: 4 })) return 'H4';
-  if (props.editor.isActive('heading', { level: 5 })) return 'H5';
-  if (props.editor.isActive('heading', { level: 6 })) return 'H6';
-  return 'Paragraph';
-});
-
-// Heading dropdown items
-const headingItems = [
-  [
-    {
-      label: 'Paragraph',
-      click: () => props.editor.chain().focus().setParagraph().run(),
-      active: !props.editor.isActive('heading'),
-    },
-  ],
-  [
-    {
-      label: 'Heading 1',
-      click: () =>
-        props.editor.chain().focus().toggleHeading({ level: 1 }).run(),
-      active: props.editor.isActive('heading', { level: 1 }),
-    },
-    {
-      label: 'Heading 2',
-      click: () =>
-        props.editor.chain().focus().toggleHeading({ level: 2 }).run(),
-      active: props.editor.isActive('heading', { level: 2 }),
-    },
-    {
-      label: 'Heading 3',
-      click: () =>
-        props.editor.chain().focus().toggleHeading({ level: 3 }).run(),
-      active: props.editor.isActive('heading', { level: 3 }),
-    },
-    {
-      label: 'Heading 4',
-      click: () =>
-        props.editor.chain().focus().toggleHeading({ level: 4 }).run(),
-      active: props.editor.isActive('heading', { level: 4 }),
-    },
-    {
-      label: 'Heading 5',
-      click: () =>
-        props.editor.chain().focus().toggleHeading({ level: 5 }).run(),
-      active: props.editor.isActive('heading', { level: 5 }),
-    },
-    {
-      label: 'Heading 6',
-      click: () =>
-        props.editor.chain().focus().toggleHeading({ level: 6 }).run(),
-      active: props.editor.isActive('heading', { level: 6 }),
-    },
-  ],
-];
-
-// Current link URL for editing
-const currentLinkUrl = computed(() => {
-  if (props.editor.isActive('link')) {
-    return props.editor.getAttributes('link').href;
-  }
-  return '';
-});
-
-// Dialog handlers
-const openImageDialog = () => {
-  imageDialogOpen.value = true;
-};
-
-const openLinkDialog = () => {
-  linkDialogOpen.value = true;
-};
-
-const openYouTubeDialog = () => {
-  youtubeDialogOpen.value = true;
-};
-
-// Insert handlers
-const insertImage = (data: { url: string; alt?: string; title?: string }) => {
-  props.editor
-    .chain()
-    .focus()
-    .setImage({
-      src: data.url,
-      alt: data.alt || '',
-      title: data.title || '',
-    })
-    .run();
-};
-
-const insertLink = (data: {
-  url: string;
-  text?: string;
-  openInNewTab?: boolean;
-}) => {
-  const { url, text, openInNewTab } = data;
-
-  // If text is provided and nothing is selected, insert the text first
-  if (text && props.editor.state.selection.empty) {
-    props.editor.chain().focus().insertContent(text).run();
-    // Select the inserted text
-    const { from } = props.editor.state.selection;
-    props.editor.commands.setTextSelection({
-      from: from - text.length,
-      to: from,
-    });
-  }
-
-  props.editor
-    .chain()
-    .focus()
-    .setLink({
-      href: url,
-      target: openInNewTab ? '_blank' : null,
-      rel: openInNewTab ? 'noopener noreferrer' : null,
-    })
-    .run();
-};
-
-const removeLink = () => {
-  props.editor.chain().focus().unsetLink().run();
-};
-
-const insertYouTube = (data: {
-  url: string;
-  width?: number;
-  height?: number;
-}) => {
-  props.editor
-    .chain()
-    .focus()
-    .setYoutubeVideo({
-      src: data.url,
-      width: data.width || 640,
-      height: data.height || 480,
-    })
-    .run();
-};
-
-const insertTable = () => {
-  props.editor
-    .chain()
-    .focus()
-    .insertTable({
-      rows: 3,
-      cols: 3,
-      withHeaderRow: true,
-    })
-    .run();
-};
-
-// Keyboard shortcuts
-onMounted(() => {
-  const handleKeydown = (event: KeyboardEvent) => {
-    // Custom shortcuts can be added here if needed
-    // Most shortcuts are handled by TipTap extensions automatically
-  };
-
-  document.addEventListener('keydown', handleKeydown);
-
-  onUnmounted(() => {
-    document.removeEventListener('keydown', handleKeydown);
-  });
-});
-</script>Bold (Ctrl+B)"
-      />
-      <UButton
-        variant="ghost"
-        size="sm"
-        icon="i-lucide-italic"
-        :class="{ 'bg-gray-200 dark:bg-gray-700': editor.isActive('italic') }"
-        @click="editor.chain().focus().toggleItalic().run()"
-        title="Italic (Ctrl+I)"
-      />
-      <UButton
-        variant="ghost"
-        size="sm"
-        icon="i-lucide-underline"
-        :class="{ 'bg-gray-200 dark:bg-gray-700': editor.isActive('underline') }"
-        @click="editor.chain().focus().toggleUnderline().run()"
-        title="Underline (Ctrl+U)"
-      />
-      <UButton
-        variant="ghost"
-        size="sm"
-        icon="i-lucide-strikethrough"
-        :class="{ 'bg-gray-200 dark:bg-gray-700': editor.isActive('strike') }"
-        @click="editor.chain().focus().toggleStrike().run()"
-        title="Strikethrough"
-      />
-      <UButton
-        variant="ghost"
-        size="sm"
-        icon="i-lucide-code-bracket"
-        :class="{ 'bg-gray-200 dark:bg-gray-700': editor.isActive('code') }"
-        @click="editor.chain().focus().toggleCode().run()"
-        title="Inline Code"
-      />
-    </div>
-
-    <!-- Headings -->
-    <div class="flex items-center border-r border-gray-200 dark:border-gray-600 pr-2 mr-2">
-      <UDropdown 
-        :items="headingItems" 
-        :popper="{ placement: 'bottom-start' }"
-      >
-        <UButton 
-          variant="ghost" 
-          size="sm" 
-          :label="currentHeading"
-          trailing-icon="i-lucide-chevron-down-20-solid"
-        />
-      </UDropdown>
-    </div>
-
-    <!-- Paragraph formatting -->
-    <div class="flex items-center border-r border-gray-200 dark:border-gray-600 pr-2 mr-2">
-      <UButton
-        variant="ghost"
-        size="sm"
-        icon="i-lucide-list-bullet"
-        :class="{ 'bg-gray-200 dark:bg-gray-700': editor.isActive('bulletList') }"
-        @click="editor.chain().focus().toggleBulletList().run()"
-        title="
+<!-- <script lang="ts"> -->
+<!-- 	import type { Editor } from '@tiptap/core'; -->
+<!-- 	import type { Level } from '@tiptap/extension-heading'; -->
+<!-- 	import { BubbleMenu } from 'svelte-tiptap'; -->
+<!---->
+<!-- 	let { editor }: { editor: Editor } = $props(); -->
+<!---->
+<!-- 	// Toolbar actions -->
+<!-- 	function toggleBold() { -->
+<!-- 		editor.chain().focus().toggleBold().run(); -->
+<!-- 	} -->
+<!---->
+<!-- 	function toggleItalic() { -->
+<!-- 		editor.chain().focus().toggleItalic().run(); -->
+<!-- 	} -->
+<!---->
+<!-- 	function toggleUnderline() { -->
+<!-- 		editor.chain().focus().toggleMark('underline').run(); -->
+<!-- 	} -->
+<!---->
+<!-- 	function toggleHeading(level: Level) { -->
+<!-- 		editor.chain().focus().toggleHeading({ level }).run(); -->
+<!-- 	} -->
+<!---->
+<!-- 	function toggleBulletList() { -->
+<!-- 		editor.chain().focus().toggleBulletList().run(); -->
+<!-- 	} -->
+<!---->
+<!-- 	function toggleOrderedList() { -->
+<!-- 		editor.chain().focus().toggleOrderedList().run(); -->
+<!-- 	} -->
+<!---->
+<!-- 	function setTextAlign(align: 'left' | 'right' | 'justify' | 'center') { -->
+<!-- 		editor.chain().focus().setTextAlign(align).run(); -->
+<!-- 	} -->
+<!-- </script> -->
+<!---->
+<!-- <BubbleMenu {editor}> -->
+<!-- 	<div class="bg-base-200 p-2 rounded-t-lg flex flex-wrap gap-2"> -->
+<!-- 		<div class="btn-group"> -->
+<!-- 			<button -->
+<!-- 				aria-label="bold" -->
+<!-- 				class="btn btn-sm" -->
+<!-- 				onclick={toggleBold} -->
+<!-- 				class:btn-primary={editor?.isActive('bold')} -->
+<!-- 				title="Bold" -->
+<!-- 			> -->
+<!-- 				<svg -->
+<!-- 					xmlns="http://www.w3.org/2000/svg" -->
+<!-- 					width="16" -->
+<!-- 					height="16" -->
+<!-- 					viewBox="0 0 24 24" -->
+<!-- 					fill="none" -->
+<!-- 					stroke="currentColor" -->
+<!-- 					stroke-width="2" -->
+<!-- 					stroke-linecap="round" -->
+<!-- 					stroke-linejoin="round" -->
+<!-- 					><path d="M6 4h8a4 4 0 0 1 4 4 4 4 0 0 1-4 4H6z"></path><path -->
+<!-- 						d="M6 12h9a4 4 0 0 1 4 4 4 4 0 0 1-4 4H6z" -->
+<!-- 					></path></svg -->
+<!-- 				> -->
+<!-- 			</button> -->
+<!-- 			<button -->
+<!-- 				aria-label="bold" -->
+<!-- 				class="btn btn-sm" -->
+<!-- 				onclick={toggleItalic} -->
+<!-- 				class:btn-primary={editor?.isActive('italic')} -->
+<!-- 				title="Italic" -->
+<!-- 			> -->
+<!-- 				<svg -->
+<!-- 					xmlns="http://www.w3.org/2000/svg" -->
+<!-- 					width="16" -->
+<!-- 					height="16" -->
+<!-- 					viewBox="0 0 24 24" -->
+<!-- 					fill="none" -->
+<!-- 					stroke="currentColor" -->
+<!-- 					stroke-width="2" -->
+<!-- 					stroke-linecap="round" -->
+<!-- 					stroke-linejoin="round" -->
+<!-- 					><line x1="19" y1="4" x2="10" y2="4"></line><line x1="14" y1="20" x2="5" y2="20" -->
+<!-- 					></line><line x1="15" y1="4" x2="9" y2="20"></line></svg -->
+<!-- 				> -->
+<!-- 			</button> -->
+<!-- 			<button -->
+<!-- 				aria-label="bold" -->
+<!-- 				class="btn btn-sm" -->
+<!-- 				onclick={toggleUnderline} -->
+<!-- 				class:btn-primary={editor?.isActive('underline')} -->
+<!-- 				title="Underline" -->
+<!-- 			> -->
+<!-- 				<svg -->
+<!-- 					xmlns="http://www.w3.org/2000/svg" -->
+<!-- 					width="16" -->
+<!-- 					height="16" -->
+<!-- 					viewBox="0 0 24 24" -->
+<!-- 					fill="none" -->
+<!-- 					stroke="currentColor" -->
+<!-- 					stroke-width="2" -->
+<!-- 					stroke-linecap="round" -->
+<!-- 					stroke-linejoin="round" -->
+<!-- 					><path d="M6 3v7a6 6 0 0 0 6 6 6 6 0 0 0 6-6V3"></path><line -->
+<!-- 						x1="4" -->
+<!-- 						y1="21" -->
+<!-- 						x2="20" -->
+<!-- 						y2="21" -->
+<!-- 					></line></svg -->
+<!-- 				> -->
+<!-- 			</button> -->
+<!-- 		</div> -->
+<!---->
+<!-- 		<div class="btn-group"> -->
+<!-- 			<button -->
+<!-- 				class="btn btn-sm" -->
+<!-- 				onclick={() => toggleHeading(1)} -->
+<!-- 				class:btn-primary={editor?.isActive('heading', { level: 1 })} -->
+<!-- 				title="Heading 1" -->
+<!-- 			> -->
+<!-- 				H1 -->
+<!-- 			</button> -->
+<!-- 			<button -->
+<!-- 				class="btn btn-sm" -->
+<!-- 				onclick={() => toggleHeading(2)} -->
+<!-- 				class:btn-primary={editor?.isActive('heading', { level: 2 })} -->
+<!-- 				title="Heading 2" -->
+<!-- 			> -->
+<!-- 				H2 -->
+<!-- 			</button> -->
+<!-- 			<button -->
+<!-- 				class="btn btn-sm" -->
+<!-- 				onclick={() => toggleHeading(3)} -->
+<!-- 				class:btn-primary={editor?.isActive('heading', { level: 3 })} -->
+<!-- 				title="Heading 3" -->
+<!-- 			> -->
+<!-- 				H3 -->
+<!-- 			</button> -->
+<!-- 		</div> -->
+<!---->
+<!-- 		<div class="btn-group"> -->
+<!-- 			<button -->
+<!-- 				aria-label="bold" -->
+<!-- 				class="btn btn-sm" -->
+<!-- 				onclick={toggleBulletList} -->
+<!-- 				class:btn-primary={editor?.isActive('bulletList')} -->
+<!-- 				title="Bullet List" -->
+<!-- 			> -->
+<!-- 				<svg -->
+<!-- 					xmlns="http://www.w3.org/2000/svg" -->
+<!-- 					width="16" -->
+<!-- 					height="16" -->
+<!-- 					viewBox="0 0 24 24" -->
+<!-- 					fill="none" -->
+<!-- 					stroke="currentColor" -->
+<!-- 					stroke-width="2" -->
+<!-- 					stroke-linecap="round" -->
+<!-- 					stroke-linejoin="round" -->
+<!-- 					><line x1="8" y1="6" x2="21" y2="6"></line><line x1="8" y1="12" x2="21" y2="12" -->
+<!-- 					></line><line x1="8" y1="18" x2="21" y2="18"></line><line x1="3" y1="6" x2="3.01" y2="6" -->
+<!-- 					></line><line x1="3" y1="12" x2="3.01" y2="12"></line><line -->
+<!-- 						x1="3" -->
+<!-- 						y1="18" -->
+<!-- 						x2="3.01" -->
+<!-- 						y2="18" -->
+<!-- 					></line></svg -->
+<!-- 				> -->
+<!-- 			</button> -->
+<!-- 			<button -->
+<!-- 				aria-label="bold" -->
+<!-- 				class="btn btn-sm" -->
+<!-- 				onclick={toggleOrderedList} -->
+<!-- 				class:btn-primary={editor?.isActive('orderedList')} -->
+<!-- 				title="Ordered List" -->
+<!-- 			> -->
+<!-- 				<svg -->
+<!-- 					xmlns="http://www.w3.org/2000/svg" -->
+<!-- 					width="16" -->
+<!-- 					height="16" -->
+<!-- 					viewBox="0 0 24 24" -->
+<!-- 					fill="none" -->
+<!-- 					stroke="currentColor" -->
+<!-- 					stroke-width="2" -->
+<!-- 					stroke-linecap="round" -->
+<!-- 					stroke-linejoin="round" -->
+<!-- 					><line x1="10" y1="6" x2="21" y2="6"></line><line x1="10" y1="12" x2="21" y2="12" -->
+<!-- 					></line><line x1="10" y1="18" x2="21" y2="18"></line><path d="M4 6h1v4"></path><path -->
+<!-- 						d="M4 10h2" -->
+<!-- 					></path><path d="M6 18H4c0-1 2-2 2-3s-1-1.5-2-1"></path></svg -->
+<!-- 				> -->
+<!-- 			</button> -->
+<!-- 		</div> -->
+<!---->
+<!-- 		<div class="btn-group"> -->
+<!-- 			<button -->
+<!-- 				aria-label="bold" -->
+<!-- 				class="btn btn-sm" -->
+<!-- 				onclick={() => setTextAlign('left')} -->
+<!-- 				class:btn-primary={editor?.isActive({ textAlign: 'left' })} -->
+<!-- 				title="Align Left" -->
+<!-- 			> -->
+<!-- 				<svg -->
+<!-- 					xmlns="http://www.w3.org/2000/svg" -->
+<!-- 					width="16" -->
+<!-- 					height="16" -->
+<!-- 					viewBox="0 0 24 24" -->
+<!-- 					fill="none" -->
+<!-- 					stroke="currentColor" -->
+<!-- 					stroke-width="2" -->
+<!-- 					stroke-linecap="round" -->
+<!-- 					stroke-linejoin="round" -->
+<!-- 					><line x1="17" y1="10" x2="3" y2="10"></line><line x1="21" y1="6" x2="3" y2="6" -->
+<!-- 					></line><line x1="21" y1="14" x2="3" y2="14"></line><line x1="17" y1="18" x2="3" y2="18" -->
+<!-- 					></line></svg -->
+<!-- 				> -->
+<!-- 			</button> -->
+<!-- 			<button -->
+<!-- 				aria-label="bold" -->
+<!-- 				class="btn btn-sm" -->
+<!-- 				onclick={() => setTextAlign('center')} -->
+<!-- 				class:btn-primary={editor?.isActive({ textAlign: 'center' })} -->
+<!-- 				title="Align Center" -->
+<!-- 			> -->
+<!-- 				<svg -->
+<!-- 					xmlns="http://www.w3.org/2000/svg" -->
+<!-- 					width="16" -->
+<!-- 					height="16" -->
+<!-- 					viewBox="0 0 24 24" -->
+<!-- 					fill="none" -->
+<!-- 					stroke="currentColor" -->
+<!-- 					stroke-width="2" -->
+<!-- 					stroke-linecap="round" -->
+<!-- 					stroke-linejoin="round" -->
+<!-- 					><line x1="18" y1="10" x2="6" y2="10"></line><line x1="21" y1="6" x2="3" y2="6" -->
+<!-- 					></line><line x1="21" y1="14" x2="3" y2="14"></line><line x1="18" y1="18" x2="6" y2="18" -->
+<!-- 					></line></svg -->
+<!-- 				> -->
+<!-- 			</button> -->
+<!-- 			<button -->
+<!-- 				aria-label="bold" -->
+<!-- 				class="btn btn-sm" -->
+<!-- 				onclick={() => setTextAlign('right')} -->
+<!-- 				class:btn-primary={editor?.isActive({ textAlign: 'right' })} -->
+<!-- 				title="Align Right" -->
+<!-- 			> -->
+<!-- 				<svg -->
+<!-- 					xmlns="http://www.w3.org/2000/svg" -->
+<!-- 					width="16" -->
+<!-- 					height="16" -->
+<!-- 					viewBox="0 0 24 24" -->
+<!-- 					fill="none" -->
+<!-- 					stroke="currentColor" -->
+<!-- 					stroke-width="2" -->
+<!-- 					stroke-linecap="round" -->
+<!-- 					stroke-linejoin="round" -->
+<!-- 					><line x1="21" y1="10" x2="7" y2="10"></line><line x1="21" y1="6" x2="3" y2="6" -->
+<!-- 					></line><line x1="21" y1="14" x2="3" y2="14"></line><line x1="21" y1="18" x2="7" y2="18" -->
+<!-- 					></line></svg -->
+<!-- 				> -->
+<!-- 			</button> -->
+<!-- 		</div> -->
+<!-- 	</div> -->
+<!-- </BubbleMenu> -->

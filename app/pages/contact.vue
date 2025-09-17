@@ -129,7 +129,7 @@ const submitForm = async () => {
 
           <div>
             <UIcon
-              name="i-lucide-chat-bubble-left-right"
+              name="i-lucide-message-circle"
               class="h-8 w-8 text-primary-600 mx-auto mb-2"
             />
             <h3 class="font-medium text-gray-900 dark:text-white">Support</h3>

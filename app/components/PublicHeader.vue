@@ -76,7 +76,7 @@ const userMenuItems = computed(() => [
     ? [
         {
           label: 'Admin Dashboard',
-          icon: 'i-lucide-cog-6-tooth',
+          icon: 'i-lucide-settings',
           to: '/admin',
         },
       ]

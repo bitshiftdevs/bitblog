@@ -9,6 +9,7 @@ export default defineNuxtConfig({
     '@nuxt/ui',
     '@prisma/nuxt',
     '@pinia/nuxt',
+    '@vueuse/nuxt',
   ],
   prisma: {
     generateClient: false,

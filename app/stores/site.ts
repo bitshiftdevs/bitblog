@@ -87,7 +87,7 @@ export const useSiteStore = defineStore('site', {
         description:
           state.settings.seoSettings?.defaultDescription ||
           state.settings.description ||
-          'A modern multi-admin blog platform',
+          'Blog platform for Bitshift',
         image: state.settings.seoSettings?.defaultImage || '/og-image.png',
       };
     },
@@ -269,7 +269,7 @@ export const useSiteStore = defineStore('site', {
     resetSettings() {
       this.settings = {
         title: 'BitBlog',
-        description: 'A modern multi-admin blog platform',
+        description: 'Blog site for BitShift',
         commentSettings: {
           enabled: true,
           requireApproval: true,

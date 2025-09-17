@@ -1,10 +1,15 @@
-// packages/shared/src/types.ts
+import type { Editor, Range } from "@tiptap/vue-3";
 
 export type PostStatus = "DRAFT" | "SCHEDULED" | "PUBLISHED" | "ARCHIVED";
 export type PostVisibility = "PUBLIC" | "PRIVATE" | "UNLISTED";
 export type CommentStatus = "PENDING" | "APPROVED" | "REJECTED" | "SPAM";
 export type InvitationStatus = "PENDING" | "ACCEPTED" | "EXPIRED" | "REVOKED";
 
+export type TiptapCommandType = {
+  editor: Editor;
+  range: Range;
+  props: any;
+};
 export interface User {
   id: string;
   name: string;

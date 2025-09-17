@@ -46,11 +46,7 @@
       </div>
     </div>
 
-    <!-- Toast notifications -->
-    <UNotifications />
-
-    <!-- Modals -->
-    <UModals />
+    <UModal />
   </div>
 </template>
 

@@ -103,7 +103,7 @@
                       class="h-10 w-10 rounded-lg bg-gray-200 dark:bg-gray-700 flex items-center justify-center"
                     >
                       <UIcon
-                        name="i-lucide-document-text"
+                        name="i-lucide-file-text"
                         class="h-5 w-5 text-gray-400"
                       />
                     </div>
@@ -184,7 +184,7 @@
 
         <div v-if="!filteredPosts.length" class="text-center py-12">
           <UIcon
-            name="i-lucide-document-text"
+            name="i-lucide-file-text"
             class="h-12 w-12 text-gray-400 mx-auto mb-4"
           />
           <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-2">
