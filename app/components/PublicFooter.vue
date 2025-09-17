@@ -42,7 +42,7 @@
               variant="ghost"
               icon="i-simple-icons-twitter"
               size="sm"
-              color="white"
+              color="primary"
               aria-label="Twitter"
             />
             <UButton
@@ -52,7 +52,7 @@
               variant="ghost"
               icon="i-simple-icons-facebook"
               size="sm"
-              color="white"
+              color="primary"
               aria-label="Facebook"
             />
             <UButton
@@ -62,7 +62,7 @@
               variant="ghost"
               icon="i-simple-icons-instagram"
               size="sm"
-              color="white"
+              color="primary"
               aria-label="Instagram"
             />
             <UButton
@@ -72,7 +72,7 @@
               variant="ghost"
               icon="i-simple-icons-linkedin"
               size="sm"
-              color="white"
+              color="primary"
               aria-label="LinkedIn"
             />
             <UButton
@@ -82,7 +82,7 @@
               variant="ghost"
               icon="i-simple-icons-github"
               size="sm"
-              color="white"
+              color="primary"
               aria-label="GitHub"
             />
           </div>
