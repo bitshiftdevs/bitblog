@@ -24,7 +24,7 @@ useHead({
     return title ? `${title} - BitBlog` : 'BitBlog';
   },
   meta: [
-    { name: 'description', content: 'A modern multi-admin blog platform' },
+    { name: 'description', content: 'A  blog site for BitShift' },
     { property: 'og:type', content: 'website' },
     { property: 'og:site_name', content: 'BitBlog' },
     { name: 'twitter:card', content: 'summary_large_image' },
@@ -45,7 +45,7 @@ onErrorCaptured((error) => {
 });
 
 // Service Worker registration for PWA
-if (process.client && 'serviceWorker' in navigator) {
+if (import.meta.client && 'serviceWorker' in navigator) {
   navigator.serviceWorker.register('/sw.js');
 }
 

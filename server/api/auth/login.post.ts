@@ -2,9 +2,10 @@
 import { z } from "zod";
 import * as argon2 from "argon2";
 import { SignJWT } from "jose";
-import { nanoid } from "nanoid";
 import { LoginSchema } from "~~/lib/schemas";
 import prisma from "~~/server/db";
+import { createAuditLog } from "~~/lib/utils/database";
+import { randomUUID } from "node:crypto";
 
 export default defineEventHandler(async (event) => {
   try {
@@ -12,7 +13,6 @@ export default defineEventHandler(async (event) => {
     const { email, password, rememberMe } = LoginSchema.parse(body);
 
     const config = useRuntimeConfig();
-    const clientIP = getClientIP(event) || "unknown";
     const userAgent = getHeader(event, "user-agent") || "unknown";
 
     // Find user by email
@@ -55,7 +55,6 @@ export default defineEventHandler(async (event) => {
         action: "login_failed",
         details: { reason: "invalid_password" },
         userId: user.id,
-        ipAddress: clientIP,
         userAgent,
       });
 
@@ -91,6 +90,7 @@ export default defineEventHandler(async (event) => {
       iat: Math.floor(Date.now() / 1000),
     };
 
+    console.log(config.jwtSecret);
     const jwtSecret = new TextEncoder().encode(config.jwtSecret);
     const expiresIn = rememberMe ? "30d" : "24h";
     const expirationTime = rememberMe ? "30d" : "24h";
@@ -100,6 +100,7 @@ export default defineEventHandler(async (event) => {
       .setIssuedAt()
       .setExpirationTime(expirationTime)
       .sign(jwtSecret);
+    console.log("done generating");
 
     // Create refresh token if remember me is enabled
     let refreshToken = null;
@@ -121,7 +122,7 @@ export default defineEventHandler(async (event) => {
     }
 
     // Create session record
-    const sessionToken = nanoid();
+    const sessionToken = randomUUID();
     const expiresAt = new Date();
     expiresAt.setTime(
       expiresAt.getTime() +
@@ -135,7 +136,6 @@ export default defineEventHandler(async (event) => {
         token: sessionToken,
         expiresAt,
         userAgent,
-        ipAddress: clientIP,
       },
     });
 
@@ -154,7 +154,6 @@ export default defineEventHandler(async (event) => {
       action: "login",
       details: { rememberMe },
       userId: user.id,
-      ipAddress: clientIP,
       userAgent,
     });
 

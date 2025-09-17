@@ -67,8 +67,8 @@ export default defineNuxtConfig({
   // },
   runtimeConfig: {
     // Private keys (only available on server-side)
-    jwtSecret: '',
-    databaseUrl: 'postgresql://kratosgado:28935617@localhost:5432/bitblog',
+    jwtSecret: process.env.JWT_SECRET,
+    databaseUrl: process.env.DATABASE_URL,
     r2BucketName: '',
     r2AccessKeyId: '',
     r2SecretAccessKey: '',
@@ -107,47 +107,47 @@ export default defineNuxtConfig({
       ],
     },
   },
-  // routeRules: {
-  //   // Homepage pre-rendered at build time
-  //   '/': { prerender: true },
-  //
-  //   // Blog post pages cached for 1 hour
-  //   '/posts/**': {
-  //     headers: { 'cache-control': 's-maxage=3600' },
-  //     prerender: true,
-  //   },
-  //
-  //   // Tag and category pages cached
-  //   '/tags/**': {
-  //     headers: { 'cache-control': 's-maxage=1800' },
-  //     prerender: true,
-  //   },
-  //   '/categories/**': {
-  //     headers: { 'cache-control': 's-maxage=1800' },
-  //     prerender: true,
-  //   },
-  //
-  //   // Author pages cached
-  //   '/authors/**': {
-  //     headers: { 'cache-control': 's-maxage=1800' },
-  //     prerender: true,
-  //   },
-  //
-  //   // Admin pages - SPA mode, no caching
-  //   '/admin/**': {
-  //     ssr: false,
-  //     headers: { 'cache-control': 'no-cache' },
-  //   },
-  //
-  //   // API routes
-  //   '/api/**': {
-  //     headers: { 'cache-control': 'no-cache' },
-  //     cors: true,
-  //   },
-  //
-  //   // Static assets cached for 1 year
-  //   '/assets/**': {
-  //     headers: { 'cache-control': 'max-age=31536000' },
-  //   },
-  // },
+  routeRules: {
+    // Homepage pre-rendered at build time
+    '/': { prerender: true },
+
+    // Blog post pages cached for 1 hour
+    '/posts/**': {
+      headers: { 'cache-control': 's-maxage=3600' },
+      prerender: true,
+    },
+
+    // Tag and category pages cached
+    '/tags/**': {
+      headers: { 'cache-control': 's-maxage=1800' },
+      prerender: true,
+    },
+    '/categories/**': {
+      headers: { 'cache-control': 's-maxage=1800' },
+      prerender: true,
+    },
+
+    // Author pages cached
+    '/authors/**': {
+      headers: { 'cache-control': 's-maxage=1800' },
+      prerender: true,
+    },
+
+    // Admin pages - SPA mode, no caching
+    '/admin/**': {
+      ssr: false,
+      headers: { 'cache-control': 'no-cache' },
+    },
+
+    // API routes
+    '/api/**': {
+      headers: { 'cache-control': 'no-cache' },
+      cors: true,
+    },
+
+    // Static assets cached for 1 year
+    '/assets/**': {
+      headers: { 'cache-control': 'max-age=31536000' },
+    },
+  },
 });

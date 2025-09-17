@@ -1,4 +1,3 @@
-<!-- apps/web/pages/posts/[slug].vue -->
 <template>
   <div v-if="post">
     <!-- Post Header -->
