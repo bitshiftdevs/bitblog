@@ -58,9 +58,8 @@ A modern, SEO-first, multi-admin blog platform with a rich block-style editor, r
 │   ├── api/
 │   ├── prisma/
 │   └── wrangler.toml
-├── packages/
-│   ├── shared/       # Shared types and schemas
-│   └── ui/          # Shared UI components
+├── shared/       # Shared types and schemas
+│   └── utils/          # Shared UI components
 ├── .github/
 │   └── workflows/   # CI/CD pipelines
 └── docs/           # Documentation
@@ -80,7 +79,9 @@ A modern, SEO-first, multi-admin blog platform with a rich block-style editor, r
 1. **Clone the repository**
 
    ```bash
-   git clone <repository-url>
+   git clone https://github.com/bitshiftdevs/bitblog
+   or
+   gh repo clone bitshiftdevs/bitblog
    cd multi-admin-blog-platform
    ```
 
@@ -158,15 +159,6 @@ pnpm lint:fix         # Fix linting issues
 pnpm format           # Format code
 pnpm typecheck        # Type checking
 
-# Testing
-pnpm test             # Run unit tests
-pnpm test:e2e         # Run E2E tests
-pnpm test:coverage    # Run tests with coverage
-
-# Building
-pnpm build            # Build all applications
-pnpm build:web        # Build frontend only
-pnpm build:api        # Build API only
 ```
 
 ### Database Management
@@ -195,12 +187,12 @@ pnpm db:migrate deploy
    - Use shared schemas for validation
 
 3. **Frontend Components**
-   - Create components in `apps/web/components/`
+   - Create components in `app/components/`
    - Use Nuxt UI components for consistency
 
 4. **Types**
-   - Add shared types in `packages/shared/src/types.ts`
-   - Update schemas in `packages/shared/src/schemas.ts`
+   - Add shared types in `shared/types.ts`
+   - Update schemas in `shared/schemas.ts`
 
 ## 🚀 Deployment
 
