@@ -3,7 +3,7 @@
     <UInput
       v-model="searchQuery"
       placeholder="Search posts..."
-      icon="i-heroicons-magnifying-glass"
+      icon="i-lucide-search"
       size="sm"
       class="w-full sm:w-64"
       @keyup.enter="performSearch"
@@ -11,14 +11,16 @@
     />
 
     <!-- Search suggestions dropdown -->
-    <div 
+    <div
       v-if="showSuggestions && suggestions.length > 0"
       class="absolute top-full left-0 right-0 mt-1 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-md shadow-lg z-50 max-h-96 overflow-y-auto"
     >
       <div class="py-2">
         <!-- Quick results -->
         <div v-if="quickResults.length > 0" class="px-3 py-2">
-          <h4 class="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-2">
+          <h4
+            class="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-2"
+          >
             Posts
           </h4>
           <div class="space-y-1">
@@ -30,14 +32,21 @@
               @click="closeSuggestions"
             >
               <div class="font-medium">{{ post.title }}</div>
-              <div class="text-xs text-gray-500 dark:text-gray-400">{{ post.author.name }}</div>
+              <div class="text-xs text-gray-500 dark:text-gray-400">
+                {{ post.author.name }}
+              </div>
             </NuxtLink>
           </div>
         </div>
 
         <!-- Search suggestions -->
-        <div v-if="searchSuggestions.length > 0" class="border-t border-gray-200 dark:border-gray-700 px-3 py-2">
-          <h4 class="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-2">
+        <div
+          v-if="searchSuggestions.length > 0"
+          class="border-t border-gray-200 dark:border-gray-700 px-3 py-2"
+        >
+          <h4
+            class="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-2"
+          >
             Suggestions
           </h4>
           <div class="space-y-1">
@@ -66,7 +75,7 @@
     </div>
 
     <!-- Backdrop to close suggestions -->
-    <div 
+    <div
       v-if="showSuggestions"
       class="fixed inset-0 z-40"
       @click="closeSuggestions"
@@ -75,105 +84,113 @@
 </template>
 
 <script setup lang="ts">
-import type { PostSummary } from '@blog-platform/shared/types'
+import type { PostSummary } from '@blog-platform/shared/types';
 
-const searchQuery = ref('')
-const showSuggestions = ref(false)
-const quickResults = ref<PostSummary[]>([])
-const searchSuggestions = ref<string[]>([])
-const searchTimeout = ref<NodeJS.Timeout>()
+const searchQuery = ref('');
+const showSuggestions = ref(false);
+const quickResults = ref<PostSummary[]>([]);
+const searchSuggestions = ref<string[]>([]);
+const searchTimeout = ref<NodeJS.Timeout>();
 
 const suggestions = computed(() => {
-  return quickResults.value.length > 0 || searchSuggestions.value.length > 0
-})
+  return quickResults.value.length > 0 || searchSuggestions.value.length > 0;
+});
 
 const handleInput = () => {
   // Clear previous timeout
   if (searchTimeout.value) {
-    clearTimeout(searchTimeout.value)
+    clearTimeout(searchTimeout.value);
   }
 
   // Don't search for very short queries
   if (searchQuery.value.length < 2) {
-    closeSuggestions()
-    return
+    closeSuggestions();
+    return;
   }
 
   // Debounce search
   searchTimeout.value = setTimeout(async () => {
-    await fetchSuggestions()
-  }, 300)
-}
+    await fetchSuggestions();
+  }, 300);
+};
 
 const fetchSuggestions = async () => {
-  if (!searchQuery.value.trim()) return
+  if (!searchQuery.value.trim()) return;
 
   try {
     // Fetch quick post results
-    const { data: postsData } = await $fetch<{ data: { items: PostSummary[] } }>('/api/search', {
+    const { data: postsData } = await $fetch<{
+      data: { items: PostSummary[] };
+    }>('/api/search', {
       query: {
         q: searchQuery.value,
         type: 'posts',
-        limit: 5
-      }
-    })
+        limit: 5,
+      },
+    });
 
-    quickResults.value = postsData?.items || []
+    quickResults.value = postsData?.items || [];
 
     // Generate search suggestions based on popular searches or tags
-    const { data: suggestionsData } = await $fetch<{ data: string[] }>('/api/search/suggestions', {
-      query: {
-        q: searchQuery.value,
-        limit: 5
-      }
-    }).catch(() => ({ data: [] }))
+    const { data: suggestionsData } = await $fetch<{ data: string[] }>(
+      '/api/search/suggestions',
+      {
+        query: {
+          q: searchQuery.value,
+          limit: 5,
+        },
+      },
+    ).catch(() => ({ data: [] }));
 
-    searchSuggestions.value = suggestionsData || []
+    searchSuggestions.value = suggestionsData || [];
 
-    showSuggestions.value = true
+    showSuggestions.value = true;
   } catch (error) {
-    console.error('Search suggestions failed:', error)
-    showSuggestions.value = false
+    console.error('Search suggestions failed:', error);
+    showSuggestions.value = false;
   }
-}
+};
 
 const performSearch = () => {
   if (searchQuery.value.trim()) {
-    navigateTo(`/search?q=${encodeURIComponent(searchQuery.value)}`)
-    closeSuggestions()
+    navigateTo(`/search?q=${encodeURIComponent(searchQuery.value)}`);
+    closeSuggestions();
   }
-}
+};
 
 const selectSuggestion = (suggestion: string) => {
-  searchQuery.value = suggestion
-  performSearch()
-}
+  searchQuery.value = suggestion;
+  performSearch();
+};
 
 const closeSuggestions = () => {
-  showSuggestions.value = false
-}
+  showSuggestions.value = false;
+};
 
 // Close suggestions when route changes
-const route = useRoute()
-watch(() => route.path, () => {
-  closeSuggestions()
-})
+const route = useRoute();
+watch(
+  () => route.path,
+  () => {
+    closeSuggestions();
+  },
+);
 
 // Close suggestions on escape key
 onMounted(() => {
   const handleEscape = (event: KeyboardEvent) => {
     if (event.key === 'Escape') {
-      closeSuggestions()
+      closeSuggestions();
     }
-  }
+  };
 
-  document.addEventListener('keydown', handleEscape)
-  
+  document.addEventListener('keydown', handleEscape);
+
   onUnmounted(() => {
-    document.removeEventListener('keydown', handleEscape)
+    document.removeEventListener('keydown', handleEscape);
     if (searchTimeout.value) {
-      clearTimeout(searchTimeout.value)
+      clearTimeout(searchTimeout.value);
     }
-  })
-})
+  });
+});
 </script>

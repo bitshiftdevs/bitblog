@@ -1,6 +1,5 @@
 // apps/web/stores/site.ts
 import { defineStore } from 'pinia';
-import type { SiteSettings } from '~~/shared/types';
 
 interface SiteState {
   settings: {
@@ -45,7 +44,8 @@ export const useSiteStore = defineStore('site', {
   state: (): SiteState => ({
     settings: {
       title: 'BitBlog',
-      description: 'A modern multi-admin blog platform',
+      logo: '/favicon.ico',
+      description: 'Blog site for BitShift',
       commentSettings: {
         enabled: true,
         requireApproval: true,
@@ -63,7 +63,7 @@ export const useSiteStore = defineStore('site', {
     },
 
     siteDescription: (state): string => {
-      return state.settings.description || 'A modern multi-admin blog platform';
+      return state.settings.description || 'Blog Platform for Bitshift';
     },
 
     siteLogo: (state): string | undefined => {

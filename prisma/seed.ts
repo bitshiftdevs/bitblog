@@ -465,7 +465,7 @@ async function main() {
       key: "general",
       value: {
         title: "BitBlog",
-        description: "A modern multi-admin blog platform",
+        description: "Blog platform for BitShift",
         logo: null,
         favicon: null,
       },

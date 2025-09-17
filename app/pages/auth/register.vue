@@ -29,7 +29,7 @@
                 placeholder="Enter your full name"
                 required
                 :disabled="isLoading"
-                icon="i-heroicons-user"
+                icon="i-lucide-user"
               />
             </UFormField>
           </div>
@@ -42,7 +42,7 @@
                 placeholder="Enter your email"
                 required
                 :disabled="isLoading"
-                icon="i-heroicons-envelope"
+                icon="i-lucide-envelope"
               />
             </UFormField>
           </div>
@@ -55,7 +55,7 @@
                 placeholder="Create a password"
                 required
                 :disabled="isLoading"
-                icon="i-heroicons-lock-closed"
+                icon="i-lucide-lock-closed"
               />
             </UFormField>
           </div>
@@ -68,7 +68,7 @@
                 placeholder="Confirm your password"
                 required
                 :disabled="isLoading"
-                icon="i-heroicons-lock-closed"
+                icon="i-lucide-lock-closed"
               />
             </UFormField>
           </div>

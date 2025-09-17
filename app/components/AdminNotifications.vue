@@ -4,7 +4,7 @@
     <UButton
       variant="ghost"
       size="sm"
-      icon="i-heroicons-bell"
+      icon="i-lucide-bell"
       :class="hasUnread ? 'text-primary-600' : 'text-gray-500'"
       class="relative"
     >
@@ -81,7 +81,7 @@ const notificationItems = computed(() => {
     items.push([
       {
         label: 'View all notifications',
-        icon: 'i-heroicons-arrow-right',
+        icon: 'i-lucide-arrow-right',
         to: '/admin/notifications',
       },
     ]);
@@ -90,7 +90,7 @@ const notificationItems = computed(() => {
       {
         label: 'No new notifications',
         disabled: true,
-        icon: 'i-heroicons-bell-slash',
+        icon: 'i-lucide-bell-slash',
       },
     ]);
   }
@@ -101,13 +101,13 @@ const notificationItems = computed(() => {
 const getNotificationIcon = (type: string) => {
   switch (type) {
     case 'comment':
-      return 'i-heroicons-chat-bubble-left';
+      return 'i-lucide-chat-bubble-left';
     case 'post':
-      return 'i-heroicons-document-text';
+      return 'i-lucide-document-text';
     case 'user':
-      return 'i-heroicons-user';
+      return 'i-lucide-user';
     default:
-      return 'i-heroicons-bell';
+      return 'i-lucide-bell';
   }
 };
 </script>

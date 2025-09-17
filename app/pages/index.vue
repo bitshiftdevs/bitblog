@@ -28,7 +28,7 @@
             <UButton
               to="/posts"
               size="lg"
-              icon="i-heroicons-book-open"
+              icon="i-lucide-book-open"
               class="justify-center"
             >
               Explore Posts
@@ -39,7 +39,7 @@
               to="/auth/login"
               variant="outline"
               size="lg"
-              icon="i-heroicons-user-plus"
+              icon="i-lucide-user-plus"
               class="justify-center"
             >
               Join Community
@@ -82,7 +82,7 @@
 
         <div v-else class="text-center py-12">
           <UIcon
-            name="i-heroicons-document-text"
+            name="i-lucide-document-text"
             class="h-12 w-12 text-gray-400 mx-auto mb-4"
           />
           <p class="text-gray-500 dark:text-gray-400">
@@ -93,7 +93,7 @@
         <div class="text-center mt-12">
           <UButton to="/posts" variant="outline" size="lg">
             View All Posts
-            <UIcon name="i-heroicons-arrow-right" class="ml-2 h-4 w-4" />
+            <UIcon name="i-lucide-arrow-right" class="ml-2 h-4 w-4" />
           </UButton>
         </div>
       </div>

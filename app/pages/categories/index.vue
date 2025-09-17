@@ -29,7 +29,7 @@
 
     <div v-else class="text-center py-12">
       <UIcon
-        name="i-heroicons-folder"
+        name="i-lucide-folder"
         class="h-12 w-12 text-gray-400 mx-auto mb-4"
       />
       <p class="text-gray-500 dark:text-gray-400">No categories available</p>

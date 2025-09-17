@@ -7,7 +7,7 @@
         Dashboard
       </h1>
       <div class="flex items-center space-x-3">
-        <UButton to="/admin/posts/new" icon="i-heroicons-plus" size="sm">
+        <UButton to="/admin/posts/new" icon="i-lucide-plus" size="sm">
           New Post
         </UButton>
       </div>
@@ -18,25 +18,25 @@
       <StatCard
         title="Total Posts"
         :value="stats.posts?.total || 0"
-        icon="i-heroicons-document-text"
+        icon="i-lucide-document-text"
         color="blue"
       />
       <StatCard
         title="Published"
         :value="stats.posts?.published || 0"
-        icon="i-heroicons-eye"
+        icon="i-lucide-eye"
         color="green"
       />
       <StatCard
         title="Drafts"
         :value="stats.posts?.draft || 0"
-        icon="i-heroicons-pencil"
+        icon="i-lucide-pencil"
         color="yellow"
       />
       <StatCard
         title="Comments"
         :value="stats.comments?.total || 0"
-        icon="i-heroicons-chat-bubble-left"
+        icon="i-lucide-chat-bubble-left"
         color="purple"
         :badge="
           stats.comments?.pending > 0 ? stats.comments.pending : undefined
@@ -136,7 +136,7 @@
           variant="outline"
           class="justify-center h-20 flex-col"
         >
-          <UIcon name="i-heroicons-plus" class="h-6 w-6 mb-2" />
+          <UIcon name="i-lucide-plus" class="h-6 w-6 mb-2" />
           New Post
         </UButton>
 
@@ -145,7 +145,7 @@
           variant="outline"
           class="justify-center h-20 flex-col"
         >
-          <UIcon name="i-heroicons-photo" class="h-6 w-6 mb-2" />
+          <UIcon name="i-lucide-photo" class="h-6 w-6 mb-2" />
           Upload Media
         </UButton>
 
@@ -154,7 +154,7 @@
           variant="outline"
           class="justify-center h-20 flex-col"
         >
-          <UIcon name="i-heroicons-user-plus" class="h-6 w-6 mb-2" />
+          <UIcon name="i-lucide-user-plus" class="h-6 w-6 mb-2" />
           Invite User
         </UButton>
 
@@ -163,7 +163,7 @@
           variant="outline"
           class="justify-center h-20 flex-col"
         >
-          <UIcon name="i-heroicons-cog-6-tooth" class="h-6 w-6 mb-2" />
+          <UIcon name="i-lucide-cog-6-tooth" class="h-6 w-6 mb-2" />
           Settings
         </UButton>
       </div>

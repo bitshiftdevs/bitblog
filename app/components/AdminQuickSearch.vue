@@ -4,7 +4,7 @@
     <UInput
       v-model="searchQuery"
       placeholder="Quick search..."
-      icon="i-heroicons-magnifying-glass"
+      icon="i-lucide-magnifying-glass"
       size="sm"
       class="w-64"
       @focus="showResults = true"

@@ -30,7 +30,7 @@
       <UInput
         v-model="searchQuery"
         placeholder="Search posts..."
-        icon="i-heroicons-magnifying-glass"
+        icon="i-lucide-magnifying-glass"
         class="flex-1 max-w-md"
       />
     </div>
@@ -67,7 +67,7 @@
 
     <div v-else class="text-center py-12">
       <UIcon
-        name="i-heroicons-document-text"
+        name="i-lucide-document-text"
         class="h-12 w-12 text-gray-400 mx-auto mb-4"
       />
       <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-2">

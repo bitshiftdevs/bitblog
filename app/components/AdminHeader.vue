@@ -10,7 +10,7 @@
           <UButton
             variant="ghost"
             size="sm"
-            icon="i-heroicons-bars-3"
+            icon="i-lucide-bars-3"
             class="lg:hidden mr-2"
             @click="toggleSidebar"
             aria-label="Toggle sidebar"
@@ -31,7 +31,7 @@
             <UButton
               to="/admin/posts/new"
               size="sm"
-              icon="i-heroicons-plus"
+              icon="i-lucide-plus"
               label="New Post"
             />
           </div>
@@ -55,7 +55,7 @@
               <span class="hidden md:block text-sm font-medium">{{
                 user?.name
               }}</span>
-              <UIcon name="i-heroicons-chevron-down" class="h-4 w-4" />
+              <UIcon name="i-lucide-chevron-down" class="h-4 w-4" />
             </UButton>
           </UDropdown>
         </div>
@@ -109,25 +109,25 @@ const userMenuItems = computed(() => [
   [
     {
       label: 'View Site',
-      icon: 'i-heroicons-arrow-top-right-on-square',
+      icon: 'i-lucide-square-arrow-up-right',
       to: '/',
       target: '_blank',
     },
     {
       label: 'Profile Settings',
-      icon: 'i-heroicons-user',
+      icon: 'i-lucide-user',
       to: '/admin/profile',
     },
   ],
   [
     {
       label: 'Help & Support',
-      icon: 'i-heroicons-question-mark-circle',
+      icon: 'i-lucide-badge-question-mark',
       to: '/admin/help',
     },
     {
       label: 'Keyboard Shortcuts',
-      icon: 'i-heroicons-command-line',
+      icon: 'i-lucide-terminal',
       click: () => {
         // Show keyboard shortcuts modal
       },
@@ -136,7 +136,7 @@ const userMenuItems = computed(() => [
   [
     {
       label: 'Sign Out',
-      icon: 'i-heroicons-arrow-right-on-rectangle',
+      icon: 'i-lucide-log-out',
       click: async () => {
         await authStore.logout();
         await navigateTo('/auth/login');

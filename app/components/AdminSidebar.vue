@@ -19,7 +19,7 @@
           <div
             class="h-8 w-8 bg-primary-600 rounded-md flex items-center justify-center"
           >
-            <UIcon name="i-heroicons-cog-6-tooth" class="h-5 w-5 text-white" />
+            <UIcon name="i-lucide-cog-6-tooth" class="h-5 w-5 text-white" />
           </div>
           <span class="text-white font-semibold">Admin Panel</span>
         </NuxtLink>
@@ -27,7 +27,7 @@
         <UButton
           variant="ghost"
           size="sm"
-          icon="i-heroicons-x-mark"
+          icon="i-lucide-x-mark"
           class="lg:hidden text-gray-400 hover:text-white"
           @click="$emit('close')"
         />
@@ -38,7 +38,7 @@
         <!-- Dashboard -->
         <SidebarItem
           to="/admin"
-          icon="i-heroicons-home"
+          icon="i-lucide-home"
           label="Dashboard"
           :exact="true"
         />
@@ -47,31 +47,31 @@
         <SidebarSection title="Content">
           <SidebarItem
             to="/admin/posts"
-            icon="i-heroicons-document-text"
+            icon="i-lucide-document-text"
             label="Posts"
             :badge="postStats.draft > 0 ? postStats.draft : undefined"
           />
 
           <SidebarItem
             to="/admin/pages"
-            icon="i-heroicons-document"
+            icon="i-lucide-document"
             label="Pages"
           />
 
           <SidebarItem
             to="/admin/categories"
-            icon="i-heroicons-folder"
+            icon="i-lucide-folder"
             label="Categories"
           />
 
-          <SidebarItem to="/admin/tags" icon="i-heroicons-tag" label="Tags" />
+          <SidebarItem to="/admin/tags" icon="i-lucide-tag" label="Tags" />
         </SidebarSection>
 
         <!-- Media -->
         <SidebarSection title="Media">
           <SidebarItem
             to="/admin/media"
-            icon="i-heroicons-photo"
+            icon="i-lucide-photo"
             label="Media Library"
           />
         </SidebarSection>
@@ -80,14 +80,14 @@
         <SidebarSection title="Engagement">
           <SidebarItem
             to="/admin/comments"
-            icon="i-heroicons-chat-bubble-left-right"
+            icon="i-lucide-chat-bubble-left-right"
             label="Comments"
             :badge="commentStats.pending > 0 ? commentStats.pending : undefined"
           />
 
           <SidebarItem
             to="/admin/newsletter"
-            icon="i-heroicons-envelope"
+            icon="i-lucide-envelope"
             label="Newsletter"
           />
         </SidebarSection>
@@ -96,19 +96,19 @@
         <SidebarSection v-if="canManageUsers" title="Users">
           <SidebarItem
             to="/admin/users"
-            icon="i-heroicons-users"
+            icon="i-lucide-users"
             label="All Users"
           />
 
           <SidebarItem
             to="/admin/roles"
-            icon="i-heroicons-shield-check"
+            icon="i-lucide-shield-check"
             label="Roles & Permissions"
           />
 
           <SidebarItem
             to="/admin/invitations"
-            icon="i-heroicons-user-plus"
+            icon="i-lucide-user-plus"
             label="Invitations"
             :badge="
               invitationStats.pending > 0 ? invitationStats.pending : undefined
@@ -120,13 +120,13 @@
         <SidebarSection title="Analytics">
           <SidebarItem
             to="/admin/analytics"
-            icon="i-heroicons-chart-bar"
+            icon="i-lucide-chart-bar"
             label="Analytics"
           />
 
           <SidebarItem
             to="/admin/reports"
-            icon="i-heroicons-document-chart-bar"
+            icon="i-lucide-document-chart-bar"
             label="Reports"
           />
         </SidebarSection>
@@ -135,19 +135,19 @@
         <SidebarSection v-if="canManageSettings" title="Settings">
           <SidebarItem
             to="/admin/settings"
-            icon="i-heroicons-cog-6-tooth"
+            icon="i-lucide-cog-6-tooth"
             label="Site Settings"
           />
 
           <SidebarItem
             to="/admin/settings/seo"
-            icon="i-heroicons-magnifying-glass"
+            icon="i-lucide-magnifying-glass"
             label="SEO Settings"
           />
 
           <SidebarItem
             to="/admin/settings/integrations"
-            icon="i-heroicons-puzzle-piece"
+            icon="i-lucide-puzzle-piece"
             label="Integrations"
           />
         </SidebarSection>
@@ -156,13 +156,13 @@
         <SidebarSection v-if="canManageSystem" title="System">
           <SidebarItem
             to="/admin/audit-logs"
-            icon="i-heroicons-clipboard-document-list"
+            icon="i-lucide-clipboard-document-list"
             label="Audit Logs"
           />
 
           <SidebarItem
             to="/admin/backups"
-            icon="i-heroicons-archive-box"
+            icon="i-lucide-archive-box"
             label="Backups"
           />
         </SidebarSection>
@@ -183,7 +183,7 @@
             <UButton
               variant="ghost"
               size="sm"
-              icon="i-heroicons-ellipsis-vertical"
+              icon="i-lucide-ellipsis-vertical"
               class="text-gray-400 hover:text-white"
             />
           </UDropdown>
@@ -241,7 +241,7 @@ const userMenuItems = computed(() => [
   [
     {
       label: 'View Site',
-      icon: 'i-heroicons-arrow-top-right-on-square',
+      icon: 'i-lucide-arrow-top-right-on-square',
       to: '/',
       target: '_blank',
     },
@@ -249,14 +249,14 @@ const userMenuItems = computed(() => [
   [
     {
       label: 'Profile',
-      icon: 'i-heroicons-user',
+      icon: 'i-lucide-user',
       to: '/admin/profile',
     },
   ],
   [
     {
       label: 'Sign Out',
-      icon: 'i-heroicons-arrow-right-on-rectangle',
+      icon: 'i-lucide-arrow-right-on-rectangle',
       click: async () => {
         await authStore.logout();
         await navigateTo('/auth/login');

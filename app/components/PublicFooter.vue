@@ -17,7 +17,7 @@
               class="h-8 w-8 bg-primary-600 rounded-md flex items-center justify-center"
             >
               <UIcon
-                name="i-heroicons-pencil-square"
+                name="i-lucide-pencil-square"
                 class="h-5 w-5 text-white"
               />
             </div>
@@ -29,7 +29,7 @@
           <p class="text-gray-300 mb-6 max-w-md">
             {{
               siteSettings?.description ||
-              "A modern multi-admin blog platform for sharing amazing stories and insights."
+              "Blog Platform for BitShift for sharing amazing stories and insights."
             }}
           </p>
 

@@ -118,7 +118,7 @@ const submitForm = async () => {
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
           <div>
             <UIcon
-              name="i-heroicons-envelope"
+              name="i-lucide-envelope"
               class="h-8 w-8 text-primary-600 mx-auto mb-2"
             />
             <h3 class="font-medium text-gray-900 dark:text-white">Email</h3>
@@ -129,7 +129,7 @@ const submitForm = async () => {
 
           <div>
             <UIcon
-              name="i-heroicons-chat-bubble-left-right"
+              name="i-lucide-chat-bubble-left-right"
               class="h-8 w-8 text-primary-600 mx-auto mb-2"
             />
             <h3 class="font-medium text-gray-900 dark:text-white">Support</h3>
@@ -140,7 +140,7 @@ const submitForm = async () => {
 
           <div>
             <UIcon
-              name="i-heroicons-building-office"
+              name="i-lucide-building-office"
               class="h-8 w-8 text-primary-600 mx-auto mb-2"
             />
             <h3 class="font-medium text-gray-900 dark:text-white">Business</h3>

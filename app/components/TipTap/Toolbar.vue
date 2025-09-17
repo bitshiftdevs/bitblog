@@ -5,7 +5,7 @@
       <UButton
         variant="ghost"
         size="sm"
-        icon="i-heroicons-bold"
+        icon="i-lucide-bold"
         :class="{ 'bg-gray-200 dark:bg-gray-700': editor.isActive('bold') }"
         @click="editor.chain().focus().toggleBold().run()"
         title="Bullet List"
@@ -13,7 +13,7 @@
       <UButton
         variant="ghost"
         size="sm"
-        icon="i-heroicons-numbered-list"
+        icon="i-lucide-numbered-list"
         :class="{ 'bg-gray-200 dark:bg-gray-700': editor.isActive('orderedList') }"
         @click="editor.chain().focus().toggleOrderedList().run()"
         title="Numbered List"
@@ -21,7 +21,7 @@
       <UButton
         variant="ghost"
         size="sm"
-        icon="i-heroicons-check-square"
+        icon="i-lucide-check-square"
         :class="{ 'bg-gray-200 dark:bg-gray-700': editor.isActive('taskList') }"
         @click="editor.chain().focus().toggleTaskList().run()"
         title="Task List"
@@ -29,7 +29,7 @@
       <UButton
         variant="ghost"
         size="sm"
-        icon="i-heroicons-chat-bubble-left-right"
+        icon="i-lucide-chat-bubble-left-right"
         :class="{ 'bg-gray-200 dark:bg-gray-700': editor.isActive('blockquote') }"
         @click="editor.chain().focus().toggleBlockquote().run()"
         title="Quote"
@@ -41,14 +41,14 @@
       <UButton
         variant="ghost"
         size="sm"
-        icon="i-heroicons-photo"
+        icon="i-lucide-photo"
         @click="openImageDialog"
         title="Insert Image"
       />
       <UButton
         variant="ghost"
         size="sm"
-        icon="i-heroicons-link"
+        icon="i-lucide-link"
         :class="{ 'bg-gray-200 dark:bg-gray-700': editor.isActive('link') }"
         @click="openLinkDialog"
         title="Insert Link"
@@ -56,14 +56,14 @@
       <UButton
         variant="ghost"
         size="sm"
-        icon="i-heroicons-play"
+        icon="i-lucide-play"
         @click="openYouTubeDialog"
         title="Insert YouTube Video"
       />
       <UButton
         variant="ghost"
         size="sm"
-        icon="i-heroicons-table-cells"
+        icon="i-lucide-table-cells"
         @click="insertTable"
         title="Insert Table"
       />
@@ -74,7 +74,7 @@
       <UButton
         variant="ghost"
         size="sm"
-        icon="i-heroicons-code-bracket-square"
+        icon="i-lucide-code-bracket-square"
         :class="{ 'bg-gray-200 dark:bg-gray-700': editor.isActive('codeBlock') }"
         @click="editor.chain().focus().toggleCodeBlock().run()"
         title="Code Block"
@@ -86,14 +86,14 @@
       <UButton
         variant="ghost"
         size="sm"
-        icon="i-heroicons-minus"
+        icon="i-lucide-minus"
         @click="editor.chain().focus().setHorizontalRule().run()"
         title="Horizontal Rule"
       />
       <UButton
         variant="ghost"
         size="sm"
-        icon="i-heroicons-arrow-uturn-left"
+        icon="i-lucide-arrow-uturn-left"
         :disabled="!editor.can().undo()"
         @click="editor.chain().focus().undo().run()"
         title="Undo (Ctrl+Z)"
@@ -101,7 +101,7 @@
       <UButton
         variant="ghost"
         size="sm"
-        icon="i-heroicons-arrow-uturn-right"
+        icon="i-lucide-arrow-uturn-right"
         :disabled="!editor.can().redo()"
         @click="editor.chain().focus().redo().run()"
         title="Redo (Ctrl+Y)"
@@ -315,7 +315,7 @@ onMounted(() => {
       <UButton
         variant="ghost"
         size="sm"
-        icon="i-heroicons-italic"
+        icon="i-lucide-italic"
         :class="{ 'bg-gray-200 dark:bg-gray-700': editor.isActive('italic') }"
         @click="editor.chain().focus().toggleItalic().run()"
         title="Italic (Ctrl+I)"
@@ -323,7 +323,7 @@ onMounted(() => {
       <UButton
         variant="ghost"
         size="sm"
-        icon="i-heroicons-underline"
+        icon="i-lucide-underline"
         :class="{ 'bg-gray-200 dark:bg-gray-700': editor.isActive('underline') }"
         @click="editor.chain().focus().toggleUnderline().run()"
         title="Underline (Ctrl+U)"
@@ -331,7 +331,7 @@ onMounted(() => {
       <UButton
         variant="ghost"
         size="sm"
-        icon="i-heroicons-strikethrough"
+        icon="i-lucide-strikethrough"
         :class="{ 'bg-gray-200 dark:bg-gray-700': editor.isActive('strike') }"
         @click="editor.chain().focus().toggleStrike().run()"
         title="Strikethrough"
@@ -339,7 +339,7 @@ onMounted(() => {
       <UButton
         variant="ghost"
         size="sm"
-        icon="i-heroicons-code-bracket"
+        icon="i-lucide-code-bracket"
         :class="{ 'bg-gray-200 dark:bg-gray-700': editor.isActive('code') }"
         @click="editor.chain().focus().toggleCode().run()"
         title="Inline Code"
@@ -356,7 +356,7 @@ onMounted(() => {
           variant="ghost" 
           size="sm" 
           :label="currentHeading"
-          trailing-icon="i-heroicons-chevron-down-20-solid"
+          trailing-icon="i-lucide-chevron-down-20-solid"
         />
       </UDropdown>
     </div>
@@ -366,7 +366,7 @@ onMounted(() => {
       <UButton
         variant="ghost"
         size="sm"
-        icon="i-heroicons-list-bullet"
+        icon="i-lucide-list-bullet"
         :class="{ 'bg-gray-200 dark:bg-gray-700': editor.isActive('bulletList') }"
         @click="editor.chain().focus().toggleBulletList().run()"
         title="

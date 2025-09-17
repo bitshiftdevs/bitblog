@@ -9,7 +9,7 @@
         {{ category.name }}
       </h3>
       <UIcon 
-        name="i-heroicons-folder-open" 
+        name="i-lucide-folder-open" 
         class="h-5 w-5 text-gray-400 group-hover:text-primary-500 transition-colors" 
       />
     </div>
@@ -20,7 +20,7 @@
     
     <div class="flex items-center justify-between text-sm text-gray-500 dark:text-gray-400">
       <span>{{ category._count?.posts || 0 }} posts</span>
-      <UIcon name="i-heroicons-arrow-right" class="h-4 w-4 group-hover:translate-x-1 transition-transform" />
+      <UIcon name="i-lucide-arrow-right" class="h-4 w-4 group-hover:translate-x-1 transition-transform" />
     </div>
   </NuxtLink>
 </template>

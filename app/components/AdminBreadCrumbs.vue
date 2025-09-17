@@ -8,7 +8,7 @@
             to="/admin" 
             class="text-gray-400 hover:text-gray-500 dark:text-gray-500 dark:hover:text-gray-400"
           >
-            <UIcon name="i-heroicons-home" class="h-4 w-4" />
+            <UIcon name="i-lucide-home" class="h-4 w-4" />
             <span class="sr-only">Home</span>
           </NuxtLink>
         </div>
@@ -17,7 +17,7 @@
       <li v-for="(item, index) in items" :key="index">
         <div class="flex items-center">
           <UIcon 
-            name="i-heroicons-chevron-right" 
+            name="i-lucide-chevron-right" 
             class="h-4 w-4 text-gray-300 dark:text-gray-600 mx-2" 
           />
           

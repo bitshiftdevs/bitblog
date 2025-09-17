@@ -85,17 +85,17 @@
         <!-- Reading Stats -->
         <div class="flex items-center space-x-3">
           <span v-if="post.readingTime" class="flex items-center">
-            <UIcon name="i-heroicons-clock" class="h-4 w-4 mr-1" />
+            <UIcon name="i-lucide-clock" class="h-4 w-4 mr-1" />
             {{ post.readingTime }} min
           </span>
 
           <span class="flex items-center">
-            <UIcon name="i-heroicons-eye" class="h-4 w-4 mr-1" />
+            <UIcon name="i-lucide-eye" class="h-4 w-4 mr-1" />
             {{ formatNumber(post.viewCount) }}
           </span>
 
           <span v-if="post._count?.comments" class="flex items-center">
-            <UIcon name="i-heroicons-chat-bubble-left" class="h-4 w-4 mr-1" />
+            <UIcon name="i-lucide-chat-bubble-left" class="h-4 w-4 mr-1" />
             {{ post._count.comments }}
           </span>
         </div>

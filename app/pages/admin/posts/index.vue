@@ -8,7 +8,7 @@
         </h1>
         <p class="text-gray-600 dark:text-gray-400">Manage your blog posts</p>
       </div>
-      <UButton to="/admin/posts/new" icon="i-heroicons-plus" size="lg">
+      <UButton to="/admin/posts/new" icon="i-lucide-plus" size="lg">
         New Post
       </UButton>
     </div>
@@ -33,7 +33,7 @@
         <UInput
           v-model="searchQuery"
           placeholder="Search posts..."
-          icon="i-heroicons-magnifying-glass"
+          icon="i-lucide-magnifying-glass"
           class="flex-1 max-w-md"
         />
 
@@ -103,7 +103,7 @@
                       class="h-10 w-10 rounded-lg bg-gray-200 dark:bg-gray-700 flex items-center justify-center"
                     >
                       <UIcon
-                        name="i-heroicons-document-text"
+                        name="i-lucide-document-text"
                         class="h-5 w-5 text-gray-400"
                       />
                     </div>
@@ -158,20 +158,20 @@
                     target="_blank"
                     variant="ghost"
                     size="sm"
-                    icon="i-heroicons-eye"
+                    icon="i-lucide-eye"
                     title="View Post"
                   />
                   <UButton
                     :to="`/admin/posts/${post.id}/edit`"
                     variant="ghost"
                     size="sm"
-                    icon="i-heroicons-pencil"
+                    icon="i-lucide-pencil"
                     title="Edit Post"
                   />
                   <UButton
                     variant="ghost"
                     size="sm"
-                    icon="i-heroicons-trash"
+                    icon="i-lucide-trash"
                     color="red"
                     @click="deletePost(post)"
                     title="Delete Post"
@@ -184,7 +184,7 @@
 
         <div v-if="!filteredPosts.length" class="text-center py-12">
           <UIcon
-            name="i-heroicons-document-text"
+            name="i-lucide-document-text"
             class="h-12 w-12 text-gray-400 mx-auto mb-4"
           />
           <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-2">

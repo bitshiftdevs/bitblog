@@ -144,7 +144,7 @@
                 variant="solid"
                 color="red"
                 size="xs"
-                icon="i-heroicons-x-mark"
+                icon="i-lucide-x-mark"
                 class="absolute top-2 right-2"
                 @click="form.featuredImage = ''"
               />
@@ -152,7 +152,7 @@
 
             <UButton
               variant="outline"
-              icon="i-heroicons-photo"
+              icon="i-lucide-photo"
               block
               @click="selectFeaturedImage"
               :disabled="isSaving || isPublishing"
