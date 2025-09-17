@@ -30,12 +30,13 @@ useHead({
     { name: 'twitter:card', content: 'summary_large_image' },
   ],
 });
+const pending = ref(false);
 
 // Global loading state
-const { pending } = useLazyAsyncData('app-init', () => {
-  // Initialize app data here if needed
-  return Promise.resolve();
-});
+// const { pending } = useLazyAsyncData('app-init', () => {
+//   // Initialize app data here if needed
+//   return Promise.resolve();
+// });
 
 // Global error handling
 onErrorCaptured((error) => {
@@ -45,9 +46,9 @@ onErrorCaptured((error) => {
 });
 
 // Service Worker registration for PWA
-if (import.meta.client && 'serviceWorker' in navigator) {
-  navigator.serviceWorker.register('/sw.js');
-}
+// if (import.meta.client && 'serviceWorker' in navigator) {
+//   navigator.serviceWorker.register('/sw.js');
+// }
 
 // Global CSS variables from site settings
 const colorMode = useColorMode();

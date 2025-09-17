@@ -27,7 +27,6 @@
       class="fixed bottom-6 right-6 z-40"
       variant="solid"
       color="primary"
-      :ui="{ rounded: 'rounded-full' }"
       @click="scrollToTop"
       aria-label="Back to top"
     />
@@ -38,29 +37,10 @@
 // Back to top functionality
 const showBackToTop = ref(false);
 
-const handleScroll = () => {
-  showBackToTop.value = window.scrollY > 300;
-};
-
 const scrollToTop = () => {
   window.scrollTo({
     top: 0,
     behavior: 'smooth',
   });
 };
-
-// Add scroll listener
-onMounted(() => {
-  window.addEventListener('scroll', handleScroll);
-});
-
-onUnmounted(() => {
-  window.removeEventListener('scroll', handleScroll);
-});
-
-// // SEO defaults for public pages
-// useSeoMeta({
-// 	ogType: 'website',
-// 	twitterCard: 'summary_large_image',
-// });
 </script>

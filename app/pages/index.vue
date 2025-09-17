@@ -194,57 +194,6 @@
         </div>
       </div>
     </section>
-
-    <!-- Stats Section -->
-    <section class="py-16 bg-gray-50 dark:bg-gray-800">
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="grid grid-cols-1 md:grid-cols-4 gap-8 text-center">
-          <div class="space-y-2">
-            <div
-              class="text-4xl font-bold text-primary-600 dark:text-primary-400"
-            >
-              {{ stats?.posts || 0 }}
-            </div>
-            <div class="text-gray-600 dark:text-gray-400 font-medium">
-              Published Posts
-            </div>
-          </div>
-
-          <div class="space-y-2">
-            <div
-              class="text-4xl font-bold text-primary-600 dark:text-primary-400"
-            >
-              {{ stats?.authors || 0 }}
-            </div>
-            <div class="text-gray-600 dark:text-gray-400 font-medium">
-              Active Authors
-            </div>
-          </div>
-
-          <div class="space-y-2">
-            <div
-              class="text-4xl font-bold text-primary-600 dark:text-primary-400"
-            >
-              {{ stats?.categories || 0 }}
-            </div>
-            <div class="text-gray-600 dark:text-gray-400 font-medium">
-              Categories
-            </div>
-          </div>
-
-          <div class="space-y-2">
-            <div
-              class="text-4xl font-bold text-primary-600 dark:text-primary-400"
-            >
-              {{ formatNumber(stats?.views || 0) }}
-            </div>
-            <div class="text-gray-600 dark:text-gray-400 font-medium">
-              Total Views
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
   </div>
 </template>
 
@@ -310,8 +259,4 @@ const { data: authorsData, pending: authorsLoading } = await useFetch(
 );
 
 const authors = computed(() => authorsData.value?.data?.items || []);
-
-// Fetch site stats
-const { data: statsData } = await useFetch('/api/stats');
-const stats = computed(() => statsData.value?.data || {});
 </script>

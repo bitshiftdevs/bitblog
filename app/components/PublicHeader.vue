@@ -178,7 +178,7 @@ onMounted(() => {
           </div>
 
           <!-- Theme toggle -->
-          <ThemeToggle />
+          <UColorModeSwitch />
 
           <!-- Auth buttons -->
           <template v-if="!user">

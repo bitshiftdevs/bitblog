@@ -4,8 +4,9 @@ import {
   createPaginationOptions,
   createPaginationResult,
   createSearchFilter,
-} from "~/../server/utils/database";
-import { PostFiltersSchema, PaginationSchema } from "~/../shared/schemas";
+} from "~~/server/utils/database";
+import { PostFiltersSchema, PaginationSchema } from "~~/shared/schemas";
+import { PostSummary } from "~~/shared/types";
 import prisma from "~~/server/db";
 
 const QuerySchema = PostFiltersSchema.merge(PaginationSchema).extend({
@@ -145,29 +146,32 @@ export default defineEventHandler(async (event) => {
         },
       },
       orderBy,
-      skip: (page - 1) * limit,
+      skip: (page! - 1) * limit!,
       take: limit,
     });
 
     // Transform posts for response
-    const transformedPosts = posts.map((post) => ({
-      id: post.id,
-      slug: post.slug,
-      title: post.title,
-      excerpt: post.excerpt,
-      status: post.status,
-      visibility: post.visibility,
-      featuredImage: post.featuredImage,
-      readingTime: post.readingTime,
-      viewCount: post.viewCount,
-      publishedAt: post.publishedAt?.toISOString(),
-      createdAt: post.createdAt.toISOString(),
-      updatedAt: post.updatedAt.toISOString(),
-      author: post.author,
-      tags: post.tags,
-      categories: post.categories,
-      _count: post._count,
-    }));
+    const transformedPosts = posts.map(
+      (post) =>
+        ({
+          id: post.id,
+          slug: post.slug,
+          title: post.title,
+          excerpt: post.excerpt,
+          status: post.status,
+          visibility: post.visibility,
+          featuredImage: post.featuredImage,
+          readingTime: post.readingTime,
+          viewCount: post.viewCount,
+          publishedAt: post.publishedAt?.toISOString(),
+          createdAt: post.createdAt.toISOString(),
+          updatedAt: post.updatedAt.toISOString(),
+          author: post.author,
+          tags: post.tags,
+          categories: post.categories,
+          _count: post._count,
+        }) as unknown as PostSummary,
+    );
 
     const result = createPaginationResult(transformedPosts, total, {
       page,
