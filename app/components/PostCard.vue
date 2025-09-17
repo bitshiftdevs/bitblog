@@ -105,7 +105,7 @@
 </template>
 
 <script setup lang="ts">
-import type { PostSummary } from '~~/lib/types';
+import type { PostSummary } from '~~/shared/types';
 
 interface Props {
   post: PostSummary;

@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia';
-import type { AuthUser, LoginRequest, RegisterRequest } from '../../lib/types';
+import type { AuthUser, LoginRequest, RegisterRequest } from '~~/shared/types';
 
 interface AuthState {
   user: AuthUser | null;

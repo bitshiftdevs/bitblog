@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { createAuditLog } from "~~/lib/utils/database";
+import { createAuditLog } from "~~/server/utils/database";
 import prisma from "~~/server/db";
 import { verifyJWT } from "~~/server/utils/auth";
 

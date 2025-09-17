@@ -1,6 +1,6 @@
 // apps/web/stores/site.ts
 import { defineStore } from 'pinia';
-import type { SiteSettings } from '~~/lib/types';
+import type { SiteSettings } from '~~/shared/types';
 
 interface SiteState {
   settings: {

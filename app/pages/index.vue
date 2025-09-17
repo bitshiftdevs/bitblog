@@ -251,7 +251,6 @@
 <script setup lang="ts">
 import { useAuthStore } from '~/stores/auth';
 import { useSiteStore } from '~/stores/site';
-import type { PostSummary, Category, User } from '~~/lib/types';
 
 // Meta tags
 useSeoMeta({
@@ -315,19 +314,4 @@ const authors = computed(() => authorsData.value?.data?.items || []);
 // Fetch site stats
 const { data: statsData } = await useFetch('/api/stats');
 const stats = computed(() => statsData.value?.data || {});
-
-// Utility function to format large numbers
-const formatNumber = (num: number): string => {
-  if (num >= 1000000) {
-    return (num / 1000000).toFixed(1) + 'M';
-  } else if (num >= 1000) {
-    return (num / 1000).toFixed(1) + 'K';
-  }
-  return num.toString();
-};
-
-// Load site settings
-// onMounted(() => {
-//   siteStore.loadSettings();
-// });
 </script>

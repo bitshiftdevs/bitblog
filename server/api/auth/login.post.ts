@@ -2,9 +2,9 @@
 import { z } from "zod";
 import * as argon2 from "argon2";
 import { SignJWT } from "jose";
-import { LoginSchema } from "~~/lib/schemas";
+import { LoginSchema } from "~~/shared/schemas";
 import prisma from "~~/server/db";
-import { createAuditLog } from "~~/lib/utils/database";
+import { createAuditLog } from "~~/server/utils/database";
 import { randomUUID } from "node:crypto";
 
 export default defineEventHandler(async (event) => {

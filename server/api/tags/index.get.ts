@@ -3,8 +3,8 @@ import { z } from "zod";
 import {
   createPaginationOptions,
   createPaginationResult,
-} from "~~/lib/utils/database";
-import { PaginationSchema } from "~~/lib/schemas";
+} from "~~/server/utils/database";
+import { PaginationSchema } from "~~/shared/schemas";
 import prisma from "~~/server/db";
 
 const QuerySchema = PaginationSchema.extend({

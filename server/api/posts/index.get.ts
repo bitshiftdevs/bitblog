@@ -4,8 +4,8 @@ import {
   createPaginationOptions,
   createPaginationResult,
   createSearchFilter,
-} from "~/../lib/utils/database";
-import { PostFiltersSchema, PaginationSchema } from "~/../lib/schemas";
+} from "~/../server/utils/database";
+import { PostFiltersSchema, PaginationSchema } from "~/../shared/schemas";
 import prisma from "~~/server/db";
 
 const QuerySchema = PostFiltersSchema.merge(PaginationSchema).extend({

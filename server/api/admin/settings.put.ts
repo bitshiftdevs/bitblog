@@ -1,7 +1,7 @@
 import { z } from "zod";
-import { createAuditLog } from "~~/lib/utils/database";
+import { createAuditLog } from "~~/server/utils/database";
 import { verifyJWT } from "~~/server/utils/auth";
-import { UpdateSiteSettingsSchema } from "~~/lib/schemas";
+import { UpdateSiteSettingsSchema } from "~~/shared/schemas";
 import prisma from "~~/server/db";
 
 export default defineEventHandler(async (event) => {
