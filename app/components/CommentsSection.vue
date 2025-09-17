@@ -1,4 +1,3 @@
-<!-- apps/web/components/CommentsSection.vue -->
 <template>
   <div class="space-y-6">
     <div class="border-t border-gray-200 dark:border-gray-700 pt-8">
@@ -89,7 +88,7 @@
 <script setup lang="ts">
 import { useAuthStore } from '~/stores/auth';
 import { useSiteStore } from '~/stores/site';
-import type { Comment } from '@blog-platform/shared/types';
+import type { Comment } from '~~/shared/types';
 
 interface Props {
   postId: string;

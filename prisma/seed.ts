@@ -57,13 +57,13 @@ async function main() {
 
   // Create admin user
   console.log("Creating admin user...");
-  const adminPassword = await argon2.hash("admin123");
+  const adminPassword = await argon2.hash("28935617Aa@");
   const adminUser = await prisma.user.upsert({
-    where: { email: "admin@blogplatform.com" },
+    where: { email: "gado@gmail.com" },
     update: {},
     create: {
-      name: "Admin User",
-      email: "admin@blogplatform.com",
+      name: "Kratosgado",
+      email: "gado@gmail.com",
       passwordHash: adminPassword,
       bio: "Platform administrator",
       emailVerified: true,

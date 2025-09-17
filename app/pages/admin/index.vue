@@ -30,7 +30,7 @@
       <StatCard
         title="Drafts"
         :value="stats.posts?.draft || 0"
-        icon="i-lucide-pencil"
+        icon="i-lucide-square-pen"
         color="yellow"
       />
       <StatCard
@@ -224,14 +224,6 @@ const recentPosts = computed(
 const pendingComments = computed(
   () => dashboardData.value?.data?.pendingComments || [],
 );
-
-const formatDate = (dateString: string): string => {
-  return new Intl.DateTimeFormat('en-US', {
-    year: 'numeric',
-    month: 'short',
-    day: 'numeric',
-  }).format(new Date(dateString));
-};
 
 const getStatusColor = (status: string) => {
   switch (status) {

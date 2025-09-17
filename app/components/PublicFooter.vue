@@ -16,10 +16,7 @@
               v-else
               class="h-8 w-8 bg-primary-600 rounded-md flex items-center justify-center"
             >
-              <UIcon
-                name="i-lucide-pencil-square"
-                class="h-5 w-5 text-white"
-              />
+              <UIcon name="i-lucide-square-pen" class="h-5 w-5 text-white" />
             </div>
             <span class="text-xl font-bold">{{
               siteSettings?.title || "BitBlog"

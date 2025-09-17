@@ -46,8 +46,7 @@
 </template>
 
 <script setup lang="ts">
-import { format } from 'date-fns';
-import type { Comment } from '@blog-platform/shared/types';
+import type { Comment } from '~~/shared/types';
 
 interface Props {
   comment: Comment;
@@ -58,10 +57,6 @@ defineProps<Props>();
 defineEmits<{
   reply: [comment: Comment];
 }>();
-
-const formatDate = (dateString: string): string => {
-  return format(new Date(dateString), "MMM d, yyyy 'at' h:mm a");
-};
 </script>
 
 <!-- apps/web/middleware/guest.ts -->

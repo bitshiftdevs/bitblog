@@ -6,3 +6,11 @@ export const formatNumber = (num: number): string => {
   }
   return num.toString();
 };
+
+export const formatDate = (dateString: string): string => {
+  return new Intl.DateTimeFormat("en-US", {
+    year: "numeric",
+    month: "short",
+    day: "numeric",
+  }).format(new Date(dateString));
+};

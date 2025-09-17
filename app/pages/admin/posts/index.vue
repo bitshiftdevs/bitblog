@@ -165,14 +165,14 @@
                     :to="`/admin/posts/${post.id}/edit`"
                     variant="ghost"
                     size="sm"
-                    icon="i-lucide-pencil"
+                    icon="i-lucide-square-pen"
                     title="Edit Post"
                   />
                   <UButton
                     variant="ghost"
                     size="sm"
                     icon="i-lucide-trash"
-                    color="red"
+                    color="error"
                     @click="deletePost(post)"
                     title="Delete Post"
                   />

@@ -90,7 +90,6 @@ export default defineEventHandler(async (event) => {
       iat: Math.floor(Date.now() / 1000),
     };
 
-    console.log(config.jwtSecret);
     const jwtSecret = new TextEncoder().encode(config.jwtSecret);
     const expiresIn = rememberMe ? "30d" : "24h";
     const expirationTime = rememberMe ? "30d" : "24h";
@@ -100,7 +99,6 @@ export default defineEventHandler(async (event) => {
       .setIssuedAt()
       .setExpirationTime(expirationTime)
       .sign(jwtSecret);
-    console.log("done generating");
 
     // Create refresh token if remember me is enabled
     let refreshToken = null;

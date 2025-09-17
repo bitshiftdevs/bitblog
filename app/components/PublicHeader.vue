@@ -25,7 +25,7 @@ const navItems = computed<NavigationMenuItem[]>(() => [
   {
     label: 'Home',
     to: '/',
-    active: route.path.startsWith('/'),
+    active: route.path === '/',
   },
   {
     label: 'Posts',
@@ -108,7 +108,7 @@ const userMenuItems = computed(() => [
             v-else
             class="h-8 w-8 bg-primary-600 rounded-md flex items-center justify-center"
           >
-            <UIcon name="i-lucide-pencil-square" class="h-5 w-5 text-white" />
+            <UIcon name="i-lucide-square-pen" class="h-5 w-5 text-white" />
           </div>
           <span>{{ siteSettings?.title || "BitBlog" }}</span>
         </NuxtLink>
@@ -148,7 +148,7 @@ const userMenuItems = computed(() => [
         <UButton
           variant="ghost"
           size="sm"
-          icon="i-lucide-bars-3"
+          icon="i-lucide-menu"
           class="md:hidden"
           @click="mobileMenuOpen = !mobileMenuOpen"
           aria-label="Toggle mobile menu"

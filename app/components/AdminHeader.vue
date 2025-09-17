@@ -10,7 +10,7 @@
           <UButton
             variant="ghost"
             size="sm"
-            icon="i-lucide-bars-3"
+            icon="i-lucide-menu"
             class="lg:hidden mr-2"
             @click="toggleSidebar"
             aria-label="Toggle sidebar"
