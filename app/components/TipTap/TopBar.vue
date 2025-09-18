@@ -60,13 +60,31 @@ const items: NavigationMenuItem[][] = [
   ],
   [
     {
-      label: `SEO: ${seoStore.seoScore}`,
-      icon: 'i-lucide-heart-pulse',
-      class: 'secondary',
+      badge: {
+        label: `SEO: ${seoStore.seoScore}`,
+        icon: 'i-lucide-heart-pulse',
+        variant: 'outline',
+        size: 'md',
+        color:
+          seoStore.seoScore >= 80
+            ? 'success'
+            : seoStore.seoScore >= 50 && seoStore.seoScore < 80
+              ? 'warning'
+              : 'error',
+      },
     },
     {
       label: 'Save',
       icon: 'i-lucide-save',
+      children: [
+        { description: 'Save Draft', label: 'Sa' },
+        { description: 'Publish' },
+      ],
+      class: 'cursor-pointer',
+    },
+    {
+      label: 'Templates',
+      icon: 'i-lucide-backpack',
     },
   ],
 ];
