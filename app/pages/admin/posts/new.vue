@@ -47,7 +47,10 @@ editorStore.$subscribe((mutation, state) => {
       <TipTapSidebar />
       <section class="flex-1 overflow-auto p-6">
         <div class="max-w-4xl mx-auto bg-base-200 shadow-md rounded-lg">
-          <TipTapContent v-if="view === 'editor'" />
+          <TipTapContent
+            :editor="blog.editor.value!"
+            v-if="view === 'editor' && blog.editor"
+          />
           <pre
             v-else-if="view === 'code'"
           ><code>{{ editorStore.content }}</code></pre>

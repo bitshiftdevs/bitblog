@@ -30,22 +30,6 @@ const removeFeaturedImage = () => {
   editorStore.setFeaturedImage('');
 };
 
-const addCategory = () => {
-  const cat = newCategory.value.trim();
-  if (cat) {
-    editorStore.addCategory(cat);
-    newCategory.value = '';
-  }
-};
-
-const addTag = () => {
-  const tag = newTag.value.trim();
-  if (tag) {
-    editorStore.addTag(tag);
-    newTag.value = '';
-  }
-};
-
 // Revisions
 const viewRevisions = () => {
   // In a real app, this would open a modal with revision history
@@ -97,47 +81,21 @@ editorStore.$subscribe((mutation, state) => {
       </UFormField>
 
       <!-- Categories -->
-      <UFormField label="Categories">
-        <UInput
-          type="text"
-          v-model="newCategory"
-          @keyup.enter="addCategory"
+      <UFormField label="Categories" required>
+        <UInputTags
+          v-model="editorStore.categories"
           class="input input-info"
           placeholder="Add category"
         />
-        <div class="flex flex-wrap gap-2 mt-2">
-          <UButton
-            v-for="category in editorStore.categories"
-            :key="category"
-            :label="category"
-            color="secondary"
-            trailing-icon="i-lucide-x"
-            size="sm"
-            @click="() => editorStore.removeCategory(category)"
-          />
-        </div>
       </UFormField>
 
       <!-- Tags -->
-      <UFormField label="Tags">
-        <UInput
-          type="text"
-          v-model="newTag"
-          @keyup.enter="addTag"
+      <UFormField label="Tags" required>
+        <UInputTags
+          v-model="editorStore.tags"
           class="input input-info"
           placeholder="Add tag"
         />
-        <div class="flex flex-wrap gap-2 mt-2">
-          <UButton
-            v-for="tag in editorStore.tags"
-            :key="tag"
-            :label="tag"
-            color="secondary"
-            trailing-icon="i-lucide-x"
-            size="sm"
-            @click="() => editorStore.removeTag(tag)"
-          />
-        </div>
       </UFormField>
       <!-- Word Count Stats -->
       <div class="mb-6">

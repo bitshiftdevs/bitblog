@@ -28,7 +28,7 @@ export function useBlogEditor() {
           levels: [1, 2, 3, 4, 5, 6],
         },
       }) as AnyExtension,
-      SlashCommands,
+      // SlashCommands,
       TOC.configure({
         levels: [1, 2, 3],
         updateEvent: 'update:toc',
@@ -40,13 +40,13 @@ export function useBlogEditor() {
       //     return editor.isActive('myMark')
       //   },
       // }),
-      Link.configure({
-        openOnClick: false,
-        linkOnPaste: true,
-        HTMLAttributes: {
-          class: 'text-primary underline',
-        },
-      }),
+      // Link.configure({
+      //   openOnClick: false,
+      //   linkOnPaste: true,
+      //   HTMLAttributes: {
+      //     class: 'text-primary underline',
+      //   },
+      // }),
       Image.configure({
         allowBase64: true,
         inline: true,
@@ -57,9 +57,9 @@ export function useBlogEditor() {
       Placeholder.configure({
         placeholder: 'Start writing your amazing blog post...',
       }),
-      CodeBlockLowlight.configure({
-        lowlight,
-      }),
+      // CodeBlockLowlight.configure({
+      //   lowlight,
+      // }),
       TextStyle,
       Color,
       Highlight,

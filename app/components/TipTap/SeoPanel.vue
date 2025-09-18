@@ -57,26 +57,22 @@ watch(
     <div class="flex-1 overflow-y-auto">
       <div class="p-4">
         <!-- SEO Score -->
-        <div class="mb-6">
-          <div class="flex justify-between mb-2">
-            <span class="font-medium">SEO Score</span>
-            <span :class="scoreClass(seoStore.seoScore)"
-              >{{ seoStore.seoScore }}/100</span
-            >
-          </div>
-          <UProgress :value="seoStore.seoScore" />
-        </div>
+        <UFormField label="SEO Score">
+          <UProgress
+            v-model="seoStore.seoScore"
+            status
+            :color="getStatusColor(seoStore.seoScore)"
+          />
+        </UFormField>
 
         <!-- Readability Score -->
-        <div class="mb-6">
-          <div class="flex justify-between mb-2">
-            <span class="font-medium">Readability</span>
-            <span :class="scoreClass(seoStore.readabilityScore)"
-              >{{ seoStore.readabilityScore }}/100</span
-            >
-          </div>
-          <UProgress :value="seoStore.readabilityScore" />
-        </div>
+        <UFormField label="Readability">
+          <UProgress
+            v-model="seoStore.readabilityScore"
+            status
+            :color="getStatusColor(seoStore.readabilityScore)"
+          />
+        </UFormField>
 
         <UFormField label="Focus Keywork">
           <UInput
@@ -123,14 +119,20 @@ watch(
             <UAlert
               v-for="(improvement, index) in seoStore.analysis.improvements"
               :key="index"
-              :msg="improvement"
-              class="soft"
+              icon="i-lucide-badge-x"
+              color="error"
+              variant="subtle"
+              class="mt-1"
+              :description="improvement"
             />
           </div>
           <UAlert
             v-else
-            class="soft"
-            msg="Great job! No SEO improvements needed"
+            color="success"
+            variant="subtle"
+            title="Great job!"
+            icon="i-lucide-check-check"
+            description="No SEO improvements needed"
           />
         </UFormField>
       </div>

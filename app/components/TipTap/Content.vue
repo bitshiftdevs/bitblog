@@ -16,7 +16,7 @@ const blog = useBlogEditor();
       />
     </div>
 
-    <TipTapMenuBar :editor="blog.editor" />
+    <TipTapMenuBar :editor="blog.editor.value!" />
     <TipTapTOC
       :editor="blog.editor.value!"
       title="Table Of Content"
@@ -26,7 +26,7 @@ const blog = useBlogEditor();
     />
 
     <div class="px-6 py-4 min-h-[500px]">
-      <EditorBubbleMenu :editor="blog.editor" />
+      <!-- <TipTapBubbleMenu :editor="blog.editor.value" /> -->
       <EditorContent :editor="blog.editor.value" class="prose max-w-none" />
     </div>
     <!-- <LinkModal :editor /> -->

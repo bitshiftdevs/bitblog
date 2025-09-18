@@ -65,12 +65,7 @@ const items: NavigationMenuItem[][] = [
         icon: 'i-lucide-heart-pulse',
         variant: 'outline',
         size: 'md',
-        color:
-          seoStore.seoScore >= 80
-            ? 'success'
-            : seoStore.seoScore >= 50 && seoStore.seoScore < 80
-              ? 'warning'
-              : 'error',
+        color: getStatusColor(seoStore.seoScore),
       },
     },
     {

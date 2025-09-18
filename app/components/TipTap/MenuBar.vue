@@ -1,11 +1,12 @@
 <script setup lang="ts">
+import type { Editor } from '@tiptap/vue-3';
 import { computed, watch } from 'vue';
 import { getTemplate, templates } from '~/utils/templates';
 
 const editorStore = useEditorStore();
-// const { editor } = defineProps<{ editor: Editor }>()
+// const blog = useBlogEditor();
+const { editor } = defineProps<{ editor: Editor }>();
 
-const { editor } = defineProps<{ editor: any }>();
 watch(
   () => editorStore.content,
   (content) => {
@@ -90,11 +91,11 @@ const currentHeading = computed(() => {
 // }
 
 const insertTable = () => {
-  editor
-    .chain()
-    .focus()
-    .insertTable({ rows: 3, cols: 3, withHeaderRow: true })
-    .run();
+  // editor
+  //   .chain()
+  //   .focus()
+  //   .insertTable({ rows: 3, cols: 3, withHeaderRow: true })
+  //   .run();
 };
 
 const insertDivider = () => {
@@ -392,22 +393,20 @@ const insertTabs = () => {
 
     <!-- Undo/Redo -->
     <div class="flex space-x-1 ml-auto">
-      <button
+      <UButton
         class="btn btn-sm p-2"
         @click="editor.chain().focus().undo().run()"
         :disabled="!editor.can().undo()"
         title="Undo"
-      >
-        <IconUndo />
-      </button>
-      <button
+        icon="i-lucide-undo-dot"
+      />
+      <UButton
         class="btn btn-sm p-2"
         @click="editor.chain().focus().redo().run()"
         :disabled="!editor.can().redo()"
         title="Redo"
-      >
-        <IconRedo />
-      </button>
+        icon="i-lucide-redo-dot"
+      />
     </div>
   </UContainer>
 </template>
