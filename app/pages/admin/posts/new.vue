@@ -4,8 +4,6 @@ import { MutationType } from 'pinia';
 const editorStore = useEditorStore();
 const { destroyEditor } = useBlogEditor();
 const { analyzeSeo } = useSeo();
-const error = ref<string | undefined>(undefined);
-const success = ref<string | undefined>(undefined);
 
 const view = ref<'editor' | 'preview' | 'code'>('editor');
 
@@ -25,14 +23,6 @@ onMounted(() => {
     destroyEditor();
   });
 });
-function updateStatus({ success: s, msg }: { success: boolean; msg: string }) {
-  if (s) success.value = msg;
-  else error.value = msg;
-  setTimeout(() => {
-    success.value = undefined;
-    error.value = undefined;
-  }, 3000);
-}
 
 function changeView(newView: 'editor' | 'preview' | 'code') {
   view.value = newView;
@@ -51,8 +41,7 @@ editorStore.$subscribe((mutation, state) => {
     class="blog-editor-container flex flex-col"
     :class="view !== 'preview' && 'h-screen'"
   >
-    <TipTapTopBar @change-view="changeView" @status-change="updateStatus" />
-    <Status :success="success" :error="error" />
+    <TipTapTopBar @change-view="changeView" />
 
     <!-- <TipTapPostView v-if="view === 'preview'" :post="editorStore.getPost" /> -->
     <div v-if="view === 'preview'" class="flex-1 overflow-auto p-6">

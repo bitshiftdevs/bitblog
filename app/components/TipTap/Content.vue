@@ -16,8 +16,8 @@ const { editor } = useBlogEditor();
       />
     </div>
 
-    <MenuBar :editor="editor" />
-    <TOC
+    <TipTapMenuBar :editor="editor" />
+    <TipTapTOC
       :editor="editor"
       title="Table Of Content"
       :levels="[1, 2, 3]"

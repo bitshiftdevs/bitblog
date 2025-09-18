@@ -10,6 +10,7 @@ export type TiptapCommandType = {
   range: Range;
   props: any;
 };
+export type EditorView = "editor" | "preview" | "code";
 export interface User {
   id: string;
   name: string;
