@@ -18,7 +18,7 @@ export default defineNuxtConfig({
     runMigration: false,
   },
   pinia: {
-    storesDirs: ['stores'],
+    storesDirs: ['./app/stores/**'],
   },
   ui: {
     theme: {
@@ -172,3 +172,4 @@ export default defineNuxtConfig({
   //   },
   // },
 });
+

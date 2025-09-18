@@ -1,8 +1,5 @@
 <script setup lang="ts">
 import { MutationType } from 'pinia';
-import { useBlogEditor } from '~/components/TipTap/useEditor';
-import { useSeo } from '~/components/TipTap/useSeo';
-import { useEditorStore } from '~/stores/editorStore';
 
 const editorStore = useEditorStore();
 const { destroyEditor } = useBlogEditor();
@@ -54,15 +51,15 @@ editorStore.$subscribe((mutation, state) => {
     class="blog-editor-container flex flex-col"
     :class="view !== 'preview' && 'h-screen'"
   >
-    <EditorTopBar @change-view="changeView" @status-change="updateStatus" />
+    <TipTapTopBar @change-view="changeView" @status-change="updateStatus" />
     <Status :success="success" :error="error" />
 
-    <PostView v-if="view === 'preview'" :post="editorStore.getPost" />
+    <TipTapPostView v-if="view === 'preview'" :post="editorStore.getPost" />
     <div v-else class="flex-1 flex overflow-hidden">
-      <TipTapEditorSidebar />
+      <TipTapSidebar />
       <section class="flex-1 overflow-auto p-6">
         <div class="max-w-4xl mx-auto bg-base-200 shadow-md rounded-lg">
-          <EditorContent v-if="view === 'editor'" />
+          <TipTapContent v-if="view === 'editor'" />
           <pre
             v-else-if="view === 'code'"
           ><code>{{ editorStore.content }}</code></pre>
