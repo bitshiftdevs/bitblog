@@ -62,6 +62,9 @@ export const useEditorStore = defineStore('editor', {
     };
   },
   getters: {
+    getStatus: (state) => {
+      return state.status;
+    },
     getWordCount: (state) => {
       if (!state.content) return 0;
       // Remove HTML tags and count words

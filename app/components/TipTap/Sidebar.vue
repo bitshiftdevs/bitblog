@@ -2,12 +2,18 @@
 import { ref } from 'vue';
 import { Modal, useEditorStore } from '../../stores/editorStore';
 import type { PostStatus } from '~~/shared/types';
-// import BadgeButton from '@/components/BadgeButton.vue'
+import type { SelectMenuItem } from '@nuxt/ui';
 
 const editorStore = useEditorStore();
 
 // Form fields
 const status = ref(editorStore.status);
+
+const postStatusList: SelectMenuItem[] = [
+  { label: 'DRAFT' },
+  { label: 'PUBLISHED' },
+  { label: 'SCHEDULED' },
+];
 const newCategory = ref('');
 const newTag = ref('');
 
@@ -54,142 +60,94 @@ editorStore.$subscribe((mutation, state) => {
 });
 </script>
 <template>
-  <div
-    class="editor-sidebar bg-base w-64 border-r border-gray-200 overflow-y-auto h-full"
-  >
+  <UDashboardSidebar>
     <div class="p-4">
-      <!-- Blog Post Settings -->
-      <div class="mb-6">
-        <h3 class="text-lg font-semibold mb-3">Post Settings</h3>
+      <h3 class="text-lg font-semibold mb-3">Post Settings</h3>
 
-        <!-- Status -->
-        <div class="mb-4">
-          <label class="block text-sm font-medium text-gray-400 mb-1"
-            >Status</label
-          >
-          <select
-            v-model="status"
-            @change="updateStatus"
-            class="select select-info"
-          >
-            <option value="draft">Draft</option>
-            <option value="published">Published</option>
-            <option value="scheduled">Scheduled</option>
-          </select>
-        </div>
+      <UFormField label="Post Status">
+        <USelectMenu :items="postStatusList" v-model="editorStore.getStatus" />
+      </UFormField>
 
-        <!-- Publish Date (show if scheduled) -->
-        <div class="mb-4" v-if="status === 'SCHEDULED'">
-          <label class="block text-sm font-medium text-gray-400 mb-1"
-            >Publish Date</label
-          >
-          <input
-            type="datetime-local"
-            v-model="editorStore.publishedAt"
-            class="input input-info"
-          />
-        </div>
-
-        <!-- Slug -->
-        <div class="mb-4">
-          <label class="block text-sm font-medium text-gray-400 mb-1"
-            >Slug</label
-          >
-          <div type="text" class="btn btn-info btn-soft w-full">
-            {{ editorStore.slug }}
-          </div>
-        </div>
-
-        <!-- Featured Image -->
-        <div class="mb-4">
-          <label class="block text-sm font-medium text-gray-400 mb-1"
-            >Featured Image</label
-          >
-          <div v-if="editorStore.featuredImage" class="mb-2">
-            <img
-              :src="editorStore.featuredImage"
-              class="w-full h-auto rounded-md"
-              alt="Featured Image"
-            />
-            <button
-              @click="removeFeaturedImage"
-              class="text-red-500 text-sm mt-1"
-            >
-              Remove
-            </button>
-          </div>
-          <button
-            @click="selectFeaturedImage"
-            class="btn btn-sm btn-outline w-full"
-          >
-            {{ editorStore.featuredImage ? "Change Image" : "Add Image" }}
-          </button>
-        </div>
-
-        <!-- Excerpt -->
-        <div class="mb-4">
-          <label class="block text-sm font-medium text-gray-400 mb-1"
-            >Excerpt</label
-          >
-          <textarea
-            v-model="editorStore.excerpt"
-            class="textarea textarea-info"
-            rows="3"
-            placeholder="Brief summary of your post"
-          ></textarea>
-        </div>
+      <!-- Publish Date (show if scheduled) -->
+      <div class="mb-4" v-if="editorStore.getStatus === 'SCHEDULED'">
+        <label class="block text-sm font-medium text-gray-400 mb-1"
+          >Publish Date</label
+        >
+        <input
+          type="datetime-local"
+          v-model="editorStore.publishedAt"
+          class="input input-info"
+        />
       </div>
+
+      <UFormField label="slug">
+        <UInput type="text" :placeholder="editorStore.slug" disabled />
+      </UFormField>
+
+      <UFormField label="Featured Image">
+        <UFileUpload />
+      </UFormField>
+
+      <UFormField label="Excerpt">
+        <UInput
+          type="text"
+          placeholder="Brief summary of post"
+          v-model="editorStore.excerpt"
+        />
+      </UFormField>
 
       <!-- Categories -->
-      <div class="mb-6">
-        <h3 class="text-lg font-semibold mb-3">Categories</h3>
-        <div class="mb-2 flex">
-          <input
-            type="text"
-            v-model="newCategory"
-            @keyup.enter="addCategory"
-            class="input input-info"
-            placeholder="Add category"
+      <UFormField label="Categories">
+        <UInput
+          type="text"
+          v-model="newCategory"
+          @keyup.enter="addCategory"
+          class="input input-info"
+          placeholder="Add category"
+        />
+        <div class="flex flex-wrap gap-2 mt-2">
+          <UButton
+            v-for="category in editorStore.categories"
+            :key="category"
+            :label="category"
+            color="secondary"
+            trailing-icon="i-lucide-x"
+            size="sm"
+            @click="() => editorStore.removeCategory(category)"
           />
         </div>
-        <div class="flex flex-wrap gap-2 mt-2">
-          <!-- <BadgeButton -->
-          <!--   v-for="category in editorStore.categories" -->
-          <!--   :key="category" -->
-          <!--   :value="category" -->
-          <!--   :cb="editorStore.removeCategory" -->
-          <!-- /> -->
-        </div>
-      </div>
+      </UFormField>
 
       <!-- Tags -->
-      <div class="mb-6">
-        <h3 class="text-lg font-semibold mb-3">Tags</h3>
-        <div class="mb-2 flex">
-          <input
-            type="text"
-            v-model="newTag"
-            @keyup.enter="addTag"
-            class="input input-info"
-            placeholder="Add tag"
-          />
-        </div>
+      <UFormField label="Tags">
+        <UInput
+          type="text"
+          v-model="newTag"
+          @keyup.enter="addTag"
+          class="input input-info"
+          placeholder="Add tag"
+        />
         <div class="flex flex-wrap gap-2 mt-2">
-          <BadgeButton
+          <UButton
             v-for="tag in editorStore.tags"
             :key="tag"
-            :value="tag"
-            :cb="editorStore.removeTag"
+            :label="tag"
+            color="secondary"
+            trailing-icon="i-lucide-x"
+            size="sm"
+            @click="() => editorStore.removeTag(tag)"
           />
         </div>
-      </div>
+      </UFormField>
       <!-- Word Count Stats -->
       <div class="mb-6">
         <h3 class="text-lg font-semibold mb-3">Stats</h3>
         <div class="grid grid-cols-2 gap-2">
           <div class="p-2 rounded-md border border-success">
             <div class="text-sm text-gray-400">Words</div>
-            <div class="text-lg font-bold">{{ editorStore.getWordCount }}</div>
+            <div class="text-lg font-bold">
+              {{ editorStore.getWordCount }}
+            </div>
           </div>
           <div class="p-2 rounded-md border border-success">
             <div class="text-sm text-gray-400">Reading time</div>
@@ -208,5 +166,5 @@ editorStore.$subscribe((mutation, state) => {
         </div>
       </div>
     </div>
-  </div>
+  </UDashboardSidebar>
 </template>

@@ -1,11 +1,12 @@
 <script setup lang="ts">
 import { MutationType } from 'pinia';
+import type { EditorView } from '~~/shared/types';
 
 const editorStore = useEditorStore();
 const { destroyEditor } = useBlogEditor();
 const { analyzeSeo } = useSeo();
 
-const view = ref<'editor' | 'preview' | 'code'>('editor');
+const view = ref<EditorView>('editor');
 
 onMounted(() => {
   const slug = useRoute().params.slug as string;
@@ -24,7 +25,7 @@ onMounted(() => {
   });
 });
 
-function changeView(newView: 'editor' | 'preview' | 'code') {
+function changeView(newView: EditorView) {
   view.value = newView;
 }
 
