@@ -1,9 +1,4 @@
 <script setup lang="ts">
-import { ref, computed, watch } from 'vue';
-// import Progress from '@/components/Progress.vue';
-import { useSeoStore } from '~/stores/seoStore';
-import { useEditorStore } from '~/stores/editorStore';
-
 const seoStore = useSeoStore();
 const editorStore = useEditorStore();
 
@@ -52,8 +47,8 @@ watch(
 </script>
 
 <template>
-  <div
-    class="seo-panel w-80 bg-base border-l border-gray-500 overflow-y-auto h-full flex flex-col"
+  <UDashboardSidebar
+    class="w-80 bg-base border-l border-gray-500 overflow-y-auto h-full flex flex-col"
   >
     <div class="p-4 border-b border-gray-500">
       <h2 class="text-xl font-bold">SEO</h2>
@@ -69,7 +64,7 @@ watch(
               >{{ seoStore.seoScore }}/100</span
             >
           </div>
-          <!-- <Progress :value="seoStore.seoScore" /> -->
+          <UProgress :value="seoStore.seoScore" />
         </div>
 
         <!-- Readability Score -->
@@ -80,70 +75,67 @@ watch(
               >{{ seoStore.readabilityScore }}/100</span
             >
           </div>
-          <!-- <Progress :value="seoStore.readabilityScore" /> -->
+          <UProgress :value="seoStore.readabilityScore" />
         </div>
 
-        <!-- Focus Keyword -->
-        <div class="mb-6">
-          <label class="block text-sm font-medium text-gray-400 mb-1"
-            >Focus Keyword</label
-          >
-          <input
+        <UFormField label="Focus Keywork">
+          <UInput
             type="text"
             v-model="focusKeyword"
             @input="updateFocusKeyword"
-            class="input input-info p-2 rounded-md"
             placeholder="Enter focus keyword"
           />
-        </div>
+        </UFormField>
 
-        <!-- Meta Title -->
-        <div class="mb-6">
-          <label class="block text-sm font-medium text-gray-400 mb-1">
-            Meta Title
-            <span :class="metaTitleLengthClass"
-              >{{ seoStore.analysis.titleLength }}/60</span
-            >
-          </label>
-          <input
+        <UFormField :label="`Meta Title: ${seoStore.analysis.titleLength}/60`">
+          <UInput
             type="text"
-            v-model="editorStore.title"
-            class="input input-info"
-            placeholder="Enter meta title"
+            v-model="focusKeyword"
+            @input="updateFocusKeyword"
+            placeholder="Enter focus keyword"
           />
-        </div>
+        </UFormField>
 
         <!-- SEO Preview -->
-        <div class="mb-6 p-3 border border-gray-500 rounded-md">
-          <h3 class="text-sm font-medium mb-2">Google Preview</h3>
-          <div class="google-preview">
-            <div class="text-blue-600 text-lg truncate">
-              {{ editorStore.title || "Title Example" }}
-            </div>
-            <div class="text-green-700 text-sm">{{ previewUrl }}</div>
-            <div class="text-gray-400 text-sm line-clamp-2">
-              {{
-                editorStore.excerpt ||
-                "This is an example of how your page might appear in Google search results." +
-                  "Write a compelling meta description to improve click - through rates."
-              }}
+        <UFormField label="Google Preview">
+          <div class="mb-6 p-3 border border-gray-500 rounded-md">
+            <div class="google-preview">
+              <div class="text-blue-600 text-lg truncate">
+                {{ editorStore.title || "Title Example" }}
+              </div>
+              <div class="text-green-700 text-wrap text-sm">
+                {{ previewUrl }}
+              </div>
+              <div class="text-gray-400 text-sm line-clamp-2">
+                {{
+                  editorStore.excerpt ||
+                  "This is an example of how your page might appear in Google search results." +
+                    "Write a compelling meta description to improve click - through rates."
+                }}
+              </div>
             </div>
           </div>
-        </div>
+        </UFormField>
 
         <!-- SEO Analysis -->
-        <div class="mb-6">
-          <h3 class="text-sm font-medium mb-2">SEO Analysis</h3>
-
-          <!-- <div v-if="seoStore.analysis.improvements.length > 0"> -->
-          <!--   <AlertError v-for="(improvement, index) in seoStore.analysis.improvements" :key="index" :msg="improvement" -->
-          <!--     class="alert-soft" /> -->
-          <!-- </div> -->
-          <!-- <AlertSuccess v-else class="alert-soft" msg="Great job! No SEO improvements needed" /> -->
-        </div>
+        <UFormField label="SEO Analysis" class="mb-6">
+          <div v-if="seoStore.analysis.improvements.length > 0">
+            <UAlert
+              v-for="(improvement, index) in seoStore.analysis.improvements"
+              :key="index"
+              :msg="improvement"
+              class="soft"
+            />
+          </div>
+          <UAlert
+            v-else
+            class="soft"
+            msg="Great job! No SEO improvements needed"
+          />
+        </UFormField>
       </div>
     </div>
-  </div>
+  </UDashboardSidebar>
 </template>
 
 <style scoped>
