@@ -1,6 +1,5 @@
 import { useEditor, type AnyExtension } from '@tiptap/vue-3';
 import Focus from '@tiptap/extension-focus';
-import { useEditorStore } from '@/stores/editorStore';
 import { common } from 'lowlight';
 const { lowlight } = common;
 import {
@@ -8,8 +7,6 @@ import {
   Image,
   Highlight,
   TaskItem,
-  Underline,
-  Link,
   TextAlign,
   Placeholder,
   TextStyle,
@@ -19,8 +16,8 @@ import {
   CharacterCount,
   Shortcode,
   Widget,
-} from './extensions';
-import TOC from './TOCExtension';
+} from '~/utils/extensions';
+import TOC from '~/utils/TOCExtension';
 
 export function useBlogEditor() {
   const editorStore = useEditorStore();
@@ -36,7 +33,7 @@ export function useBlogEditor() {
         levels: [1, 2, 3],
         updateEvent: 'update:toc',
       }),
-      Underline,
+      // Underline,
       // BubbleMenu.configure({
       //   element: document.querySelector('#bubblemenu') as any,
       //   shouldShow: ({ editor, view, state, oldState, from, to }) => {
@@ -60,9 +57,9 @@ export function useBlogEditor() {
       Placeholder.configure({
         placeholder: 'Start writing your amazing blog post...',
       }),
-      // CodeBlockLowlight.configure({
-      //   // lowlight,
-      // }),
+      CodeBlockLowlight.configure({
+        lowlight,
+      }),
       TextStyle,
       Color,
       Highlight,

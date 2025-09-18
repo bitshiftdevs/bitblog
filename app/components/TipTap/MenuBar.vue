@@ -163,9 +163,7 @@ const insertTabs = () => {
 };
 </script>
 <template>
-  <div
-    class="editor-menu-bar border-b border-success bg-neutral-50 p-2 flex flex-wrap gap-1 sticky top-0 z-10"
-  >
+  <UContainer>
     <!-- Basic Text Formatting -->
     <div class="flex space-x-1">
       <button
@@ -411,5 +409,5 @@ const insertTabs = () => {
         <IconRedo />
       </button>
     </div>
-  </div>
+  </UContainer>
 </template>

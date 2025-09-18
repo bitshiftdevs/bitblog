@@ -3,16 +3,12 @@ import { MutationType } from 'pinia';
 import type { EditorView } from '~~/shared/types';
 
 const editorStore = useEditorStore();
-const { destroyEditor } = useBlogEditor();
+const blog = useBlogEditor();
 const { analyzeSeo } = useSeo();
 
 const view = ref<EditorView>('editor');
 
 onMounted(() => {
-  const slug = useRoute().params.slug as string;
-  if (slug !== 'new') {
-    editorStore.loadPost(slug);
-  }
   // Auto-save every 30 seconds
   const autoSaveInterval = setInterval(() => {
     editorStore.saveContent('DRAFT');
@@ -21,7 +17,7 @@ onMounted(() => {
   // Clean up on unmount
   onBeforeUnmount(() => {
     clearInterval(autoSaveInterval);
-    destroyEditor();
+    blog.destroyEditor();
   });
 });
 
@@ -38,10 +34,7 @@ editorStore.$subscribe((mutation, state) => {
 </script>
 
 <template>
-  <div
-    class="blog-editor-container flex flex-col"
-    :class="view !== 'preview' && 'h-screen'"
-  >
+  <div class="flex flex-col" :class="view !== 'preview' && 'h-screen'">
     <TipTapTopBar @change-view="changeView" />
 
     <!-- <TipTapPostView v-if="view === 'preview'" :post="editorStore.getPost" /> -->

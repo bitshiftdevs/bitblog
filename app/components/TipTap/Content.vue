@@ -3,11 +3,11 @@ import { EditorContent } from '@tiptap/vue-3';
 
 const editorStore = useEditorStore();
 
-const { editor } = useBlogEditor();
+const blog = useBlogEditor();
 </script>
 
 <template>
-  <div class="editor-container" v-if="editor">
+  <div class="editor-container" v-if="blog.editor">
     <div class="px-4 py-3 border-b border-gray-200">
       <input
         v-model="editorStore.title"
@@ -16,9 +16,9 @@ const { editor } = useBlogEditor();
       />
     </div>
 
-    <TipTapMenuBar :editor="editor" />
+    <TipTapMenuBar :editor="blog.editor" />
     <TipTapTOC
-      :editor="editor"
+      :editor="blog.editor.value!"
       title="Table Of Content"
       :levels="[1, 2, 3]"
       update-event="update:toc"
@@ -26,12 +26,12 @@ const { editor } = useBlogEditor();
     />
 
     <div class="px-6 py-4 min-h-[500px]">
-      <!-- <EditorBubbleMenu :editor="editor" /> -->
-      <EditorContent :editor="editor" class="prose max-w-none" />
+      <EditorBubbleMenu :editor="blog.editor" />
+      <EditorContent :editor="blog.editor.value" class="prose max-w-none" />
     </div>
-    <LinkModal :editor />
-    <ImageModal :editor />
-    <YoutubeModal :editor />
+    <!-- <LinkModal :editor /> -->
+    <!-- <ImageModal :editor /> -->
+    <!-- <YoutubeModal :editor /> -->
   </div>
 </template>
 

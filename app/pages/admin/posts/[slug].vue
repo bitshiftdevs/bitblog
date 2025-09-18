@@ -198,12 +198,12 @@ const loadPost = async () => {
 
 // Lifecycle
 onMounted(async () => {
-  await loadPost();
-  editorStore.enableAutoSave();
+  // await loadPost();
+  // editorStore.enableAutoSave();
 });
 
 onBeforeUnmount(() => {
-  editorStore.disableAutoSave();
+  // editorStore.disableAutoSave();
 });
 
 // Route guards
