@@ -19,38 +19,28 @@ const newComment = ref<Comment>();
 const hasLiked = ref(false);
 
 const fetchPost = async () => {
-  isLoading.value = true;
   try {
-    article = await new Query<Post>('posts')
-      .one()
-      .whereEqualTo('slug', route.params.slug as string)
-      .setJoin()
-      .get();
-    if (article) {
-      metadata.value = {
-        title: article.title,
-        description: article.excerpt,
-        keywords: article.tags || [],
-        type: 'article',
-        ogImage: article.featuredImage,
-        publishedTime: article.publishedAt?.toUTCString(),
-        modifiedTime: article.updatedAt.toUTCString(),
-        author: article.author?.name,
-      };
-      new Query<Post>('posts')
-        .whereEqualTo('status', 'published')
-        .whereIncludes('categories', article.categories[0])
-        .limit(10)
-        .postOverView()
-        .get<Post[]>()
-        .then((posts) => {
-          relatedPosts.value = posts;
-        });
-    }
+    // article = await new Query<Post>('posts')
+    //   .one()
+    //   .whereEqualTo('slug', route.params.slug as string)
+    //   .setJoin()
+    //   .get();
+    // if (article) {
+    //   metadata.value = {
+    //     title: article.title,
+    //     description: article.excerpt,
+    //     keywords: article.tags || [],
+    //     type: 'article',
+    //     ogImage: article.featuredImage,
+    //     publishedTime: article.publishedAt?.toUTCString(),
+    //     modifiedTime: article.updatedAt.toUTCString(),
+    //     author: article.author?.name,
+    //   };
+    // }
   } catch (err) {
-    console.error(err);
+    // console.error(err);
   } finally {
-    isLoading.value = false;
+    // isLoading.value = false;
   }
 };
 onBeforeMount(() => {
@@ -58,14 +48,13 @@ onBeforeMount(() => {
   else article = post;
 });
 const handleLike = () => {
-  if (!hasLiked.value) {
-    article!.likeCount += 1;
-    hasLiked.value = true;
-  } else {
-    article!.likeCount -= 1;
-    hasLiked.value = false;
-  }
-  togglePostLike(article!.slug, hasLiked.value ? 1 : -1);
+  // if (!hasLiked.value) {
+  //   article!.likeCount += 1;
+  //   hasLiked.value = true;
+  // } else {
+  //   article!.likeCount -= 1;
+  //   hasLiked.value = false;
+  // }
 };
 
 const submitComment = () => {

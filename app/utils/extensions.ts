@@ -1,30 +1,29 @@
 import { Node } from '@tiptap/vue-3';
 
-export * from '@tiptap/extension-paragraph';
-export * from '@tiptap/extension-heading';
-export * from '@tiptap/extension-document';
-export * from '@tiptap/extension-text';
-export * from '@tiptap/extension-bullet-list';
+export { Paragraph } from '@tiptap/extension-paragraph';
+export { Heading } from '@tiptap/extension-heading';
+export { Document } from '@tiptap/extension-document';
+export { Text } from '@tiptap/extension-text';
+export { BulletList } from '@tiptap/extension-bullet-list';
 export { OrderedList } from '@tiptap/extension-ordered-list';
-export * from '@tiptap/extension-code-block';
-export * from '@tiptap/extension-list-item';
-export * from '@tiptap/extension-horizontal-rule';
-export * from '@tiptap/extension-typography';
-export * from '@tiptap/starter-kit';
-export * from '@tiptap/extension-underline';
-export * from '@tiptap/extension-link';
+export { CodeBlock } from '@tiptap/extension-code-block';
+export { ListItem } from '@tiptap/extension-list-item';
+export { HorizontalRule } from '@tiptap/extension-horizontal-rule';
+export { Typography } from '@tiptap/extension-typography';
+export { StarterKit } from '@tiptap/starter-kit';
+export { Underline } from '@tiptap/extension-underline';
+export { Link } from '@tiptap/extension-link';
 export { Image } from '@tiptap/extension-image';
-export * from '@tiptap/extension-text-align';
-export * from '@tiptap/extension-placeholder';
-export * from '@tiptap/extension-code-block-lowlight';
-export * from '@tiptap/extension-color';
-export * from '@tiptap/extension-text-style';
+export { TextAlign } from '@tiptap/extension-text-align';
+export { Placeholder } from '@tiptap/extension-placeholder';
+export { CodeBlockLowlight } from '@tiptap/extension-code-block-lowlight';
+export { Color } from '@tiptap/extension-color';
+export { TextStyle } from '@tiptap/extension-text-style';
 export { Highlight } from '@tiptap/extension-highlight';
-export * from '@tiptap/extension-youtube';
-export * from '@tiptap/extension-task-list';
+export { Youtube } from '@tiptap/extension-youtube';
+export { TaskList } from '@tiptap/extension-task-list';
 export { TaskItem } from '@tiptap/extension-task-item';
-export * from '@tiptap/extension-character-count';
-export * from './SlashCommands';
+export { CharacterCount } from '@tiptap/extension-character-count';
 
 // Custom extension for shortcodes
 export const Shortcode = Node.create({

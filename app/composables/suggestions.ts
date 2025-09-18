@@ -2,13 +2,10 @@ import Suggestion from '@tiptap/suggestion';
 import type { Editor } from '@tiptap/vue-3';
 
 import type { TiptapCommandType } from '~~/shared/types';
-import '../utils/extensions';
-import { Modal, useEditorStore } from '@/stores/editorStore';
-
-const editorStore = useEditorStore();
 
 // Command suggestion configuration
-export const suggestions = (editor: Editor) =>
+export const suggestions = (editor: Editor) => {
+  const editorStore = useEditorStore();
   Suggestion({
     editor: editor,
     char: '/',
@@ -310,3 +307,4 @@ export const suggestions = (editor: Editor) =>
       };
     },
   });
+};

@@ -17,7 +17,6 @@ import {
   Youtube,
   TaskList,
   CharacterCount,
-  SlashCommands,
   Shortcode,
   Widget,
 } from './extensions';
@@ -58,7 +57,6 @@ export function useBlogEditor() {
       TextAlign.configure({
         types: ['heading', 'paragraph'],
       }),
-      // SlashCommands,
       Placeholder.configure({
         placeholder: 'Start writing your amazing blog post...',
       }),

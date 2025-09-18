@@ -91,7 +91,7 @@ const handleLogin = async (event: FormSubmitEvent<LoginType>) => {
                 placeholder="Enter your email"
                 required
                 :disabled="isLoading"
-                icon="i-lucide-envelope"
+                icon="i-lucide-mail"
               />
             </UFormField>
           </div>
@@ -104,7 +104,7 @@ const handleLogin = async (event: FormSubmitEvent<LoginType>) => {
                 placeholder="Enter your password"
                 required
                 :disabled="isLoading"
-                icon="i-lucide-lock-closed"
+                icon="i-lucide-lock-keyhole"
               />
             </UFormField>
           </div>

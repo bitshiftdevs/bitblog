@@ -42,7 +42,7 @@
                 placeholder="Enter your email"
                 required
                 :disabled="isLoading"
-                icon="i-lucide-envelope"
+                icon="i-lucide-mail"
               />
             </UFormField>
           </div>
@@ -55,7 +55,7 @@
                 placeholder="Create a password"
                 required
                 :disabled="isLoading"
-                icon="i-lucide-lock-closed"
+                icon="i-lucide-lock-keyhole"
               />
             </UFormField>
           </div>
@@ -68,7 +68,7 @@
                 placeholder="Confirm your password"
                 required
                 :disabled="isLoading"
-                icon="i-lucide-lock-closed"
+                icon="i-lucide-lock-keyhole"
               />
             </UFormField>
           </div>

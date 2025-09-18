@@ -54,7 +54,12 @@ editorStore.$subscribe((mutation, state) => {
     <TipTapTopBar @change-view="changeView" @status-change="updateStatus" />
     <Status :success="success" :error="error" />
 
-    <TipTapPostView v-if="view === 'preview'" :post="editorStore.getPost" />
+    <!-- <TipTapPostView v-if="view === 'preview'" :post="editorStore.getPost" /> -->
+    <div v-if="view === 'preview'" class="flex-1 overflow-auto p-6">
+      <div class="max-w-4xl mx-auto bg-base-200 shadow-md rounded-lg p-6">
+        <!-- <TipTapPostView :post="editorStore.getPost" /> -->
+      </div>
+    </div>
     <div v-else class="flex-1 flex overflow-hidden">
       <TipTapSidebar />
       <section class="flex-1 overflow-auto p-6">

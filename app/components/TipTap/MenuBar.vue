@@ -1,32 +1,21 @@
 <script setup lang="ts">
-import IconBullets from '@/components/icons/IconBullets.vue'
-import IconCenterAlign from '@/components/icons/IconCenterAlign.vue'
-import IconJustifyAlign from '@/components/icons/IconJustifyAlign.vue'
-import IconLeftAlign from '@/components/icons/IconLeftAlign.vue'
-import IconNumbered from '@/components/icons/IconNumbered.vue'
-import IconPallete from '@/components/icons/IconPallete.vue'
-import IconRedo from '@/components/icons/IconRedo.vue'
-import IconRightAlign from '@/components/icons/IconRightAlign.vue'
-import IconStrikeThrough from '@/components/icons/IconStrikeThrough.vue'
-import IconUndo from '@/components/icons/IconUndo.vue'
-import { getTemplate, templates } from '@/lib/utils/templates'
-import { useEditorStore } from '@/stores/editorStore'
-import { computed, watch } from 'vue'
+import { computed, watch } from 'vue';
+import { getTemplate, templates } from '~/utils/templates';
 
-const editorStore = useEditorStore()
+const editorStore = useEditorStore();
 // const { editor } = defineProps<{ editor: Editor }>()
 
-const { editor } = defineProps<{ editor: any }>()
+const { editor } = defineProps<{ editor: any }>();
 watch(
   () => editorStore.content,
   (content) => {
-    editor.commands.setContent(content)
+    editor.commands.setContent(content);
   },
   { once: true },
-)
+);
 
 function insertTemplate(type: string) {
-  editor.commands.insertContent(getTemplate(type))
+  editor.commands.insertContent(getTemplate(type));
 }
 
 const textColors = [
@@ -50,17 +39,17 @@ const textColors = [
   '#0000ff',
   '#9900ff',
   '#ff00ff',
-]
+];
 
 const currentHeading = computed(() => {
-  if (editor.isActive('heading', { level: 1 })) return 1
-  if (editor.isActive('heading', { level: 2 })) return 2
-  if (editor.isActive('heading', { level: 3 })) return 3
-  if (editor.isActive('heading', { level: 4 })) return 4
-  if (editor.isActive('heading', { level: 5 })) return 5
-  if (editor.isActive('heading', { level: 6 })) return 6
-  return null
-})
+  if (editor.isActive('heading', { level: 1 })) return 1;
+  if (editor.isActive('heading', { level: 2 })) return 2;
+  if (editor.isActive('heading', { level: 3 })) return 3;
+  if (editor.isActive('heading', { level: 4 })) return 4;
+  if (editor.isActive('heading', { level: 5 })) return 5;
+  if (editor.isActive('heading', { level: 6 })) return 6;
+  return null;
+});
 
 // const setLink = () => {
 //   const previousUrl = editor.getAttributes('link').href
@@ -101,30 +90,38 @@ const currentHeading = computed(() => {
 // }
 
 const insertTable = () => {
-  editor.chain().focus().insertTable({ rows: 3, cols: 3, withHeaderRow: true }).run()
-}
+  editor
+    .chain()
+    .focus()
+    .insertTable({ rows: 3, cols: 3, withHeaderRow: true })
+    .run();
+};
 
 const insertDivider = () => {
-  editor.chain().focus().setHorizontalRule().run()
-}
+  editor.chain().focus().setHorizontalRule().run();
+};
 
 const insertBlockquote = () => {
-  editor.chain().focus().toggleBlockquote().run()
-}
+  editor.chain().focus().toggleBlockquote().run();
+};
 
 const insertCodeBlock = () => {
-  editor.chain().focus().toggleCodeBlock().run()
-}
+  editor.chain().focus().toggleCodeBlock().run();
+};
 
 const insertSpacer = () => {
   // Custom spacer logic would go here
-  editor.chain().focus().insertContent('<div class="spacer my-8"></div>').run()
-}
+  editor.chain().focus().insertContent('<div class="spacer my-8"></div>').run();
+};
 
 const insertButton = () => {
   // Custom button insertion logic
-  editor.chain().focus().insertContent('<a class="btn btn-primary">Button Text</a>').run()
-}
+  editor
+    .chain()
+    .focus()
+    .insertContent('<a class="btn btn-primary">Button Text</a>')
+    .run();
+};
 
 const insertAccordion = () => {
   // Custom accordion insertion logic
@@ -144,8 +141,8 @@ const insertAccordion = () => {
     </div>
   `,
     )
-    .run()
-}
+    .run();
+};
 
 const insertTabs = () => {
   // Custom tabs insertion logic
@@ -162,47 +159,81 @@ const insertTabs = () => {
     <div class="p-4 bg-base-100 rounded-lg">Tab content here</div>
   `,
     )
-    .run()
-}
+    .run();
+};
 </script>
 <template>
-  <div class="editor-menu-bar border-b border-success bg-neutral-50 p-2 flex flex-wrap gap-1 sticky top-0 z-10">
+  <div
+    class="editor-menu-bar border-b border-success bg-neutral-50 p-2 flex flex-wrap gap-1 sticky top-0 z-10"
+  >
     <!-- Basic Text Formatting -->
     <div class="flex space-x-1">
-      <button class="btn btn-sm" :class="{ 'btn-primary': editor.isActive('bold') }"
-        @click="editor.chain().focus().toggleBold().run()" title="Bold">
+      <button
+        class="btn btn-sm"
+        :class="{ 'btn-primary': editor.isActive('bold') }"
+        @click="editor.chain().focus().toggleBold().run()"
+        title="Bold"
+      >
         <i class="fas fa-bold">B</i>
       </button>
-      <button class="btn btn-sm" :class="{ 'btn-primary': editor.isActive('italic') }"
-        @click="editor.chain().focus().toggleItalic().run()" title="Italic">
+      <button
+        class="btn btn-sm"
+        :class="{ 'btn-primary': editor.isActive('italic') }"
+        @click="editor.chain().focus().toggleItalic().run()"
+        title="Italic"
+      >
         <i class="fas fa-italic">I</i>
       </button>
-      <button class="btn btn-sm" :class="{ 'btn-primary': editor.isActive('underline') }"
-        @click="editor.chain().focus().toggleUnderline().run()" title="Underline">
+      <button
+        class="btn btn-sm"
+        :class="{ 'btn-primary': editor.isActive('underline') }"
+        @click="editor.chain().focus().toggleUnderline().run()"
+        title="Underline"
+      >
         <i class="fas fa-underline">U</i>
       </button>
-      <button class="btn btn-sm p-2" :class="{ 'btn-primary': editor.isActive('strike') }"
-        @click="editor.chain().focus().toggleStrike().run()" title="Strike">
+      <button
+        class="btn btn-sm p-2"
+        :class="{ 'btn-primary': editor.isActive('strike') }"
+        @click="editor.chain().focus().toggleStrike().run()"
+        title="Strike"
+      >
         <IconStrikeThrough />
       </button>
     </div>
 
     <!-- Text Alignment -->
     <div class="flex space-x-1">
-      <button class="btn btn-sm p-2" :class="{ 'btn-primary': editor.isActive({ textAlign: 'left' }) }"
-        @click="editor.chain().focus().setTextAlign('left').run()" title="Align Left">
+      <button
+        class="btn btn-sm p-2"
+        :class="{ 'btn-primary': editor.isActive({ textAlign: 'left' }) }"
+        @click="editor.chain().focus().setTextAlign('left').run()"
+        title="Align Left"
+      >
         <IconLeftAlign />
       </button>
-      <button class="btn btn-sm p-2" :class="{ 'btn-primary': editor.isActive({ textAlign: 'center' }) }"
-        @click="editor.chain().focus().setTextAlign('center').run()" title="Align Center">
+      <button
+        class="btn btn-sm p-2"
+        :class="{ 'btn-primary': editor.isActive({ textAlign: 'center' }) }"
+        @click="editor.chain().focus().setTextAlign('center').run()"
+        title="Align Center"
+      >
         <IconCenterAlign />
       </button>
-      <button class="btn btn-sm p-2" :class="{ 'btn-primary': editor.isActive({ textAlign: 'right' }) }"
-        @click="editor.chain().focus().setTextAlign('right').run()" title="Align Right">
+      <button
+        class="btn btn-sm p-2"
+        :class="{ 'btn-primary': editor.isActive({ textAlign: 'right' }) }"
+        @click="editor.chain().focus().setTextAlign('right').run()"
+        title="Align Right"
+      >
         <IconRightAlign />
       </button>
-      <button class="btn btn-sm p-2" :class="{ 'btn-primary': editor.isActive({ textAlign: 'justify' }) }"
-        @click="editor.chain().focus().setTextAlign('justify').run()" title="Justify">
+      <button
+        class="btn btn-sm p-2"
+        :class="{ 'btn-primary': editor.isActive({ textAlign: 'justify' }) }"
+        @click="editor.chain().focus().setTextAlign('justify').run()"
+        title="Justify"
+      >
         <IconJustifyAlign />
       </button>
     </div>
@@ -215,14 +246,43 @@ const insertTabs = () => {
         <span v-if="currentHeading">H{{ currentHeading }}</span>
         <span v-else>Paragraph</span>
       </label>
-      <ul tabindex="0" class="dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box w-52">
-        <li><a @click="editor.chain().focus().setParagraph().run()">Paragraph</a></li>
-        <li><a @click="editor.chain().focus().toggleHeading({ level: 1 }).run()">Heading 1</a></li>
-        <li><a @click="editor.chain().focus().toggleHeading({ level: 2 }).run()">Heading 2</a></li>
-        <li><a @click="editor.chain().focus().toggleHeading({ level: 3 }).run()">Heading 3</a></li>
-        <li><a @click="editor.chain().focus().toggleHeading({ level: 4 }).run()">Heading 4</a></li>
-        <li><a @click="editor.chain().focus().toggleHeading({ level: 5 }).run()">Heading 5</a></li>
-        <li><a @click="editor.chain().focus().toggleHeading({ level: 6 }).run()">Heading 6</a></li>
+      <ul
+        tabindex="0"
+        class="dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box w-52"
+      >
+        <li>
+          <a @click="editor.chain().focus().setParagraph().run()">Paragraph</a>
+        </li>
+        <li>
+          <a @click="editor.chain().focus().toggleHeading({ level: 1 }).run()"
+            >Heading 1</a
+          >
+        </li>
+        <li>
+          <a @click="editor.chain().focus().toggleHeading({ level: 2 }).run()"
+            >Heading 2</a
+          >
+        </li>
+        <li>
+          <a @click="editor.chain().focus().toggleHeading({ level: 3 }).run()"
+            >Heading 3</a
+          >
+        </li>
+        <li>
+          <a @click="editor.chain().focus().toggleHeading({ level: 4 }).run()"
+            >Heading 4</a
+          >
+        </li>
+        <li>
+          <a @click="editor.chain().focus().toggleHeading({ level: 5 }).run()"
+            >Heading 5</a
+          >
+        </li>
+        <li>
+          <a @click="editor.chain().focus().toggleHeading({ level: 6 }).run()"
+            >Heading 6</a
+          >
+        </li>
       </ul>
     </div>
 
@@ -230,12 +290,20 @@ const insertTabs = () => {
 
     <!-- Lists -->
     <div class="flex space-x-1">
-      <button class="btn btn-sm p-2" :class="{ 'btn-primary': editor.isActive('bulletList') }"
-        @click="editor.chain().focus().toggleBulletList().run()" title="Bullet List">
+      <button
+        class="btn btn-sm p-2"
+        :class="{ 'btn-primary': editor.isActive('bulletList') }"
+        @click="editor.chain().focus().toggleBulletList().run()"
+        title="Bullet List"
+      >
         <IconBullets />
       </button>
-      <button class="btn btn-sm p-2" :class="{ 'btn-primary': editor.isActive('orderedList') }"
-        @click="editor.chain().focus().toggleOrderedList().run()" title="Numbered List">
+      <button
+        class="btn btn-sm p-2"
+        :class="{ 'btn-primary': editor.isActive('orderedList') }"
+        @click="editor.chain().focus().toggleOrderedList().run()"
+        title="Numbered List"
+      >
         <IconNumbered />
       </button>
     </div>
@@ -260,7 +328,10 @@ const insertTabs = () => {
     <!-- Advanced Features -->
     <div class="dropdown dropdown-hover">
       <label tabindex="0" class="btn btn-sm"> Insert Block </label>
-      <ul tabindex="0" class="dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box w-52">
+      <ul
+        tabindex="0"
+        class="dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box w-52"
+      >
         <li><a @click="insertTable">Table</a></li>
         <li><a @click="insertDivider">Divider</a></li>
         <li><a @click="insertBlockquote">Blockquote</a></li>
@@ -277,24 +348,44 @@ const insertTabs = () => {
       <label tabindex="0" class="btn btn-sm">
         <IconPallete />
       </label>
-      <div tabindex="0" class="dropdown-content z-[1] p-2 shadow bg-base-100 rounded-box w-52">
+      <div
+        tabindex="0"
+        class="dropdown-content z-[1] p-2 shadow bg-base-100 rounded-box w-52"
+      >
         <div class="grid grid-cols-5 gap-1">
-          <button v-for="color in textColors" :key="color" class="w-6 h-6 rounded-full"
-            :style="{ backgroundColor: color }" @click="editor.chain().focus().setColor(color).run()"></button>
+          <button
+            v-for="color in textColors"
+            :key="color"
+            class="w-6 h-6 rounded-full"
+            :style="{ backgroundColor: color }"
+            @click="editor.chain().focus().setColor(color).run()"
+          ></button>
         </div>
       </div>
     </div>
 
     <div class="dropdown dropdown-hover">
-      <label for="templates" class="btn btn-sm"><svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1"
-          viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-          stroke-linejoin="round">
+      <label for="templates" class="btn btn-sm"
+        ><svg
+          xmlns="http://www.w3.org/2000/svg"
+          class="h-4 w-4 mr-1"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
           <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
           <line x1="9" y1="3" x2="9" y2="21"></line>
         </svg>
-        Templates</label>
+        Templates</label
+      >
 
-      <ul tabindex="0" class="dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box w-52">
+      <ul
+        tabindex="0"
+        class="dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box w-52"
+      >
         <li v-for="t in templates">
           <a @click="insertTemplate(t)">{{ t }}</a>
         </li>
@@ -303,12 +394,20 @@ const insertTabs = () => {
 
     <!-- Undo/Redo -->
     <div class="flex space-x-1 ml-auto">
-      <button class="btn btn-sm p-2" @click="editor.chain().focus().undo().run()" :disabled="!editor.can().undo()"
-        title="Undo">
+      <button
+        class="btn btn-sm p-2"
+        @click="editor.chain().focus().undo().run()"
+        :disabled="!editor.can().undo()"
+        title="Undo"
+      >
         <IconUndo />
       </button>
-      <button class="btn btn-sm p-2" @click="editor.chain().focus().redo().run()" :disabled="!editor.can().redo()"
-        title="Redo">
+      <button
+        class="btn btn-sm p-2"
+        @click="editor.chain().focus().redo().run()"
+        :disabled="!editor.can().redo()"
+        title="Redo"
+      >
         <IconRedo />
       </button>
     </div>
