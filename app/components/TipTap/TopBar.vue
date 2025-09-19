@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import type { NavigationMenuItem } from '@nuxt/ui';
 import type { EditorView } from '~~/shared/types';
+
 const editorStore = useEditorStore();
 const seoStore = useSeoStore();
 const auth = useAuth();
@@ -86,7 +87,9 @@ const items: NavigationMenuItem[][] = [
 </script>
 
 <template>
-  <UDashboardToolbar>
-    <UNavigationMenu :items="items" highlight class="flex-1" />
-  </UDashboardToolbar>
+  <header>
+    <UDashboardToolbar>
+      <UNavigationMenu :items="items" highlight class="flex-1" />
+    </UDashboardToolbar>
+  </header>
 </template>

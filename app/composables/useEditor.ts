@@ -1,39 +1,40 @@
-import { useEditor, type AnyExtension } from '@tiptap/vue-3';
-import Focus from '@tiptap/extension-focus';
-import { common } from 'lowlight';
-const { lowlight } = common;
 import {
-  StarterKit,
-  Image,
-  Highlight,
-  TaskItem,
-  TextAlign,
-  Placeholder,
-  TextStyle,
-  Color,
-  Youtube,
-  TaskList,
-  CharacterCount,
-  Shortcode,
-  Widget,
-} from '~/utils/extensions';
+  mergeAttributes,
+  useEditor,
+  VueRenderer,
+  type AnyExtension,
+} from '@tiptap/vue-3';
+import { useTippy } from 'vue-tippy';
+import SuggestionList from '~/components/TipTap/SuggestionList.vue';
 import TOC from '~/utils/TOCExtension';
+
+function updatePopup(
+  popup: ReturnType<typeof useTippy>,
+  component: VueRenderer,
+  props: any,
+) {
+  component.updateProps(props);
+  popup.setProps({
+    getReferenceClientRect: props.clientRect as () => DOMRect,
+    content: component.el?.getHTML(),
+  });
+}
 
 export function useBlogEditor() {
   const editorStore = useEditorStore();
-  let editor = useEditor({
+  const editor = useEditor({
     extensions: [
       StarterKit.configure({
         heading: {
           levels: [1, 2, 3, 4, 5, 6],
         },
       }) as AnyExtension,
-      // SlashCommands,
+      MentionExtension,
+      SlashCommands,
       TOC.configure({
         levels: [1, 2, 3],
         updateEvent: 'update:toc',
       }),
-      // Underline,
       // BubbleMenu.configure({
       //   element: document.querySelector('#bubblemenu') as any,
       //   shouldShow: ({ editor, view, state, oldState, from, to }) => {
@@ -47,7 +48,7 @@ export function useBlogEditor() {
       //     class: 'text-primary underline',
       //   },
       // }),
-      Image.configure({
+      TipTapImage.configure({
         allowBase64: true,
         inline: true,
       }),

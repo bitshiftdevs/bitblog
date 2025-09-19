@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import type { DropdownMenuItem } from '@nuxt/ui';
 import type { Editor } from '@tiptap/vue-3';
 import { computed, watch } from 'vue';
 import { getTemplate, templates } from '~/utils/templates';
@@ -6,6 +7,19 @@ import { getTemplate, templates } from '~/utils/templates';
 const editorStore = useEditorStore();
 // const blog = useBlogEditor();
 const { editor } = defineProps<{ editor: Editor }>();
+
+const blockItems: DropdownMenuItem[] = [
+  { label: 'Table', onSelect: () => insertTable() },
+  { label: 'Divider', onSelect: () => insertDivider() },
+  { label: 'Blockquote', onSelect: () => insertBlockquote() },
+  { label: 'Code Block', onSelect: () => insertCodeBlock() },
+  { label: 'Spacer', onSelect: () => insertSpacer() },
+  { label: 'Button', onSelect: () => insertButton() },
+  { label: 'Accordion', onSelect: () => insertAccordion() },
+  { label: 'Tabs', onSelect: () => insertTabs() },
+];
+
+const colorItems: any = [];
 
 watch(
   () => editorStore.content,
@@ -133,7 +147,7 @@ const insertAccordion = () => {
       `
     <div class="collapse collapse-arrow border border-base-300 bg-base-100 rounded-box">
       <input type="checkbox" />
-      <div class="collapse-title text-xl font-medium">
+      <div class="collapse-icon text-xl font-medium">
         Click to open/close
       </div>
       <div class="collapse-content">
@@ -164,160 +178,92 @@ const insertTabs = () => {
 };
 </script>
 <template>
-  <UContainer>
+  <UContainer class="flex border rounded-2xl">
     <!-- Basic Text Formatting -->
     <div class="flex space-x-1">
-      <button
-        class="btn btn-sm"
-        :class="{ 'btn-primary': editor.isActive('bold') }"
+      <UButton
+        :variant="editor.isActive('bold') ? 'solid' : 'soft'"
         @click="editor.chain().focus().toggleBold().run()"
-        title="Bold"
-      >
-        <i class="fas fa-bold">B</i>
-      </button>
-      <button
-        class="btn btn-sm"
-        :class="{ 'btn-primary': editor.isActive('italic') }"
+        icon="i-lucide-bold"
+      />
+      <UButton
+        :variant="editor.isActive('italic') ? 'solid' : 'soft'"
         @click="editor.chain().focus().toggleItalic().run()"
-        title="Italic"
-      >
-        <i class="fas fa-italic">I</i>
-      </button>
-      <button
-        class="btn btn-sm"
-        :class="{ 'btn-primary': editor.isActive('underline') }"
+        icon="i-lucide-italic"
+      />
+      <UButton
+        :variant="editor.isActive('underline') ? 'solid' : 'soft'"
         @click="editor.chain().focus().toggleUnderline().run()"
-        title="Underline"
-      >
-        <i class="fas fa-underline">U</i>
-      </button>
-      <button
-        class="btn btn-sm p-2"
-        :class="{ 'btn-primary': editor.isActive('strike') }"
+        icon="i-lucide-underline"
+      />
+      <UButton
+        :variant="editor.isActive('strike') ? 'solid' : 'soft'"
         @click="editor.chain().focus().toggleStrike().run()"
-        title="Strike"
-      >
-        <IconStrikeThrough />
-      </button>
+        icon="i-lucide-strikethrough"
+      />
     </div>
 
     <!-- Text Alignment -->
     <div class="flex space-x-1">
-      <button
-        class="btn btn-sm p-2"
-        :class="{ 'btn-primary': editor.isActive({ textAlign: 'left' }) }"
+      <UButton
+        :variant="editor.isActive({ textAlign: 'left' }) ? 'solid' : 'soft'"
         @click="editor.chain().focus().setTextAlign('left').run()"
-        title="Align Left"
-      >
-        <IconLeftAlign />
-      </button>
-      <button
-        class="btn btn-sm p-2"
-        :class="{ 'btn-primary': editor.isActive({ textAlign: 'center' }) }"
+        icon="i-lucide-align-left"
+      />
+      <UButton
+        :variant="editor.isActive({ textAlign: 'center' }) ? 'solid' : 'soft'"
         @click="editor.chain().focus().setTextAlign('center').run()"
-        title="Align Center"
-      >
-        <IconCenterAlign />
-      </button>
-      <button
-        class="btn btn-sm p-2"
-        :class="{ 'btn-primary': editor.isActive({ textAlign: 'right' }) }"
+        icon="i-lucide-text-align-center"
+      />
+      <UButton
+        :variant="editor.isActive({ textAlign: 'right' }) ? 'solid' : 'soft'"
         @click="editor.chain().focus().setTextAlign('right').run()"
-        title="Align Right"
-      >
-        <IconRightAlign />
-      </button>
-      <button
-        class="btn btn-sm p-2"
-        :class="{ 'btn-primary': editor.isActive({ textAlign: 'justify' }) }"
+        icon="i-lucide-align-right"
+      />
+      <UButton
+        :variant="editor.isActive({ textAlign: 'justify' }) ? 'solid' : 'soft'"
         @click="editor.chain().focus().setTextAlign('justify').run()"
-        title="Justify"
-      >
-        <IconJustifyAlign />
-      </button>
+        icon="i-lucide-text-align-justify"
+      />
     </div>
 
     <div class="divider divider-horizontal mx-1"></div>
 
     <!-- Heading Levels -->
-    <div class="dropdown dropdown-hover">
+    <UDropdownMenu>
       <label tabindex="0" class="btn btn-sm">
         <span v-if="currentHeading">H{{ currentHeading }}</span>
         <span v-else>Paragraph</span>
       </label>
-      <ul
-        tabindex="0"
-        class="dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box w-52"
-      >
-        <li>
-          <a @click="editor.chain().focus().setParagraph().run()">Paragraph</a>
-        </li>
-        <li>
-          <a @click="editor.chain().focus().toggleHeading({ level: 1 }).run()"
-            >Heading 1</a
-          >
-        </li>
-        <li>
-          <a @click="editor.chain().focus().toggleHeading({ level: 2 }).run()"
-            >Heading 2</a
-          >
-        </li>
-        <li>
-          <a @click="editor.chain().focus().toggleHeading({ level: 3 }).run()"
-            >Heading 3</a
-          >
-        </li>
-        <li>
-          <a @click="editor.chain().focus().toggleHeading({ level: 4 }).run()"
-            >Heading 4</a
-          >
-        </li>
-        <li>
-          <a @click="editor.chain().focus().toggleHeading({ level: 5 }).run()"
-            >Heading 5</a
-          >
-        </li>
-        <li>
-          <a @click="editor.chain().focus().toggleHeading({ level: 6 }).run()"
-            >Heading 6</a
-          >
-        </li>
-      </ul>
-    </div>
+    </UDropdownMenu>
 
     <div class="divider divider-horizontal mx-1"></div>
 
     <!-- Lists -->
     <div class="flex space-x-1">
-      <button
-        class="btn btn-sm p-2"
-        :class="{ 'btn-primary': editor.isActive('bulletList') }"
+      <UButton
+        :variant="editor.isActive('bulletList') ? 'solid' : 'soft'"
         @click="editor.chain().focus().toggleBulletList().run()"
-        title="Bullet List"
-      >
-        <IconBullets />
-      </button>
-      <button
-        class="btn btn-sm p-2"
-        :class="{ 'btn-primary': editor.isActive('orderedList') }"
+        icon="i-lucide-list"
+      />
+      <UButton
+        :variant="editor.isActive('orderedList') ? 'solid' : 'soft'"
         @click="editor.chain().focus().toggleOrderedList().run()"
-        title="Numbered List"
-      >
-        <IconNumbered />
-      </button>
+        icon="i-lucide-list-ordered"
+      />
     </div>
 
     <div class="divider divider-horizontal mx-1"></div>
 
     <!-- Links and Media -->
     <!-- <div class="flex space-x-1"> -->
-    <!--   <button class="btn btn-sm" :class="{ 'btn-primary': editor.isActive('link') }" @click="setLink" title="Add Link"> -->
+    <!--   <UButton class="btn btn-sm" :class="{ 'btn-primary': editor.isActive('link') }" @click="setLink" icon="Add Link"> -->
     <!--     <i class="fas fa-link"></i> -->
     <!--   </button> -->
-    <!--   <button class="btn btn-sm" @click="addImage" title="Add Image"> -->
+    <!--   <UButton class="btn btn-sm" @click="addImage" icon="Add Image"> -->
     <!--     <i class="fas fa-image"></i> -->
     <!--   </button> -->
-    <!--   <button class="btn btn-sm" @click="addVideo" title="Add Video"> -->
+    <!--   <UButton class="btn btn-sm" @click="addVideo" icon="Add Video"> -->
     <!--     <i class="fas fa-video"></i> -->
     <!--   </button> -->
     <!-- </div> -->
@@ -325,86 +271,27 @@ const insertTabs = () => {
     <!-- <div class="divider divider-horizontal mx-1"></div> -->
 
     <!-- Advanced Features -->
-    <div class="dropdown dropdown-hover">
+    <UDropdownMenu :items="blockItems">
       <label tabindex="0" class="btn btn-sm"> Insert Block </label>
-      <ul
-        tabindex="0"
-        class="dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box w-52"
-      >
-        <li><a @click="insertTable">Table</a></li>
-        <li><a @click="insertDivider">Divider</a></li>
-        <li><a @click="insertBlockquote">Blockquote</a></li>
-        <li><a @click="insertCodeBlock">Code Block</a></li>
-        <li><a @click="insertSpacer">Spacer</a></li>
-        <li><a @click="insertButton">Button</a></li>
-        <li><a @click="insertAccordion">Accordion</a></li>
-        <li><a @click="insertTabs">Tabs</a></li>
-      </ul>
-    </div>
+    </UDropdownMenu>
 
     <!-- Color Picker -->
-    <div class="dropdown dropdown-hover">
-      <label tabindex="0" class="btn btn-sm">
-        <IconPallete />
-      </label>
-      <div
-        tabindex="0"
-        class="dropdown-content z-[1] p-2 shadow bg-base-100 rounded-box w-52"
-      >
-        <div class="grid grid-cols-5 gap-1">
-          <button
-            v-for="color in textColors"
-            :key="color"
-            class="w-6 h-6 rounded-full"
-            :style="{ backgroundColor: color }"
-            @click="editor.chain().focus().setColor(color).run()"
-          ></button>
-        </div>
-      </div>
-    </div>
-
-    <div class="dropdown dropdown-hover">
-      <label for="templates" class="btn btn-sm"
-        ><svg
-          xmlns="http://www.w3.org/2000/svg"
-          class="h-4 w-4 mr-1"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          stroke-width="2"
-          stroke-linecap="round"
-          stroke-linejoin="round"
-        >
-          <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
-          <line x1="9" y1="3" x2="9" y2="21"></line>
-        </svg>
-        Templates</label
-      >
-
-      <ul
-        tabindex="0"
-        class="dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box w-52"
-      >
-        <li v-for="t in templates">
-          <a @click="insertTemplate(t)">{{ t }}</a>
-        </li>
-      </ul>
-    </div>
+    <UDropdownMenu :items="colorItems">
+      <UIcon name="i-lucide-paint-bucket" />
+    </UDropdownMenu>
 
     <!-- Undo/Redo -->
     <div class="flex space-x-1 ml-auto">
       <UButton
-        class="btn btn-sm p-2"
+        :variant="editor.can().undo() ? 'solid' : 'soft'"
         @click="editor.chain().focus().undo().run()"
         :disabled="!editor.can().undo()"
-        title="Undo"
         icon="i-lucide-undo-dot"
       />
       <UButton
-        class="btn btn-sm p-2"
+        :variant="editor.can().redo() ? 'solid' : 'soft'"
         @click="editor.chain().focus().redo().run()"
         :disabled="!editor.can().redo()"
-        title="Redo"
         icon="i-lucide-redo-dot"
       />
     </div>

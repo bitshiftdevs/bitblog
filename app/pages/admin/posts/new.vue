@@ -2,6 +2,7 @@
 import { MutationType } from 'pinia';
 import type { EditorView } from '~~/shared/types';
 
+definePageMeta({ layout: 'editor' });
 const editorStore = useEditorStore();
 const blog = useBlogEditor();
 const { analyzeSeo } = useSeo();
@@ -35,8 +36,6 @@ editorStore.$subscribe((mutation, state) => {
 
 <template>
   <div class="flex flex-col" :class="view !== 'preview' && 'h-screen'">
-    <TipTapTopBar @change-view="changeView" />
-
     <!-- <TipTapPostView v-if="view === 'preview'" :post="editorStore.getPost" /> -->
     <div v-if="view === 'preview'" class="flex-1 overflow-auto p-6">
       <div class="max-w-4xl mx-auto bg-base-200 shadow-md rounded-lg p-6">
@@ -47,10 +46,7 @@ editorStore.$subscribe((mutation, state) => {
       <TipTapSidebar />
       <section class="flex-1 overflow-auto p-6">
         <div class="max-w-4xl mx-auto bg-base-200 shadow-md rounded-lg">
-          <TipTapContent
-            :editor="blog.editor.value!"
-            v-if="view === 'editor' && blog.editor"
-          />
+          <TipTapContent v-if="view === 'editor'" />
           <pre
             v-else-if="view === 'code'"
           ><code>{{ editorStore.content }}</code></pre>

@@ -13,17 +13,19 @@ export { Typography } from '@tiptap/extension-typography';
 export { StarterKit } from '@tiptap/starter-kit';
 export { Underline } from '@tiptap/extension-underline';
 export { Link } from '@tiptap/extension-link';
-export { Image } from '@tiptap/extension-image';
+export { Image as TipTapImage } from '@tiptap/extension-image';
 export { TextAlign } from '@tiptap/extension-text-align';
 export { Placeholder } from '@tiptap/extension-placeholder';
 export { CodeBlockLowlight } from '@tiptap/extension-code-block-lowlight';
 export { Color } from '@tiptap/extension-color';
 export { TextStyle } from '@tiptap/extension-text-style';
+export { Focus } from '@tiptap/extension-focus';
 export { Highlight } from '@tiptap/extension-highlight';
 export { Youtube } from '@tiptap/extension-youtube';
 export { TaskList } from '@tiptap/extension-task-list';
 export { TaskItem } from '@tiptap/extension-task-item';
 export { CharacterCount } from '@tiptap/extension-character-count';
+export { Mention } from '@tiptap/extension-mention';
 
 // Custom extension for shortcodes
 export const Shortcode = Node.create({

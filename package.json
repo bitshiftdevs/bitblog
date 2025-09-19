@@ -55,6 +55,7 @@
     "@tiptap/extension-image": "^3.4.4",
     "@tiptap/extension-link": "^3.4.4",
     "@tiptap/extension-list-item": "^3.4.4",
+    "@tiptap/extension-mention": "^3.4.4",
     "@tiptap/extension-ordered-list": "^3.4.4",
     "@tiptap/extension-paragraph": "^3.4.4",
     "@tiptap/extension-placeholder": "^3.4.4",
@@ -72,6 +73,7 @@
     "lowlight": "^3.3.0",
     "prisma": "6.16.1",
     "ts-node": "^10.9.2",
-    "tsx": "^4.20.5"
+    "tsx": "^4.20.5",
+    "vue-tippy": "^6.7.1"
   }
 }

@@ -7,8 +7,8 @@ const blog = useBlogEditor();
 </script>
 
 <template>
-  <div class="editor-container" v-if="blog.editor">
-    <div class="px-4 py-3 border-b border-gray-200">
+  <div class="editor-container" v-if="blog.editor.value">
+    <div class="px-4 py-3">
       <input
         v-model="editorStore.title"
         class="w-full text-3xl font-bold outline-none input input-xl"
@@ -16,7 +16,7 @@ const blog = useBlogEditor();
       />
     </div>
 
-    <TipTapMenuBar :editor="blog.editor.value!" />
+    <TipTapMenuBar :editor="blog.editor.value" />
     <TipTapTOC
       :editor="blog.editor.value!"
       title="Table Of Content"
