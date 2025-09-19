@@ -44,6 +44,9 @@ export const useSeoStore = defineStore('seo', {
       improvements: [],
     },
   }),
+  getters: {
+    score: (state) => state.seoScore,
+  },
   actions: {
     updateMetaTitle(title: string) {
       this.metaTitle = title;

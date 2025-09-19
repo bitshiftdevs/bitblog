@@ -1,208 +1,191 @@
 <template>
-  <!-- Mobile sidebar overlay -->
-  <div
-    v-if="isOpen"
-    class="fixed inset-0 bg-gray-600 bg-opacity-75 z-30 lg:hidden"
-    @click="$emit('close')"
-  />
-
   <!-- Sidebar -->
-  <div
-    class="fixed inset-y-0 left-0 z-40 w-64 bg-gray-900 transform transition-transform duration-300 ease-in-out lg:translate-x-0 lg:static lg:inset-0"
-    :class="isOpen ? 'translate-x-0' : '-translate-x-full'"
-  >
-    <div class="flex flex-col h-full">
-      <!-- Logo -->
-      <div class="flex items-center justify-between h-16 px-4 bg-gray-800">
-        <NuxtLink to="/admin" class="flex items-center space-x-2">
-          <div
-            class="h-8 w-8 bg-primary-600 rounded-md flex items-center justify-center"
-          >
-            <UIcon name="i-lucide-settings" class="h-5 w-5 text-white" />
-          </div>
-          <span class="text-white font-semibold">Admin Panel</span>
-        </NuxtLink>
-
-        <UButton
-          variant="ghost"
-          size="sm"
-          icon="i-lucide-x"
-          class="lg:hidden text-gray-400 hover:text-white"
-          @click="$emit('close')"
-        />
-      </div>
-
-      <!-- Navigation -->
-      <nav class="flex-1 px-2 py-4 space-y-1 overflow-y-auto">
-        <!-- Dashboard -->
-        <SidebarItem
-          to="/admin"
-          icon="i-lucide-home"
-          label="Dashboard"
-          :exact="true"
-        />
-
-        <!-- Content Management -->
-        <SidebarSection title="Content">
-          <SidebarItem
-            to="/admin/posts"
-            icon="i-lucide-notebook-text"
-            label="Posts"
-            :badge="postStats.draft > 0 ? postStats.draft : undefined"
-          />
-
-          <SidebarItem
-            to="/admin/pages"
-            icon="i-lucide-file-text"
-            label="Pages"
-          />
-
-          <SidebarItem
-            to="/admin/categories"
-            icon="i-lucide-folder"
-            label="Categories"
-          />
-
-          <SidebarItem to="/admin/tags" icon="i-lucide-tag" label="Tags" />
-        </SidebarSection>
-
-        <!-- Media -->
-        <SidebarSection title="Media">
-          <SidebarItem
-            to="/admin/media"
-            icon="i-lucide-image"
-            label="Media Library"
-          />
-        </SidebarSection>
-
-        <!-- Engagement -->
-        <SidebarSection title="Engagement">
-          <SidebarItem
-            to="/admin/comments"
-            icon="i-lucide-message-circle-dashed"
-            label="Comments"
-            :badge="commentStats.pending > 0 ? commentStats.pending : undefined"
-          />
-
-          <SidebarItem
-            to="/admin/newsletter"
-            icon="i-lucide-mail-check"
-            label="Newsletter"
-          />
-        </SidebarSection>
-
-        <!-- Users (Admin only) -->
-        <SidebarSection v-if="canManageUsers" title="Users">
-          <SidebarItem
-            to="/admin/users"
-            icon="i-lucide-users"
-            label="All Users"
-          />
-
-          <SidebarItem
-            to="/admin/roles"
-            icon="i-lucide-shield-check"
-            label="Roles & Permissions"
-          />
-
-          <SidebarItem
-            to="/admin/invitations"
-            icon="i-lucide-user-plus"
-            label="Invitations"
-            :badge="
-              invitationStats.pending > 0 ? invitationStats.pending : undefined
-            "
-          />
-        </SidebarSection>
-
-        <!-- Analytics -->
-        <SidebarSection title="Analytics">
-          <SidebarItem
-            to="/admin/analytics"
-            icon="i-lucide-bar-chart-3"
-            label="Analytics"
-          />
-
-          <SidebarItem
-            to="/admin/reports"
-            icon="i-lucide-file-chart-line"
-            label="Reports"
-          />
-        </SidebarSection>
-
-        <!-- Settings (Admin only) -->
-        <SidebarSection v-if="canManageSettings" title="Settings">
-          <SidebarItem
-            to="/admin/settings"
-            icon="i-lucide-settings"
-            label="Site Settings"
-          />
-
-          <SidebarItem
-            to="/admin/settings/seo"
-            icon="i-lucide-magnifying-glass"
-            label="SEO Settings"
-          />
-
-          <SidebarItem
-            to="/admin/settings/integrations"
-            icon="i-lucide-puzzle-piece"
-            label="Integrations"
-          />
-        </SidebarSection>
-
-        <!-- System -->
-        <SidebarSection v-if="canManageSystem" title="System">
-          <SidebarItem
-            to="/admin/audit-logs"
-            icon="i-lucide-clipboard-document-list"
-            label="Audit Logs"
-          />
-
-          <SidebarItem
-            to="/admin/backups"
-            icon="i-lucide-archive-box"
-            label="Backups"
-          />
-        </SidebarSection>
-      </nav>
-
-      <!-- User info -->
-      <div class="flex-shrink-0 border-t border-gray-700 p-4">
-        <div class="flex items-center">
-          <UAvatar :src="user?.avatarUrl" :alt="user?.name" size="sm" />
-          <div class="ml-3 flex-1 min-w-0">
-            <p class="text-sm font-medium text-white truncate">
-              {{ user?.name }}
-            </p>
-            <p class="text-xs text-gray-400 truncate">{{ user?.email }}</p>
-          </div>
-
-          <UDropdownMenu
-            :items="userMenuItems"
-            :popper="{ placement: 'top-end' }"
-          >
-            <UButton
-              variant="ghost"
-              size="sm"
-              icon="i-lucide-ellipsis-vertical"
-              class="text-gray-400 hover:text-white"
-            />
-          </UDropdownMenu>
+  <UDashboardSidebar collapsible resizable>
+    <!-- Logo -->
+    <div class="flex items-center justify-between h-16 px-4 bg-gray-800">
+      <NuxtLink to="/admin" class="flex items-center space-x-2">
+        <div
+          class="h-8 w-8 bg-primary-600 rounded-md flex items-center justify-center"
+        >
+          <UIcon name="i-lucide-settings" class="h-5 w-5 text-white" />
         </div>
+        <span class="text-white font-semibold">Admin Panel</span>
+      </NuxtLink>
+
+      <UButton
+        variant="ghost"
+        size="sm"
+        icon="i-lucide-x"
+        class="lg:hidden text-gray-400 hover:text-white"
+        @click="$emit('close')"
+      />
+    </div>
+
+    <!-- Navigation -->
+    <nav class="flex-1 px-2 py-4 space-y-1 overflow-y-auto">
+      <!-- Dashboard -->
+      <SidebarItem
+        to="/admin"
+        icon="i-lucide-home"
+        label="Dashboard"
+        :exact="true"
+      />
+
+      <!-- Content Management -->
+      <SidebarSection title="Content">
+        <SidebarItem
+          to="/admin/posts"
+          icon="i-lucide-notebook-text"
+          label="Posts"
+          :badge="postStats.draft > 0 ? postStats.draft : undefined"
+        />
+
+        <SidebarItem
+          to="/admin/pages"
+          icon="i-lucide-file-text"
+          label="Pages"
+        />
+
+        <SidebarItem
+          to="/admin/categories"
+          icon="i-lucide-folder"
+          label="Categories"
+        />
+
+        <SidebarItem to="/admin/tags" icon="i-lucide-tag" label="Tags" />
+      </SidebarSection>
+
+      <!-- Media -->
+      <SidebarSection title="Media">
+        <SidebarItem
+          to="/admin/media"
+          icon="i-lucide-image"
+          label="Media Library"
+        />
+      </SidebarSection>
+
+      <!-- Engagement -->
+      <SidebarSection title="Engagement">
+        <SidebarItem
+          to="/admin/comments"
+          icon="i-lucide-message-circle-dashed"
+          label="Comments"
+          :badge="commentStats.pending > 0 ? commentStats.pending : undefined"
+        />
+
+        <SidebarItem
+          to="/admin/newsletter"
+          icon="i-lucide-mail-check"
+          label="Newsletter"
+        />
+      </SidebarSection>
+
+      <!-- Users (Admin only) -->
+      <SidebarSection v-if="canManageUsers" title="Users">
+        <SidebarItem
+          to="/admin/users"
+          icon="i-lucide-users"
+          label="All Users"
+        />
+
+        <SidebarItem
+          to="/admin/roles"
+          icon="i-lucide-shield-check"
+          label="Roles & Permissions"
+        />
+
+        <SidebarItem
+          to="/admin/invitations"
+          icon="i-lucide-user-plus"
+          label="Invitations"
+          :badge="
+            invitationStats.pending > 0 ? invitationStats.pending : undefined
+          "
+        />
+      </SidebarSection>
+
+      <!-- Analytics -->
+      <SidebarSection title="Analytics">
+        <SidebarItem
+          to="/admin/analytics"
+          icon="i-lucide-bar-chart-3"
+          label="Analytics"
+        />
+
+        <SidebarItem
+          to="/admin/reports"
+          icon="i-lucide-file-chart-line"
+          label="Reports"
+        />
+      </SidebarSection>
+
+      <!-- Settings (Admin only) -->
+      <SidebarSection v-if="canManageSettings" title="Settings">
+        <SidebarItem
+          to="/admin/settings"
+          icon="i-lucide-settings"
+          label="Site Settings"
+        />
+
+        <SidebarItem
+          to="/admin/settings/seo"
+          icon="i-lucide-magnifying-glass"
+          label="SEO Settings"
+        />
+
+        <SidebarItem
+          to="/admin/settings/integrations"
+          icon="i-lucide-puzzle-piece"
+          label="Integrations"
+        />
+      </SidebarSection>
+
+      <!-- System -->
+      <SidebarSection v-if="canManageSystem" title="System">
+        <SidebarItem
+          to="/admin/audit-logs"
+          icon="i-lucide-clipboard-document-list"
+          label="Audit Logs"
+        />
+
+        <SidebarItem
+          to="/admin/backups"
+          icon="i-lucide-archive-box"
+          label="Backups"
+        />
+      </SidebarSection>
+    </nav>
+
+    <!-- User info -->
+    <div class="flex-shrink-0 border-t border-gray-700 p-4">
+      <div class="flex items-center">
+        <UAvatar :src="user?.avatarUrl" :alt="user?.name" size="sm" />
+        <div class="ml-3 flex-1 min-w-0">
+          <p class="text-sm font-medium text-white truncate">
+            {{ user?.name }}
+          </p>
+          <p class="text-xs text-gray-400 truncate">{{ user?.email }}</p>
+        </div>
+
+        <UDropdownMenu
+          :items="userMenuItems"
+          :popper="{ placement: 'top-end' }"
+        >
+          <UButton
+            variant="ghost"
+            size="sm"
+            icon="i-lucide-ellipsis-vertical"
+            class="text-gray-400 hover:text-white"
+          />
+        </UDropdownMenu>
       </div>
     </div>
-  </div>
+  </UDashboardSidebar>
 </template>
 
 <script setup lang="ts">
 import { useAuthStore } from '~/stores/auth';
 
-interface Props {
-  isOpen: boolean;
-}
-
-defineProps<Props>();
 defineEmits<{
   close: [];
 }>();

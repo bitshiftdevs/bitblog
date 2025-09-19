@@ -33,7 +33,7 @@
         <UInput
           v-model="searchQuery"
           placeholder="Search posts..."
-          icon="i-lucide-magnifying-glass"
+          icon="i-lucide-search"
           class="flex-1 max-w-md"
         />
 

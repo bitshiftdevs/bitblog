@@ -14,13 +14,7 @@ const postStatusList: SelectMenuItem[] = [
   { label: 'PUBLISHED' },
   { label: 'SCHEDULED' },
 ];
-const newCategory = ref('');
-const newTag = ref('');
 
-// Update methods
-const updateStatus = () => {
-  editorStore.setStatus(status.value as PostStatus);
-};
 const selectFeaturedImage = () => {
   // In a real app, you would use a media library component
   editorStore.openModal(Modal.imageFeatured);
@@ -100,18 +94,26 @@ editorStore.$subscribe((mutation, state) => {
       <!-- Word Count Stats -->
       <div class="mb-6">
         <h3 class="text-lg font-semibold mb-3">Stats</h3>
-        <div class="grid grid-cols-2 gap-2">
-          <div class="p-2 rounded-md border border-success">
-            <div class="text-sm text-gray-400">Words</div>
-            <div class="text-lg font-bold">
-              {{ editorStore.getWordCount }}
-            </div>
-          </div>
-          <div class="p-2 rounded-md border border-success">
-            <div class="text-sm text-gray-400">Reading time</div>
-            <div class="text-lg font-bold">{{ editorStore.readingTime }}</div>
-          </div>
-        </div>
+        <UContainer class="flex-col flex">
+          <UFieldGroup>
+            <UInput placeholder="Words" variant="soft" disabled />
+            <UButton
+              class="text-lg font-bold"
+              :label="`${editorStore.wordCount}`"
+              variant="soft"
+              disabled
+            />
+          </UFieldGroup>
+          <UFieldGroup>
+            <UInput placeholder="Reading time" variant="soft" disabled />
+            <UButton
+              class="text-lg font-bold"
+              :label="`${editorStore.readingTime}`"
+              variant="soft"
+              disabled
+            />
+          </UFieldGroup>
+        </UContainer>
       </div>
 
       <!-- Revision History -->

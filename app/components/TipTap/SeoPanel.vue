@@ -18,13 +18,6 @@ const previewUrl = computed(() => {
   return baseUrl + slug;
 });
 
-// Helper functions for styling
-const scoreClass = (score: number) => {
-  if (score >= 80) return 'text-green-600';
-  if (score >= 50) return 'text-yellow-600';
-  return 'text-red-600';
-};
-
 const updateFocusKeyword = () => {
   seoStore.updateFocusKeyword(focusKeyword.value);
 };
@@ -59,9 +52,9 @@ watch(
         <!-- SEO Score -->
         <UFormField label="SEO Score">
           <UProgress
-            v-model="seoStore.seoScore"
+            v-model="seoStore.score"
             status
-            :color="getStatusColor(seoStore.seoScore)"
+            :color="getStatusColor(seoStore.score)"
           />
         </UFormField>
 

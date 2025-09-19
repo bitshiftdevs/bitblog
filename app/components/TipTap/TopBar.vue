@@ -62,11 +62,11 @@ const items: NavigationMenuItem[][] = [
   [
     {
       badge: {
-        label: `SEO: ${seoStore.seoScore}`,
+        label: `SEO: ${seoStore.score}`,
         icon: 'i-lucide-heart-pulse',
         variant: 'outline',
         size: 'md',
-        color: getStatusColor(seoStore.seoScore),
+        color: getStatusColor(seoStore.score),
       },
     },
     {
