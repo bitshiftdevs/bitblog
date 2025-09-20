@@ -1,4 +1,4 @@
-import prisma from '../../server/db';
+import prisma from "../../server/db";
 
 // Database connection test
 export async function testDatabaseConnection(): Promise<boolean> {
@@ -6,7 +6,7 @@ export async function testDatabaseConnection(): Promise<boolean> {
     await prisma.$queryRaw`SELECT 1`;
     return true;
   } catch (error) {
-    console.error('Database connection failed:', error);
+    console.error("Database connection failed:", error);
     return false;
   }
 }
@@ -24,13 +24,13 @@ export async function getDatabaseHealth() {
     const responseTime = Date.now() - start;
 
     return {
-      status: 'healthy',
+      status: "healthy",
       responseTime: `${responseTime}ms`,
     };
   } catch (error) {
     return {
-      status: 'unhealthy',
-      error: error instanceof Error ? error.message : 'Unknown error',
+      status: "unhealthy",
+      error: error instanceof Error ? error.message : "Unknown error",
     };
   }
 }
@@ -45,7 +45,7 @@ export async function withTransaction<T>(
       timeout: 30000, // 30 seconds
     });
   } catch (error) {
-    console.error('Transaction failed:', error);
+    console.error("Transaction failed:", error);
     throw error;
   }
 }
@@ -55,7 +55,7 @@ export interface PaginationOptions {
   page?: number;
   limit?: number;
   sortBy?: string;
-  sortOrder?: 'asc' | 'desc';
+  sortOrder?: "asc" | "desc";
 }
 
 export interface PaginationResult<T> {
@@ -74,15 +74,15 @@ export function createPaginationOptions(query: any): PaginationOptions {
   return {
     page: Math.max(1, parseInt(query.page) || 1),
     limit: Math.min(100, Math.max(1, parseInt(query.limit) || 20)),
-    sortBy: query.sortBy || 'createdAt',
-    sortOrder: query.sortOrder === 'asc' ? 'asc' : 'desc',
+    sortBy: query.sortBy || "createdAt",
+    sortOrder: query.sortOrder === "asc" ? "asc" : "desc",
   };
 }
 
-export function createPrismaOrderBy(sortBy: string, sortOrder: 'asc' | 'desc') {
+export function createPrismaOrderBy(sortBy: string, sortOrder: "asc" | "desc") {
   // Handle nested sorting (e.g., 'user.name')
-  if (sortBy.includes('.')) {
-    const [relation, field] = sortBy.split('.');
+  if (sortBy.includes(".")) {
+    const [relation, field] = sortBy.split(".");
     return {
       [relation]: {
         [field]: sortOrder,
@@ -123,7 +123,7 @@ export function createSearchFilter(query: string, fields: string[]): any {
     OR: fields.map((field) => ({
       [field]: {
         contains: query,
-        mode: 'insensitive',
+        mode: "insensitive",
       },
     })),
   };
@@ -131,14 +131,14 @@ export function createSearchFilter(query: string, fields: string[]): any {
 
 export function createFullTextSearch(
   query: string,
-  searchVector: string = 'searchVector',
+  searchVector: string = "searchVector",
 ): any {
   if (!query?.trim()) return {};
 
   // PostgreSQL tsvector search
   return {
     [searchVector]: {
-      search: query.split(' ').join(' & '),
+      search: query.split(" ").join(" & "),
     },
   };
 }
@@ -155,29 +155,6 @@ export function withSoftDelete<T extends Record<string, any>>(
     ...where,
     ...notDeleted,
   };
-}
-
-// Audit log helper
-export async function createAuditLog(data: {
-  entity: string;
-  entityId: string;
-  action: string;
-  details?: any;
-  userId?: string;
-  ipAddress?: string;
-  userAgent?: string;
-}) {
-  try {
-    await prisma.auditLog.create({
-      data: {
-        ...data,
-        details: data.details ? JSON.stringify(data.details) : null,
-      },
-    });
-  } catch (error) {
-    console.error('Failed to create audit log:', error);
-    // Don't throw error to avoid breaking the main operation
-  }
 }
 
 // Batch operations

@@ -1,24 +1,24 @@
-import { z } from 'zod';
+import { z } from "zod";
 
 // Base schemas
 export const PostStatusSchema = z.enum([
-  'DRAFT',
-  'SCHEDULED',
-  'PUBLISHED',
-  'ARCHIVED',
+  "DRAFT",
+  "SCHEDULED",
+  "PUBLISHED",
+  "ARCHIVED",
 ]);
-export const PostVisibilitySchema = z.enum(['PUBLIC', 'PRIVATE', 'UNLISTED']);
+export const PostVisibilitySchema = z.enum(["PUBLIC", "PRIVATE", "UNLISTED"]);
 export const CommentStatusSchema = z.enum([
-  'PENDING',
-  'APPROVED',
-  'REJECTED',
-  'SPAM',
+  "PENDING",
+  "APPROVED",
+  "REJECTED",
+  "SPAM",
 ]);
 export const InvitationStatusSchema = z.enum([
-  'PENDING',
-  'ACCEPTED',
-  'EXPIRED',
-  'REVOKED',
+  "PENDING",
+  "ACCEPTED",
+  "EXPIRED",
+  "REVOKED",
 ]);
 
 // Pagination and sorting
@@ -29,7 +29,7 @@ export const PaginationSchema = z.object({
 
 export const SortSchema = z.object({
   sortBy: z.string().optional(),
-  sortOrder: z.enum(['asc', 'desc']).default('desc'),
+  sortOrder: z.enum(["asc", "desc"]).default("desc"),
 });
 
 export const ListParamsSchema = PaginationSchema.merge(SortSchema).extend({
@@ -106,8 +106,8 @@ export const CreatePostSchema = z.object({
     .regex(/^[a-z0-9-]+$/),
   excerpt: z.string().max(500).optional(),
   content: z.any(), // TipTap JSON content
-  status: PostStatusSchema.default('DRAFT'),
-  visibility: PostVisibilitySchema.default('PUBLIC'),
+  status: PostStatusSchema.default("DRAFT"),
+  visibility: PostVisibilitySchema.default("PUBLIC"),
   featuredImage: z.string().url().optional(),
   canonicalUrl: z.string().url().optional(),
   seoTitle: z.string().max(60).optional(),
@@ -127,8 +127,8 @@ export const PostFiltersSchema = z.object({
   status: PostStatusSchema.optional(),
   visibility: PostVisibilitySchema.optional(),
   authorId: z.string().uuid().optional(),
-  tagId: z.string().uuid().optional(),
-  categoryId: z.string().uuid().optional(),
+  tagId: z.string().optional(),
+  categoryId: z.string().optional(),
   search: z.string().optional(),
   fromDate: z.string().datetime().optional(),
   toDate: z.string().datetime().optional(),
@@ -271,8 +271,8 @@ export const SearchSchema = z
   .object({
     query: z.string().min(1).max(100),
     type: z
-      .enum(['posts', 'users', 'tags', 'categories', 'all'])
-      .default('posts'),
+      .enum(["posts", "users", "tags", "categories", "all"])
+      .default("posts"),
     filters: z
       .object({
         status: PostStatusSchema.optional(),
@@ -289,7 +289,7 @@ export const SearchSchema = z
 // Bulk operations schemas
 export const BulkPostActionSchema = z.object({
   postIds: z.array(z.string().uuid()).min(1),
-  action: z.enum(['publish', 'unpublish', 'archive', 'delete', 'duplicate']),
+  action: z.enum(["publish", "unpublish", "archive", "delete", "duplicate"]),
   data: z
     .object({
       status: PostStatusSchema.optional(),

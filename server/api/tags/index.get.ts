@@ -35,10 +35,8 @@ export default defineEventHandler(async (event) => {
             select: {
               posts: {
                 where: {
-                  post: {
-                    status: "PUBLISHED",
-                    visibility: "PUBLIC",
-                  },
+                  status: "PUBLISHED",
+                  visibility: "PUBLIC",
                 },
               },
             },
@@ -54,7 +52,6 @@ export default defineEventHandler(async (event) => {
     const transformedTags = tags.map((tag) => ({
       id: tag.id,
       name: tag.name,
-      slug: tag.slug,
       description: tag.description,
       color: tag.color,
       createdAt: tag.createdAt.toISOString(),

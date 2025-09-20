@@ -3,42 +3,16 @@ import prisma from "~~/server/db";
 
 export default defineEventHandler(async (event) => {
   try {
-    const slug = getRouterParam(event, "slug");
-
-    if (!slug) {
-      throw createError({
-        statusCode: 400,
-        statusMessage: "Slug parameter is required",
-      });
-    }
+    const id = getRouterParam(event, "id");
 
     const category = await prisma.category.findUnique({
-      where: { slug },
+      where: { id },
       include: {
-        parent: {
-          select: {
-            id: true,
-            name: true,
-            slug: true,
-          },
-        },
-        children: {
-          select: {
-            id: true,
-            name: true,
-            slug: true,
-          },
-        },
+        parent: { select: { id: true, name: true } },
+        children: { select: { id: true, name: true } },
         _count: {
           select: {
-            posts: {
-              where: {
-                post: {
-                  status: "PUBLISHED",
-                  visibility: "PUBLIC",
-                },
-              },
-            },
+            posts: { where: { status: "PUBLISHED", visibility: "PUBLIC" } },
           },
         },
       },
@@ -56,7 +30,6 @@ export default defineEventHandler(async (event) => {
       data: {
         id: category.id,
         name: category.name,
-        slug: category.slug,
         description: category.description,
         parentId: category.parentId,
         createdAt: category.createdAt.toISOString(),

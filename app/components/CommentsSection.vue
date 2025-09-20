@@ -1,3 +1,90 @@
+<script setup lang="ts">
+import { useAuthStore } from '~/stores/auth';
+import type { Comment } from '~~/shared/types';
+
+interface Props {
+  postId: string;
+  comments?: Comment[];
+  commentsEnabled: boolean;
+}
+
+const props = defineProps<Props>();
+
+const authStore = useAuthStore();
+const toast = useToast();
+
+const user = computed(() => authStore.user);
+
+const isSubmitting = ref(false);
+const commentForm = reactive({
+  content: '',
+  guestName: '',
+  guestEmail: '',
+  parentId: null as string | null,
+});
+
+const isFormValid = computed(() => {
+  const hasContent = commentForm.content.trim().length > 0;
+  const hasGuestInfo =
+    user.value ||
+    (commentForm.guestName.trim() && commentForm.guestEmail.trim());
+  return hasContent && hasGuestInfo;
+});
+
+const submitComment = async () => {
+  if (!isFormValid.value) return;
+
+  isSubmitting.value = true;
+
+  try {
+    await $fetch('/api/comments', {
+      method: 'POST',
+      body: {
+        postId: props.postId,
+        content: commentForm.content,
+        parentId: commentForm.parentId,
+        ...(user.value
+          ? {}
+          : {
+              guestName: commentForm.guestName,
+              guestEmail: commentForm.guestEmail,
+            }),
+      },
+    });
+
+    toast.add({
+      title: 'Comment submitted',
+      description: 'Your comment has been submitted and is awaiting approval.',
+      color: 'success',
+    });
+
+    // Reset form
+    commentForm.content = '';
+    commentForm.parentId = null;
+    if (!user.value) {
+      commentForm.guestName = '';
+      commentForm.guestEmail = '';
+    }
+
+    // Refresh page to show new comment
+    await refreshCookie();
+  } catch (error: any) {
+    toast.add({
+      title: 'Comment failed',
+      description:
+        error.data?.message || 'Failed to submit comment. Please try again.',
+      color: 'error',
+    });
+  } finally {
+    isSubmitting.value = false;
+  }
+};
+
+const handleReply = (parentComment: Comment) => {
+  commentForm.parentId = parentComment.id;
+  // You could scroll to the form or show an inline reply form here
+};
+</script>
 <template>
   <div class="space-y-6">
     <div class="border-t border-gray-200 dark:border-gray-700 pt-8">
@@ -84,93 +171,3 @@
     </div>
   </div>
 </template>
-
-<script setup lang="ts">
-import { useAuthStore } from '~/stores/auth';
-import { useSiteStore } from '~/stores/site';
-import type { Comment } from '~~/shared/types';
-
-interface Props {
-  postId: string;
-  comments?: Comment[];
-}
-
-const props = defineProps<Props>();
-
-const authStore = useAuthStore();
-const siteStore = useSiteStore();
-const toast = useToast();
-
-const user = computed(() => authStore.user);
-const commentsEnabled = computed(() => siteStore.commentConfig.enabled);
-
-const isSubmitting = ref(false);
-const commentForm = reactive({
-  content: '',
-  guestName: '',
-  guestEmail: '',
-  parentId: null as string | null,
-});
-
-const isFormValid = computed(() => {
-  const hasContent = commentForm.content.trim().length > 0;
-  const hasGuestInfo =
-    user.value ||
-    (commentForm.guestName.trim() && commentForm.guestEmail.trim());
-  return hasContent && hasGuestInfo;
-});
-
-const submitComment = async () => {
-  if (!isFormValid.value) return;
-
-  isSubmitting.value = true;
-
-  try {
-    await $fetch('/api/comments', {
-      method: 'POST',
-      body: {
-        postId: props.postId,
-        content: commentForm.content,
-        parentId: commentForm.parentId,
-        ...(user.value
-          ? {}
-          : {
-              guestName: commentForm.guestName,
-              guestEmail: commentForm.guestEmail,
-            }),
-      },
-    });
-
-    toast.add({
-      title: 'Comment submitted',
-      description: 'Your comment has been submitted and is awaiting approval.',
-      color: 'green',
-    });
-
-    // Reset form
-    commentForm.content = '';
-    commentForm.parentId = null;
-    if (!user.value) {
-      commentForm.guestName = '';
-      commentForm.guestEmail = '';
-    }
-
-    // Refresh page to show new comment
-    await refreshCookie();
-  } catch (error: any) {
-    toast.add({
-      title: 'Comment failed',
-      description:
-        error.data?.message || 'Failed to submit comment. Please try again.',
-      color: 'red',
-    });
-  } finally {
-    isSubmitting.value = false;
-  }
-};
-
-const handleReply = (parentComment: Comment) => {
-  commentForm.parentId = parentComment.id;
-  // You could scroll to the form or show an inline reply form here
-};
-</script>

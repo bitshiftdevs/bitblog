@@ -35,21 +35,22 @@ model User {
 }
 
 model Post {
-  id            String         @id @default(uuid())
-  slug          String         @unique
-  title         String
-  excerpt       String?
-  content       Json // TipTap JSON content
-  status        PostStatus     @default(DRAFT)
-  visibility    PostVisibility @default(PUBLIC)
-  featuredImage String?
-  canonicalUrl  String?
-  readingTime   Int? // in minutes
-  viewCount     Int            @default(0)
-  publishedAt   DateTime?
-  scheduledAt   DateTime?
-  createdAt     DateTime       @default(now())
-  updatedAt     DateTime       @updatedAt
+  id             String         @id @default(uuid())
+  slug           String         @unique
+  title          String
+  excerpt        String?
+  content        Json // TipTap JSON content
+  status         PostStatus     @default(DRAFT)
+  visibility     PostVisibility @default(PUBLIC)
+  featuredImage  String?
+  canonicalUrl   String?
+  readingTime    Int? // in minutes
+  viewCount      Int            @default(0)
+  commentEnabled Boolean        @default(true)
+  publishedAt    DateTime?
+  scheduledAt    DateTime?
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
 
   // SEO fields
   seoTitle       String?

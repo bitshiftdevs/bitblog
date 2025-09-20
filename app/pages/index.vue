@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { useAuthStore } from '~/stores/auth';
-import { useSiteStore } from '~/stores/site';
 
 // Meta tags
 useSeoMeta({
@@ -14,10 +13,8 @@ useSeoMeta({
 
 // Stores
 const authStore = useAuthStore();
-const siteStore = useSiteStore();
 
 const user = computed(() => authStore.user);
-const siteSettings = computed(() => siteStore.settings);
 
 // Fetch featured posts
 const { data: featuredPostsData, pending } = await useFetch('/api/posts', {
@@ -73,18 +70,14 @@ const authors = computed(() => authorsData.value?.data?.items || []);
             class="text-4xl md:text-6xl font-bold text-gray-900 dark:text-white mb-6"
           >
             Welcome to
-            <span class="text-primary dark:text-primary">{{
-              siteSettings?.title || "BitBlog"
-            }}</span>
+            <span class="text-primary dark:text-primary">BitBlog</span>
           </h1>
 
           <p
             class="text-xl text-gray-600 dark:text-gray-300 mb-8 max-w-3xl mx-auto"
           >
-            {{
-              siteSettings?.description ||
-              "Discover amazing stories, insights, and knowledge from our community of writers."
-            }}
+            Discover amazing stories, insights, and knowledge from our community
+            of writers.
           </p>
 
           <div class="flex flex-col sm:flex-row gap-4 justify-center">

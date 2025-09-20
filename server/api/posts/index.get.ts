@@ -8,6 +8,7 @@ import {
 import { PostFiltersSchema, PaginationSchema } from "~~/shared/schemas";
 import { PostSummary } from "~~/shared/types";
 import prisma from "~~/server/db";
+import { PostWhereInput } from "~~/shared/generated/prisma/models";
 
 const QuerySchema = PostFiltersSchema.merge(PaginationSchema).extend({
   includeDrafts: z.boolean().optional(),
@@ -33,7 +34,7 @@ export default defineEventHandler(async (event) => {
       createPaginationOptions(paginationOptions);
 
     // Build where clause
-    const where: any = {};
+    const where: PostWhereInput = {};
 
     // Status filter - only published posts for public API unless includeDrafts is true
     if (status) {
@@ -58,7 +59,7 @@ export default defineEventHandler(async (event) => {
     if (tagId) {
       where.tags = {
         some: {
-          tagId,
+          id: tagId,
         },
       };
     }
@@ -67,7 +68,7 @@ export default defineEventHandler(async (event) => {
     if (categoryId) {
       where.categories = {
         some: {
-          categoryId,
+          id: categoryId,
         },
       };
     }
@@ -105,44 +106,12 @@ export default defineEventHandler(async (event) => {
       where,
       include: {
         author: {
-          select: {
-            id: true,
-            name: true,
-            email: true,
-            avatarUrl: true,
-          },
+          select: { id: true, name: true, email: true, avatarUrl: true },
         },
-        tags: {
-          include: {
-            tag: {
-              select: {
-                id: true,
-                name: true,
-                slug: true,
-                color: true,
-              },
-            },
-          },
-        },
-        categories: {
-          include: {
-            category: {
-              select: {
-                id: true,
-                name: true,
-                slug: true,
-              },
-            },
-          },
-        },
+        tags: { select: { id: true, name: true, color: true } },
+        categories: { select: { id: true, name: true } },
         _count: {
-          select: {
-            comments: {
-              where: {
-                status: "APPROVED",
-              },
-            },
-          },
+          select: { comments: { where: { status: "APPROVED" } } },
         },
       },
       orderBy,

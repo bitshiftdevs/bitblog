@@ -1,6 +1,5 @@
 <script setup lang="ts">
 const route = useRoute();
-const siteStore = useSiteStore();
 
 const slug = route.params.slug as string;
 
@@ -22,9 +21,6 @@ useSeoMeta({
   articlePublishedTime: computed(() => post.value?.publishedAt),
   articleModifiedTime: computed(() => post.value?.updatedAt),
 });
-
-// Comments enabled check
-const commentsEnabled = computed(() => siteStore.isCommentsEnabled);
 
 // 404 if post not found
 if (!post.value) {
@@ -171,11 +167,12 @@ if (!post.value) {
     </div>
 
     <!-- Comments Section -->
-    <div
-      v-if="commentsEnabled"
-      class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8"
-    >
-      <CommentsSection :post-id="post.id" :comments="post.comments" />
+    <div v-if="true" class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <CommentsSection
+        :post-id="post.id"
+        :commentsEnabled="true"
+        :comments="post.comments"
+      />
     </div>
   </div>
 

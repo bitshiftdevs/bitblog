@@ -37,28 +37,18 @@ export default defineEventHandler(async (event) => {
           },
         },
         tags: {
-          include: {
-            tag: {
-              select: {
-                id: true,
-                name: true,
-                slug: true,
-                color: true,
-                description: true,
-              },
-            },
+          select: {
+            id: true,
+            name: true,
+            color: true,
+            description: true,
           },
         },
         categories: {
-          include: {
-            category: {
-              select: {
-                id: true,
-                name: true,
-                slug: true,
-                description: true,
-              },
-            },
+          select: {
+            id: true,
+            name: true,
+            description: true,
           },
         },
         comments: {
@@ -130,27 +120,12 @@ export default defineEventHandler(async (event) => {
           { visibility: "PUBLIC" },
           {
             OR: [
-              // Posts with same tags
-              {
-                tags: {
-                  some: {
-                    tagId: {
-                      in: post.tags.map((t) => t.tag.id),
-                    },
-                  },
-                },
-              },
-              // Posts with same categories
+              { tags: { some: { id: { in: post.tags.map((t) => t.id) } } } },
               {
                 categories: {
-                  some: {
-                    categoryId: {
-                      in: post.categories.map((c) => c.category.id),
-                    },
-                  },
+                  some: { id: { in: post.categories.map((c) => c.id) } },
                 },
               },
-              // Posts by same author
               { authorId: post.authorId },
             ],
           },

@@ -20,7 +20,7 @@
         <UBadge
           v-for="category in post.categories.slice(0, 2)"
           :key="category.id"
-          :label="category.category.name"
+          :label="category.name"
           variant="soft"
           size="sm"
           class="mr-2"
@@ -52,10 +52,10 @@
         <UBadge
           v-for="tag in post.tags.slice(0, 3)"
           :key="tag.id"
-          :label="tag.tag.name"
+          :label="tag.name"
           variant="outline"
           size="sm"
-          :style="{ borderColor: tag.tag.color, color: tag.tag.color }"
+          :style="{ borderColor: tag.color, color: tag.color }"
           class="mr-2 mb-1"
         />
       </div>

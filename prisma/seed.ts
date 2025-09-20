@@ -1,5 +1,9 @@
 import * as argon2 from "argon2";
 import { getDb } from "../server/db";
+import {
+  CommentCreateManyPostInput,
+  PostCreateManyInput,
+} from "../shared/generated/prisma/models";
 
 async function main() {
   console.log("🌱 Seeding database...");
@@ -8,53 +12,6 @@ async function main() {
 
   // Create roles
   console.log("Creating roles...");
-  const adminRole = await prisma.role.upsert({
-    where: { name: "Admin" },
-    update: {},
-    create: {
-      name: "Admin",
-      description: "Full system administrator access",
-      permissions: {
-        posts: ["read", "write", "publish", "delete"],
-        users: ["read", "write", "delete", "manage"],
-        media: ["read", "write", "delete"],
-        comments: ["read", "write", "delete", "moderate"],
-        settings: ["read", "write"],
-        analytics: ["read"],
-      },
-    },
-  });
-
-  const editorRole = await prisma.role.upsert({
-    where: { name: "Editor" },
-    update: {},
-    create: {
-      name: "Editor",
-      description: "Content editor and moderator",
-      permissions: {
-        posts: ["read", "write", "publish"],
-        users: ["read"],
-        media: ["read", "write"],
-        comments: ["read", "write", "moderate"],
-        analytics: ["read"],
-      },
-    },
-  });
-
-  const authorRole = await prisma.role.upsert({
-    where: { name: "Author" },
-    update: {},
-    create: {
-      name: "Author",
-      description: "Content author",
-      permissions: {
-        posts: ["read", "write"],
-        media: ["read", "write"],
-        comments: ["read"],
-      },
-    },
-  });
-
   // Create admin user
   console.log("Creating admin user...");
   const adminPassword = await argon2.hash("28935617Aa@");
@@ -67,174 +24,94 @@ async function main() {
       passwordHash: adminPassword,
       bio: "Platform administrator",
       emailVerified: true,
-      emailVerifiedAt: new Date(),
-    },
-  });
-
-  // Assign admin role
-  await prisma.userRole.upsert({
-    where: {
-      userId_roleId: {
-        userId: adminUser.id,
-        roleId: adminRole.id,
-      },
-    },
-    update: {},
-    create: {
-      userId: adminUser.id,
-      roleId: adminRole.id,
-    },
-  });
-
-  // Create editor user
-  console.log("Creating editor user...");
-  const editorPassword = await argon2.hash("editor123");
-  const editorUser = await prisma.user.upsert({
-    where: { email: "editor@blogplatform.com" },
-    update: {},
-    create: {
-      name: "Editor User",
-      email: "editor@blogplatform.com",
-      passwordHash: editorPassword,
-      bio: "Content editor and moderator",
-      emailVerified: true,
-      emailVerifiedAt: new Date(),
-    },
-  });
-
-  await prisma.userRole.upsert({
-    where: {
-      userId_roleId: {
-        userId: editorUser.id,
-        roleId: editorRole.id,
-      },
-    },
-    update: {},
-    create: {
-      userId: editorUser.id,
-      roleId: editorRole.id,
+      isAdmin: true,
     },
   });
 
   // Create author users
   console.log("Creating author users...");
-  const authors = [
+  const users = [
     {
       name: "John Smith",
-      email: "john@blogplatform.com",
+      email: "kratos@bgmail.com",
       avatarUrl: "https://i.pravatar.cc/150?img=3",
       bio: "Technology enthusiast and software developer",
+      passwordHash: await argon2.hash("28935617Aa@"),
     },
     {
       name: "Sarah Johnson",
       avatarUrl: "https://i.pravatar.cc/150?img=7",
       email: "sarah@blogplatform.com",
       bio: "Design expert and UX researcher",
+      passwordHash: await argon2.hash("28935617Aa@"),
     },
     {
       name: "Mike Chen",
       avatarUrl: "https://i.pravatar.cc/150?img=9",
       email: "mike@blogplatform.com",
       bio: "Data scientist and machine learning expert",
+      passwordHash: await argon2.hash("28935617Aa@"),
     },
   ];
 
-  const authorUsers = [];
-  for (const authorData of authors) {
-    const authorPassword = await argon2.hash("author123");
-    const author = await prisma.user.upsert({
-      where: { email: authorData.email },
-      update: {},
-      create: {
-        ...authorData,
-        passwordHash: authorPassword,
-        emailVerified: true,
-        emailVerifiedAt: new Date(),
-      },
-    });
-
-    await prisma.userRole.upsert({
-      where: {
-        userId_roleId: {
-          userId: author.id,
-          roleId: authorRole.id,
-        },
-      },
-      update: {},
-      create: {
-        userId: author.id,
-        roleId: authorRole.id,
-      },
-    });
-
-    authorUsers.push(author);
-  }
-
+  const createdUsers = await prisma.user.createManyAndReturn({
+    data: users,
+    skipDuplicates: true,
+  });
   // Create categories
   console.log("Creating categories...");
   const categories = [
     {
       name: "Technology",
-      slug: "technology",
+      id: "technology",
       description: "Latest technology trends and innovations",
     },
     {
       name: "Design",
-      slug: "design",
+      id: "design",
       description: "UI/UX design principles and best practices",
     },
     {
       name: "Development",
-      slug: "development",
+      id: "development",
       description: "Programming tutorials and development guides",
     },
     {
       name: "Business",
-      slug: "business",
+      id: "business",
       description: "Business strategies and entrepreneurship",
     },
     {
       name: "Lifestyle",
-      slug: "lifestyle",
+      id: "lifestyle",
       description: "Work-life balance and productivity tips",
     },
   ];
 
-  const createdCategories = [];
-  for (const categoryData of categories) {
-    const category = await prisma.category.upsert({
-      where: { slug: categoryData.slug },
-      update: {},
-      create: categoryData,
-    });
-    createdCategories.push(category);
-  }
+  const createdCategories = await prisma.category.createManyAndReturn({
+    data: categories,
+    skipDuplicates: true,
+  });
 
   // Create tags
   console.log("Creating tags...");
   const tags = [
-    { name: "JavaScript", slug: "javascript", color: "#f7df1e" },
-    { name: "TypeScript", slug: "typescript", color: "#3178c6" },
-    { name: "React", slug: "react", color: "#61dafb" },
-    { name: "Vue", slug: "vue", color: "#4fc08d" },
-    { name: "Node.js", slug: "nodejs", color: "#339933" },
-    { name: "CSS", slug: "css", color: "#1572b6" },
-    { name: "HTML", slug: "html", color: "#e34f26" },
-    { name: "UI/UX", slug: "ui-ux", color: "#ff6b6b" },
-    { name: "Tutorial", slug: "tutorial", color: "#4ecdc4" },
-    { name: "Best Practices", slug: "best-practices", color: "#45b7d1" },
+    { name: "JavaScript", id: "javascript", color: "#f7df1e" },
+    { name: "TypeScript", id: "typescript", color: "#3178c6" },
+    { name: "React", id: "react", color: "#61dafb" },
+    { name: "Vue", id: "vue", color: "#4fc08d" },
+    { name: "Node.js", id: "nodejs", color: "#339933" },
+    { name: "CSS", id: "css", color: "#1572b6" },
+    { name: "HTML", id: "html", color: "#e34f26" },
+    { name: "UI/UX", id: "ui-ux", color: "#ff6b6b" },
+    { name: "Tutorial", id: "tutorial", color: "#4ecdc4" },
+    { name: "Best Practices", id: "best-practices", color: "#45b7d1" },
   ];
 
-  const createdTags = [];
-  for (const tagData of tags) {
-    const tag = await prisma.tag.upsert({
-      where: { slug: tagData.slug },
-      update: {},
-      create: tagData,
-    });
-    createdTags.push(tag);
-  }
-
+  const createdTags = await prisma.tag.createManyAndReturn({
+    data: tags,
+    skipDuplicates: true,
+  });
   // Create sample posts
   console.log("Creating sample posts...");
   const posts = [
@@ -279,7 +156,7 @@ async function main() {
             ],
           },
         ],
-      },
+      } as any,
       status: "PUBLISHED",
       visibility: "PUBLIC",
       readingTime: 5,
@@ -288,8 +165,8 @@ async function main() {
       seoDescription:
         "Learn TypeScript basics, setup, and best practices in this comprehensive guide for JavaScript developers.",
       authorId: adminUser.id,
-      categoryIds: [createdCategories[2].id], // Development
-      tagIds: [createdTags[1].id, createdTags[8].id], // TypeScript, Tutorial
+      categories: [createdCategories[2].id], // Development
+      tags: [createdTags[1].id, createdTags[8].id], // TypeScript, Tutorial
     },
     {
       title: "Modern CSS Layout Techniques",
@@ -316,14 +193,14 @@ async function main() {
             ],
           },
         ],
-      },
+      } as any,
       status: "PUBLISHED",
       visibility: "PUBLIC",
       readingTime: 8,
       publishedAt: new Date("2024-01-20"),
       authorId: adminUser.id,
-      categoryIds: [createdCategories[1].id], // Design
-      tagIds: [createdTags[5].id, createdTags[7].id], // CSS, UI/UX
+      categories: [createdCategories[1].id], // Design
+      tags: [createdTags[5].id, createdTags[7].id], // CSS, UI/UX
     },
     {
       title: "Building Scalable React Applications",
@@ -352,14 +229,14 @@ async function main() {
             ],
           },
         ],
-      },
+      } as any,
       status: "PUBLISHED",
       visibility: "PUBLIC",
       readingTime: 12,
       publishedAt: new Date("2024-01-25"),
       authorId: adminUser.id,
-      categoryIds: [createdCategories[2].id], // Development
-      tagIds: [createdTags[2].id, createdTags[9].id], // React, Best Practices
+      categories: [createdCategories[2].id], // Development
+      tags: [createdTags[2].id, createdTags[9].id], // React, Best Practices
     },
     {
       title: "The Future of Web Development",
@@ -384,65 +261,38 @@ async function main() {
             ],
           },
         ],
-      },
+      } as any,
       status: "DRAFT",
       visibility: "PUBLIC",
       readingTime: 10,
-      authorId: authorUsers[2].id,
-      categoryIds: [createdCategories[0].id], // Technology
-      tagIds: [createdTags[0].id], // JavaScript
+      authorId: createdUsers[2].id,
+      categories: [createdCategories[0].id], // Technology
+      tags: [createdTags[0].id], // JavaScript
     },
   ];
 
   for (const postData of posts) {
-    const { categoryIds, tagIds, ...postInfo } = postData;
+    const { categories, tags, ...postInfo } = postData;
 
     const post = await prisma.post.upsert({
       where: { slug: postData.slug },
       update: {},
       create: {
         ...postInfo,
-        viewCount: Math.floor(Math.random() * 1000) + 100, // Random view count
+        viewCount: Math.floor(Math.random() * 1000) + 100,
+        commentEnabled: true,
+        categories: {
+          connect: categories?.map((c) => {
+            return { id: c };
+          }),
+        },
+        tags: {
+          connect: tags?.map((t) => {
+            return { id: t };
+          }),
+        },
       },
     });
-
-    // Add categories
-    if (categoryIds) {
-      for (const categoryId of categoryIds) {
-        await prisma.postCategory.upsert({
-          where: {
-            postId_categoryId: {
-              postId: post.id,
-              categoryId,
-            },
-          },
-          update: {},
-          create: {
-            postId: post.id,
-            categoryId,
-          },
-        });
-      }
-    }
-
-    // Add tags
-    if (tagIds) {
-      for (const tagId of tagIds) {
-        await prisma.postTag.upsert({
-          where: {
-            postId_tagId: {
-              postId: post.id,
-              tagId,
-            },
-          },
-          update: {},
-          create: {
-            postId: post.id,
-            tagId,
-          },
-        });
-      }
-    }
 
     // Create initial revision
     await prisma.postRevision.create({
@@ -458,66 +308,10 @@ async function main() {
     });
   }
 
-  // Create site settings
-  console.log("Creating site settings...");
-  const siteSettings = [
-    {
-      key: "general",
-      value: {
-        title: "BitBlog",
-        description: "Blog platform for BitShift",
-        logo: null,
-        favicon: null,
-      },
-    },
-    {
-      key: "seo",
-      value: {
-        defaultTitle: "BitBlog - Share Your Stories",
-        defaultDescription:
-          "Discover amazing stories, insights, and knowledge from our community of writers.",
-        defaultImage: "/og-image.png",
-      },
-    },
-    {
-      key: "social",
-      value: {
-        twitter: "https://twitter.com/blogplatform",
-        facebook: "https://facebook.com/blogplatform",
-        instagram: "https://instagram.com/blogplatform",
-        linkedin: "https://linkedin.com/company/blogplatform",
-      },
-    },
-    {
-      key: "comments",
-      value: {
-        enabled: true,
-        requireApproval: true,
-        allowGuestComments: true,
-        enableNotifications: true,
-      },
-    },
-  ];
-
-  for (const setting of siteSettings) {
-    await prisma.siteSettings.upsert({
-      where: { key: setting.key },
-      update: {},
-      create: {
-        key: setting.key,
-        value: setting.value,
-        updatedById: adminUser.id,
-      },
-    });
-  }
-
   console.log("✅ Database seeded successfully!");
   console.log("\n📋 Sample Users Created:");
-  console.log("Admin: admin@blogplatform.com / admin123");
-  console.log("Editor: editor@blogplatform.com / editor123");
-  console.log(
-    "Authors: john@blogplatform.com, sarah@blogplatform.com, mike@blogplatform.com / author123",
-  );
+  console.log("Admin: gado@gmail.com / 28935617Aa@");
+  console.log("User: kratos@gmail.com / 28935617Aa@");
   console.timeEnd("Seeding complete 🌱");
 }
 

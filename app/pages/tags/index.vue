@@ -26,7 +26,7 @@
           <NuxtLink
             v-for="tag in popularTags"
             :key="tag.id"
-            :to="`/tags/${tag.slug}`"
+            :to="`/tags/${tag.id}`"
             class="inline-flex items-center px-4 py-2 rounded-full text-sm font-medium transition-colors hover:scale-105"
             :style="{
               backgroundColor: tag.color + '20',
@@ -71,10 +71,7 @@
     </div>
 
     <div v-else class="text-center py-12">
-      <UIcon
-        name="i-lucide-tag"
-        class="h-12 w-12 text-gray-400 mx-auto mb-4"
-      />
+      <UIcon name="i-lucide-tag" class="h-12 w-12 text-gray-400 mx-auto mb-4" />
       <p class="text-gray-500 dark:text-gray-400">No tags available</p>
     </div>
   </div>

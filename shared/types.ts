@@ -64,8 +64,8 @@ export interface Post {
   author: User;
   authorId: string;
   coAuthors: User[];
-  tags: PostTagWithTag[];
-  categories: PostCategoryWithCategory[];
+  tags: Tag[];
+  categories: Category[];
   _count?: {
     comments: number;
   };
@@ -89,8 +89,8 @@ export interface PostSummary {
     name: string;
     avatarUrl?: string;
   };
-  tags: PostTagWithTag[];
-  categories: PostCategoryWithCategory[];
+  tags: Tag[];
+  categories: Category[];
   _count?: {
     comments: number;
   };
@@ -115,7 +115,6 @@ export interface PostRevision {
 export interface Tag {
   id: string;
   name: string;
-  slug: string;
   description?: string;
   color?: string;
   createdAt: string;
@@ -125,15 +124,9 @@ export interface Tag {
   };
 }
 
-export interface PostTagWithTag {
-  id: string;
-  tag: Tag;
-}
-
 export interface Category {
   id: string;
   name: string;
-  slug: string;
   description?: string;
   parentId?: string;
   createdAt: string;
@@ -143,11 +136,6 @@ export interface Category {
   _count?: {
     posts: number;
   };
-}
-
-export interface PostCategoryWithCategory {
-  id: string;
-  category: Category;
 }
 
 export interface Media {

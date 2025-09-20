@@ -34,14 +34,12 @@ export default defineEventHandler(async (event) => {
           select: {
             id: true,
             name: true,
-            slug: true,
           },
         },
         children: {
           select: {
             id: true,
             name: true,
-            slug: true,
           },
         },
         ...(includePostCount && {
@@ -49,10 +47,8 @@ export default defineEventHandler(async (event) => {
             select: {
               posts: {
                 where: {
-                  post: {
-                    status: "PUBLISHED",
-                    visibility: "PUBLIC",
-                  },
+                  status: "PUBLISHED",
+                  visibility: "PUBLIC",
                 },
               },
             },
@@ -68,7 +64,6 @@ export default defineEventHandler(async (event) => {
     const transformedCategories = categories.map((category) => ({
       id: category.id,
       name: category.name,
-      slug: category.slug,
       description: category.description,
       parentId: category.parentId,
       createdAt: category.createdAt.toISOString(),

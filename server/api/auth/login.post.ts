@@ -4,7 +4,6 @@ import * as argon2 from "argon2";
 import { SignJWT } from "jose";
 import { LoginSchema } from "~~/shared/schemas";
 import prisma from "~~/server/db";
-import { createAuditLog } from "~~/server/utils/database";
 import { randomUUID } from "node:crypto";
 
 export default defineEventHandler(async (event) => {
@@ -19,13 +18,6 @@ export default defineEventHandler(async (event) => {
     const user = await prisma.user.findUnique({
       where: {
         email,
-      },
-      include: {
-        roles: {
-          include: {
-            role: true,
-          },
-        },
       },
     });
 
@@ -48,16 +40,6 @@ export default defineEventHandler(async (event) => {
     const isValidPassword = await argon2.verify(user.passwordHash, password);
 
     if (!isValidPassword) {
-      // Log failed login attempt
-      await createAuditLog({
-        entity: "user",
-        entityId: user.id,
-        action: "login_failed",
-        details: { reason: "invalid_password" },
-        userId: user.id,
-        userAgent,
-      });
-
       throw createError({
         statusCode: 401,
         statusMessage: "Invalid email or password",
@@ -72,21 +54,12 @@ export default defineEventHandler(async (event) => {
       });
     }
 
-    // Collect user permissions
-    const permissions = user.roles.reduce((perms: string[], userRole) => {
-      const rolePerms = userRole.role.permissions as Record<string, string[]>;
-      Object.values(rolePerms).forEach((permArray) => {
-        perms.push(...permArray);
-      });
-      return [...new Set(perms)]; // Remove duplicates
-    }, []);
-
     // Create JWT token
     const tokenPayload = {
       sub: user.id,
       email: user.email,
       name: user.name,
-      permissions,
+      isAdmin: user.isAdmin,
       iat: Math.floor(Date.now() / 1000),
     };
 
@@ -127,34 +100,6 @@ export default defineEventHandler(async (event) => {
         (rememberMe ? 30 * 24 * 60 * 60 * 1000 : 24 * 60 * 60 * 1000),
     );
 
-    await prisma.session.create({
-      data: {
-        id: sessionToken,
-        userId: user.id,
-        token: sessionToken,
-        expiresAt,
-        userAgent,
-      },
-    });
-
-    // Update user last seen
-    await prisma.user.update({
-      where: { id: user.id },
-      data: {
-        lastSeenAt: new Date(),
-      },
-    });
-
-    // Log successful login
-    await createAuditLog({
-      entity: "user",
-      entityId: user.id,
-      action: "login",
-      details: { rememberMe },
-      userId: user.id,
-      userAgent,
-    });
-
     // Transform user data for response
     const userData = {
       id: user.id,
@@ -165,21 +110,9 @@ export default defineEventHandler(async (event) => {
       isActive: user.isActive,
       twoFactorEnabled: user.twoFactorEnabled,
       emailVerified: user.emailVerified,
-      lastSeenAt: user.lastSeenAt?.toISOString(),
       createdAt: user.createdAt.toISOString(),
       updatedAt: user.updatedAt.toISOString(),
-      roles: user.roles.map((ur) => ({
-        id: ur.id,
-        userId: ur.userId,
-        roleId: ur.roleId,
-        role: {
-          id: ur.role.id,
-          name: ur.role.name,
-          description: ur.role.description,
-          permissions: ur.role.permissions,
-        },
-      })),
-      permissions,
+      isAdmin: user.isAdmin,
     };
 
     return {

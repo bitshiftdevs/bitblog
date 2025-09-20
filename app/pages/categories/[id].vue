@@ -1,10 +1,10 @@
 <script setup lang="ts">
 const route = useRoute();
-const slug = route.params.slug as string;
+const id = route.params.id as string;
 const currentPage = ref(1);
 
 // Fetch category
-const { data: categoryData } = await useFetch(`/api/categories/${slug}`);
+const { data: categoryData } = await useFetch(`/api/categories/${id}`);
 const category = computed(() => categoryData.value?.data);
 
 // Fetch posts in category

@@ -1,4 +1,12 @@
-<!-- apps/web/components/PublicFooter.vue -->
+<script setup lang="ts">
+const socialLinks = {
+  twitter: 'https://x.com/bitshift',
+  github: 'https://github.com/bitshiftdevs',
+  facebook: 'https://facebook.com/bitshiftdevs',
+  instagram: 'https://instagram.com/bitshiftdevs',
+  linkedin: 'https://linkedin.com/in/bitshiftdevs',
+};
+</script>
 <template>
   <footer class="bg-gray-900 text-white">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
@@ -15,10 +23,7 @@
           </div>
 
           <p class="text-gray-300 mb-6 max-w-md">
-            {{
-              siteSettings?.description ||
-              "Blog Platform for BitShift for sharing amazing stories and insights."
-            }}
+            Blog Platform for BitShift for sharing amazing stories and insights.
           </p>
 
           <!-- Social Links -->
@@ -139,8 +144,7 @@
         class="border-t border-gray-800 mt-8 pt-8 flex flex-col sm:flex-row justify-between items-center"
       >
         <p class="text-gray-400 text-sm">
-          © {{ new Date().getFullYear() }}
-          {{ siteSettings?.title || "BitBlog" }}. All rights reserved.
+          © {{ new Date().getFullYear() }} BitBlog. All rights reserved.
         </p>
 
         <div class="flex items-center space-x-4 mt-4 sm:mt-0">
@@ -157,11 +161,3 @@
     </div>
   </footer>
 </template>
-
-<script setup lang="ts">
-import { useSiteStore } from '~/stores/site';
-
-const siteStore = useSiteStore();
-const siteSettings = computed(() => siteStore.settings);
-const socialLinks = computed(() => siteStore.socialLinks);
-</script>
