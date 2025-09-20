@@ -332,7 +332,7 @@ export interface RegisterRequest {
 }
 
 export interface AuthUser extends User {
-  permissions: string[];
+  isAdmin: boolean;
 }
 
 // Media upload types

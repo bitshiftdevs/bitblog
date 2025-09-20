@@ -21,35 +21,7 @@ export const useAuthStore = defineStore('auth', {
       return !!(state.user && state.token);
     },
 
-    canAccessAdmin: (state): boolean => {
-      if (!state.user) return false;
-
-      // Check if user has admin-level permissions
-      const adminPermissions = [
-        'admin',
-        'manage_users',
-        'manage_posts',
-        'manage_settings',
-      ];
-      return adminPermissions.some((permission) =>
-        state.user?.permissions?.includes(permission),
-      );
-    },
-
-    hasPermission: (state) => {
-      return (permission: string): boolean => {
-        return state.user?.permissions?.includes(permission) || false;
-      };
-    },
-
-    hasAnyPermission: (state) => {
-      return (permissions: string[]): boolean => {
-        if (!state.user?.permissions) return false;
-        return permissions.some((permission) =>
-          state.user?.permissions?.includes(permission),
-        );
-      };
-    },
+    canAccessAdmin: (state): boolean => state.user?.isAdmin || false,
   },
 
   actions: {
@@ -138,31 +110,12 @@ export const useAuthStore = defineStore('auth', {
     },
 
     async logout() {
-      try {
-        // Call logout endpoint to invalidate server-side session
-        if (this.token) {
-          await $fetch('/api/auth/logout', {
-            method: 'POST',
-            headers: {
-              Authorization: `Bearer ${this.token}`,
-            },
-          });
-        }
-      } catch (error) {
-        // Continue with logout even if server request fails
-        console.error('Logout request failed:', error);
-      } finally {
-        // Clear local state
-        this.user = null;
-        this.token = null;
-        this.refreshToken = null;
-
-        // Clear localStorage
-        // if (app._id) {
-        localStorage.removeItem('auth.token');
-        localStorage.removeItem('auth.refreshToken');
-        // }
-      }
+      // Clear local state
+      this.user = null;
+      this.token = null;
+      this.refreshToken = null;
+      localStorage.removeItem('auth.token');
+      localStorage.removeItem('auth.refreshToken');
     },
 
     async fetchUser() {

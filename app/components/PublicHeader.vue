@@ -40,6 +40,7 @@ const navItems = computed<NavigationMenuItem[]>(() => [
 
 // Logout handler
 const handleLogout = async () => {
+  console.log('Logging out...');
   await authStore.logout();
   await navigateTo('/');
 };
@@ -72,7 +73,7 @@ const userMenuItems = computed(() => [
   [
     {
       label: 'Sign Out',
-      icon: 'i-lucide-arrow-right-on-rectangle',
+      icon: 'i-lucide-log-out',
       click: handleLogout,
     },
   ],

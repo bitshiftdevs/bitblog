@@ -9,31 +9,16 @@ const authStore = useAuthStore();
 const user = computed(() => authStore.user);
 
 // Permission checks
-const canManageUsers = computed(
-  () =>
-    authStore.hasPermission('users.manage') || authStore.hasPermission('admin'),
-);
-
-const canManageSettings = computed(
-  () =>
-    authStore.hasPermission('settings.write') ||
-    authStore.hasPermission('admin'),
-);
-
-const canManageSystem = computed(() => authStore.hasPermission('admin'));
 
 // Stats for badges (would be fetched from API)
 const postStats = ref({ draft: 0, scheduled: 0 });
 const commentStats = ref({ pending: 0 });
-const invitationStats = ref({ pending: 0 });
 
 // Fetch stats
 const { data: statsData } = await useFetch('/api/admin/stats');
 if (statsData.value?.data) {
   postStats.value = statsData.value.data.posts || postStats.value;
   commentStats.value = statsData.value.data.comments || commentStats.value;
-  invitationStats.value =
-    statsData.value.data.invitations || invitationStats.value;
 }
 
 // User menu items
@@ -41,7 +26,7 @@ const userMenuItems = computed(() => [
   [
     {
       label: 'View Site',
-      icon: 'i-lucide-arrow-top-right-on-square',
+      icon: 'i-lucide-square-arrow-up-right',
       to: '/',
       target: '_blank',
     },
@@ -56,7 +41,7 @@ const userMenuItems = computed(() => [
   [
     {
       label: 'Sign Out',
-      icon: 'i-lucide-arrow-right-on-rectangle',
+      icon: 'i-lucide-log-out',
       click: async () => {
         await authStore.logout();
         await navigateTo('/auth/login');
@@ -103,12 +88,6 @@ const userMenuItems = computed(() => [
         />
 
         <SidebarItem
-          to="/admin/pages"
-          icon="i-lucide-file-text"
-          label="Pages"
-        />
-
-        <SidebarItem
           to="/admin/categories"
           icon="i-lucide-folder"
           label="Categories"
@@ -143,26 +122,11 @@ const userMenuItems = computed(() => [
       </SidebarSection>
 
       <!-- Users (Admin only) -->
-      <SidebarSection v-if="canManageUsers" title="Users">
+      <SidebarSection title="Users">
         <SidebarItem
           to="/admin/users"
           icon="i-lucide-users"
           label="All Users"
-        />
-
-        <SidebarItem
-          to="/admin/roles"
-          icon="i-lucide-shield-check"
-          label="Roles & Permissions"
-        />
-
-        <SidebarItem
-          to="/admin/invitations"
-          icon="i-lucide-user-plus"
-          label="Invitations"
-          :badge="
-            invitationStats.pending > 0 ? invitationStats.pending : undefined
-          "
         />
       </SidebarSection>
 
@@ -182,37 +146,19 @@ const userMenuItems = computed(() => [
       </SidebarSection>
 
       <!-- Settings (Admin only) -->
-      <SidebarSection v-if="canManageSettings" title="Settings">
-        <SidebarItem
-          to="/admin/settings"
-          icon="i-lucide-settings"
-          label="Site Settings"
-        />
-
+      <SidebarSection title="Settings">
         <SidebarItem
           to="/admin/settings/seo"
           icon="i-lucide-search"
           label="SEO Settings"
         />
-
-        <SidebarItem
-          to="/admin/settings/integrations"
-          icon="i-lucide-puzzle-piece"
-          label="Integrations"
-        />
       </SidebarSection>
 
       <!-- System -->
-      <SidebarSection v-if="canManageSystem" title="System">
-        <SidebarItem
-          to="/admin/audit-logs"
-          icon="i-lucide-clipboard-document-list"
-          label="Audit Logs"
-        />
-
+      <SidebarSection title="System">
         <SidebarItem
           to="/admin/backups"
-          icon="i-lucide-archive-box"
+          icon="i-lucide-archive"
           label="Backups"
         />
       </SidebarSection>

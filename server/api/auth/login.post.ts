@@ -12,7 +12,6 @@ export default defineEventHandler(async (event) => {
     const { email, password, rememberMe } = LoginSchema.parse(body);
 
     const config = useRuntimeConfig();
-    const userAgent = getHeader(event, "user-agent") || "unknown";
 
     // Find user by email
     const user = await prisma.user.findUnique({

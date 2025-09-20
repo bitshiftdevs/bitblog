@@ -1,18 +1,19 @@
 // apps/web/middleware/auth.ts
 export default defineNuxtRouteMiddleware((to, from) => {
-	const { $authStore } = useNuxtApp();
+  const auth = useAuth();
 
-	// Check if user is authenticated
-	if (!$authStore.isAuthenticated) {
-		// Store the intended destination
-		const redirectPath = to.fullPath !== '/auth/login' ? to.fullPath : '/';
+  console.log('Auth middleware: ', auth.isAuthenticated);
+  // Check if user is authenticated
+  if (!auth.isAuthenticated) {
+    // Store the intended destination
+    const redirectPath = to.fullPath !== '/auth/login' ? to.fullPath : '/';
 
-		// Redirect to login with return URL
-		return navigateTo({
-			path: '/auth/login',
-			query: {
-				redirect: redirectPath,
-			},
-		});
-	}
+    // Redirect to login with return URL
+    return navigateTo({
+      path: '/auth/login',
+      query: {
+        redirect: redirectPath,
+      },
+    });
+  }
 });
