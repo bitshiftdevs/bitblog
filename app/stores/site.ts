@@ -45,7 +45,7 @@ export const useSiteStore = defineStore('site', {
     settings: {
       title: 'BitBlog',
       logo: '/favicon.ico',
-      description: 'Blog site for BitShift',
+      description: 'Blog platform for BitShift',
       commentSettings: {
         enabled: true,
         requireApproval: true,
@@ -269,7 +269,7 @@ export const useSiteStore = defineStore('site', {
     resetSettings() {
       this.settings = {
         title: 'BitBlog',
-        description: 'Blog site for BitShift',
+        description: 'Blog platform for BitShift',
         commentSettings: {
           enabled: true,
           requireApproval: true,

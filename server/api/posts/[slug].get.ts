@@ -1,10 +1,8 @@
-// apps/api/server/api/posts/[slug].get.ts
-
 import prisma from "~~/server/db";
 
 export default defineEventHandler(async (event) => {
   try {
-    const slug = getRouterParam(event, "slug");
+    const slug = getRouterParam(event, "id");
 
     if (!slug) {
       throw createError({
@@ -164,6 +162,7 @@ export default defineEventHandler(async (event) => {
         title: true,
         excerpt: true,
         featuredImage: true,
+        viewCount: true,
         readingTime: true,
         publishedAt: true,
         author: {

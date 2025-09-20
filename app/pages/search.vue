@@ -10,7 +10,7 @@
         <UInput
           v-model="searchQuery"
           placeholder="Search posts..."
-          icon="i-lucide-magnifying-glass"
+          icon="i-lucide-search"
           size="lg"
           class="flex-1 max-w-md"
           @keyup.enter="performSearch"
@@ -53,7 +53,7 @@
 
     <div v-else-if="searchQuery" class="text-center py-12">
       <UIcon
-        name="i-lucide-magnifying-glass"
+        name="i-lucide-search"
         class="h-12 w-12 text-gray-400 mx-auto mb-4"
       />
       <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-2">
@@ -66,7 +66,7 @@
 
     <div v-else class="text-center py-12">
       <UIcon
-        name="i-lucide-magnifying-glass"
+        name="i-lucide-search"
         class="h-12 w-12 text-gray-400 mx-auto mb-4"
       />
       <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-2">

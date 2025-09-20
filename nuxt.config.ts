@@ -13,7 +13,7 @@ export default defineNuxtConfig({
   ],
   prisma: {
     generateClient: false,
-    installStudio: false,
+    installStudio: true,
     autoSetupPrisma: false,
     runMigration: false,
   },
@@ -172,4 +172,3 @@ export default defineNuxtConfig({
   //   },
   // },
 });
-

@@ -1,4 +1,38 @@
-<!-- apps/web/pages/authors/[id].vue -->
+<script setup lang="ts">
+const route = useRoute();
+const id = route.params.id as string;
+const currentPage = ref(1);
+
+// Fetch author
+const { data: authorData } = await useFetch(`/api/authors/${id}`);
+const author = computed(() => authorData.value?.data);
+
+// Fetch author's posts
+const { data: postsData, pending } = await useFetch('/api/posts', {
+  query: computed(() => ({
+    authorId: id,
+    page: currentPage.value,
+    limit: 12,
+    status: 'PUBLISHED',
+    visibility: 'PUBLIC',
+  })),
+});
+
+const posts = computed(() => postsData.value?.data?.items || []);
+const pagination = computed(() => postsData.value?.data?.pagination || {});
+
+// SEO
+useSeoMeta({
+  title: computed(() => author.value?.name),
+  description: computed(
+    () => author.value?.bio || `Posts by ${author.value?.name}`,
+  ),
+});
+
+if (!author.value) {
+  throw createError({ statusCode: 404, statusMessage: 'Author not found' });
+}
+</script>
 <template>
   <div v-if="author" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
     <!-- Author Header -->
@@ -80,39 +114,3 @@
     </div>
   </div>
 </template>
-
-<script setup lang="ts">
-const route = useRoute();
-const id = route.params.id as string;
-const currentPage = ref(1);
-
-// Fetch author
-const { data: authorData } = await useFetch(`/api/authors/${id}`);
-const author = computed(() => authorData.value?.data);
-
-// Fetch author's posts
-const { data: postsData, pending } = await useFetch('/api/posts', {
-  query: computed(() => ({
-    authorId: id,
-    page: currentPage.value,
-    limit: 12,
-    status: 'PUBLISHED',
-    visibility: 'PUBLIC',
-  })),
-});
-
-const posts = computed(() => postsData.value?.data?.items || []);
-const pagination = computed(() => postsData.value?.data?.pagination || {});
-
-// SEO
-useSeoMeta({
-  title: computed(() => author.value?.name),
-  description: computed(
-    () => author.value?.bio || `Posts by ${author.value?.name}`,
-  ),
-});
-
-if (!author.value) {
-  throw createError({ statusCode: 404, statusMessage: 'Author not found' });
-}
-</script>

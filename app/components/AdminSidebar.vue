@@ -129,7 +129,7 @@
 
         <SidebarItem
           to="/admin/settings/seo"
-          icon="i-lucide-magnifying-glass"
+          icon="i-lucide-search"
           label="SEO Settings"
         />
 

@@ -287,7 +287,7 @@ async function main() {
       seoTitle: "Getting Started with TypeScript - Complete Guide",
       seoDescription:
         "Learn TypeScript basics, setup, and best practices in this comprehensive guide for JavaScript developers.",
-      authorId: authorUsers[0].id,
+      authorId: adminUser.id,
       categoryIds: [createdCategories[2].id], // Development
       tagIds: [createdTags[1].id, createdTags[8].id], // TypeScript, Tutorial
     },
@@ -321,7 +321,7 @@ async function main() {
       visibility: "PUBLIC",
       readingTime: 8,
       publishedAt: new Date("2024-01-20"),
-      authorId: authorUsers[1].id,
+      authorId: adminUser.id,
       categoryIds: [createdCategories[1].id], // Design
       tagIds: [createdTags[5].id, createdTags[7].id], // CSS, UI/UX
     },
@@ -357,7 +357,7 @@ async function main() {
       visibility: "PUBLIC",
       readingTime: 12,
       publishedAt: new Date("2024-01-25"),
-      authorId: authorUsers[0].id,
+      authorId: adminUser.id,
       categoryIds: [createdCategories[2].id], // Development
       tagIds: [createdTags[2].id, createdTags[9].id], // React, Best Practices
     },

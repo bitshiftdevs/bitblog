@@ -1,4 +1,41 @@
-<!-- apps/web/pages/categories/[slug].vue -->
+<script setup lang="ts">
+const route = useRoute();
+const slug = route.params.slug as string;
+const currentPage = ref(1);
+
+// Fetch category
+const { data: categoryData } = await useFetch(`/api/categories/${slug}`);
+const category = computed(() => categoryData.value?.data);
+
+// Fetch posts in category
+const { data: postsData, pending } = await useFetch('/api/posts', {
+  query: computed(() => ({
+    categoryId: category.value?.id,
+    page: currentPage.value,
+    limit: 12,
+    status: 'PUBLISHED',
+    visibility: 'PUBLIC',
+  })),
+});
+
+const posts = computed(() => postsData.value?.data?.items || []);
+const pagination = computed(() => postsData.value?.data?.pagination || {});
+
+// SEO
+useSeoMeta({
+  title: computed(() => category.value?.name),
+  description: computed(
+    () =>
+      category.value?.description ||
+      `Posts in ${category.value?.name} category`,
+  ),
+});
+
+if (!category.value) {
+  throw createError({ statusCode: 404, statusMessage: 'Category not found' });
+}
+</script>
+
 <template>
   <div v-if="category" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
     <!-- Category Header -->
@@ -68,41 +105,3 @@
     </div>
   </div>
 </template>
-
-<script setup lang="ts">
-const route = useRoute();
-const slug = route.params.slug as string;
-const currentPage = ref(1);
-
-// Fetch category
-const { data: categoryData } = await useFetch(`/api/categories/${slug}`);
-const category = computed(() => categoryData.value?.data);
-
-// Fetch posts in category
-const { data: postsData, pending } = await useFetch('/api/posts', {
-  query: computed(() => ({
-    categoryId: category.value?.id,
-    page: currentPage.value,
-    limit: 12,
-    status: 'PUBLISHED',
-    visibility: 'PUBLIC',
-  })),
-});
-
-const posts = computed(() => postsData.value?.data?.items || []);
-const pagination = computed(() => postsData.value?.data?.pagination || {});
-
-// SEO
-useSeoMeta({
-  title: computed(() => category.value?.name),
-  description: computed(
-    () =>
-      category.value?.description ||
-      `Posts in ${category.value?.name} category`,
-  ),
-});
-
-if (!category.value) {
-  throw createError({ statusCode: 404, statusMessage: 'Category not found' });
-}
-</script>

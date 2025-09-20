@@ -1,3 +1,39 @@
+<script setup lang="ts">
+const route = useRoute();
+const siteStore = useSiteStore();
+
+const slug = route.params.slug as string;
+
+// Fetch post
+const { data: postData } = await useFetch(`/api/posts/${slug}`);
+const post = computed(() => postData.value?.data);
+
+// SEO
+useSeoMeta({
+  title: computed(() => post.value?.seoTitle || post.value?.title),
+  description: computed(
+    () => post.value?.seoDescription || post.value?.excerpt,
+  ),
+  ogTitle: computed(() => post.value?.title),
+  ogDescription: computed(() => post.value?.excerpt),
+  ogImage: computed(() => post.value?.featuredImage),
+  ogType: 'article',
+  articleAuthor: computed(() => post.value?.author.name),
+  articlePublishedTime: computed(() => post.value?.publishedAt),
+  articleModifiedTime: computed(() => post.value?.updatedAt),
+});
+
+// Comments enabled check
+const commentsEnabled = computed(() => siteStore.isCommentsEnabled);
+
+// 404 if post not found
+if (!post.value) {
+  throw createError({
+    statusCode: 404,
+    statusMessage: 'Post not found',
+  });
+}
+</script>
 <template>
   <div v-if="post">
     <!-- Post Header -->
@@ -155,51 +191,3 @@
     </div>
   </div>
 </template>
-
-<script setup lang="ts">
-import { useSiteStore } from '~/stores/site';
-
-const route = useRoute();
-const siteStore = useSiteStore();
-
-const slug = route.params.slug as string;
-
-// Fetch post
-const { data: postData } = await useFetch(`/api/posts/${slug}`);
-const post = computed(() => postData.value?.data);
-
-// SEO
-useSeoMeta({
-  title: computed(() => post.value?.seoTitle || post.value?.title),
-  description: computed(
-    () => post.value?.seoDescription || post.value?.excerpt,
-  ),
-  ogTitle: computed(() => post.value?.title),
-  ogDescription: computed(() => post.value?.excerpt),
-  ogImage: computed(() => post.value?.featuredImage),
-  ogType: 'article',
-  articleAuthor: computed(() => post.value?.author.name),
-  articlePublishedTime: computed(() => post.value?.publishedAt),
-  articleModifiedTime: computed(() => post.value?.updatedAt),
-});
-
-// Comments enabled check
-const commentsEnabled = computed(() => siteStore.isCommentsEnabled);
-
-// Utility functions
-const formatDate = (dateString: string): string => {
-  return new Intl.DateTimeFormat('en-US', {
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric',
-  }).format(new Date(dateString));
-};
-
-// 404 if post not found
-if (!post.value) {
-  throw createError({
-    statusCode: 404,
-    statusMessage: 'Post not found',
-  });
-}
-</script>

@@ -1,6 +1,4 @@
 <script setup lang="ts">
-import { useAuthStore } from '~/stores/auth';
-
 // Middleware to protect admin routes
 definePageMeta({
   middleware: ['auth', 'admin'],
@@ -75,10 +73,7 @@ useSeoMeta({
         <!-- Content wrapper -->
         <div>
           <!-- Page header -->
-          <div
-            v-if="$slots.header"
-            class="bg-white dark:bg-gray-800 shadow-sm border-b border-gray-200 dark:border-gray-700"
-          >
+          <div v-if="$slots.header">
             <div class="px-4 sm:px-6 lg:px-8 py-4">
               <slot name="header" />
             </div>
