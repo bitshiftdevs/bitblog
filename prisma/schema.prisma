@@ -11,61 +11,27 @@ datasource db {
 }
 
 model User {
-  id               String    @id @default(uuid())
+  id               String   @id @default(uuid())
   name             String
-  email            String    @unique
+  email            String   @unique
   passwordHash     String?
   avatarUrl        String?
   bio              String?
-  isActive         Boolean   @default(true)
-  twoFactorEnabled Boolean   @default(false)
+  isAdmin          Boolean  @default(false)
+  isActive         Boolean  @default(true)
+  twoFactorEnabled Boolean  @default(false)
   twoFactorSecret  String?
-  lastSeenAt       DateTime?
-  emailVerified    Boolean   @default(false)
-  emailVerifiedAt  DateTime?
-  createdAt        DateTime  @default(now())
-  updatedAt        DateTime  @updatedAt
+  emailVerified    Boolean  @default(false)
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
 
   // Relations
-  roles           UserRole[]
   authoredPosts   Post[]         @relation("AuthorPosts")
   coAuthoredPosts Post[]         @relation("CoAuthoredPosts")
-  uploadedMedia   Media[]
   postRevisions   PostRevision[]
-  sessions        Session[]
-  auditLogs       AuditLog[]
-  invitedBy       User?          @relation("UserInvites", fields: [invitedById], references: [id])
-  invitedById     String?
-  invitedUsers    User[]         @relation("UserInvites")
   comments        Comment[]
 
   @@map("users")
-}
-
-model Role {
-  id          String   @id @default(uuid())
-  name        String   @unique
-  description String?
-  permissions Json // { "posts": ["read","write","publish"], "users": ["manage"], "media": ["upload","delete"] }
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-
-  // Relations
-  users UserRole[]
-
-  @@map("roles")
-}
-
-model UserRole {
-  id     String @id @default(uuid())
-  userId String
-  roleId String
-
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
-  role Role @relation(fields: [roleId], references: [id], onDelete: Cascade)
-
-  @@unique([userId, roleId])
-  @@map("user_roles")
 }
 
 model Post {
@@ -94,13 +60,12 @@ model Post {
   author     User           @relation("AuthorPosts", fields: [authorId], references: [id])
   authorId   String
   coAuthors  User[]         @relation("CoAuthoredPosts")
-  tags       PostTag[]
-  categories PostCategory[]
+  tags       Tag[]
+  categories Category[]
   revisions  PostRevision[]
   comments   Comment[]
 
   @@index([status, publishedAt])
-  @@index([slug])
   @@index([authorId])
   @@map("posts")
 }
@@ -125,81 +90,48 @@ model PostRevision {
 }
 
 model Tag {
-  id          String   @id @default(uuid())
+  id          String   @id
   name        String
-  slug        String   @unique
   description String?
   color       String?
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
   // Relations
-  posts PostTag[]
+  posts Post[]
 
   @@map("tags")
 }
 
-model PostTag {
-  id     String @id @default(uuid())
-  postId String
-  tagId  String
-
-  post Post @relation(fields: [postId], references: [id], onDelete: Cascade)
-  tag  Tag  @relation(fields: [tagId], references: [id], onDelete: Cascade)
-
-  @@unique([postId, tagId])
-  @@map("post_tags")
-}
-
 model Category {
-  id          String   @id @default(uuid())
+  id          String   @id
   name        String
-  slug        String   @unique
   description String?
   parentId    String?
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
   // Relations
-  parent   Category?      @relation("CategoryHierarchy", fields: [parentId], references: [id])
-  children Category[]     @relation("CategoryHierarchy")
-  posts    PostCategory[]
+  parent   Category?  @relation("CategoryHierarchy", fields: [parentId], references: [id])
+  children Category[] @relation("CategoryHierarchy")
+  posts    Post[]
 
   @@map("categories")
 }
 
-model PostCategory {
-  id         String @id @default(uuid())
-  postId     String
-  categoryId String
-
-  post     Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
-  category Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
-
-  @@unique([postId, categoryId])
-  @@map("post_categories")
-}
-
 model Media {
-  id           String   @id @default(uuid())
-  key          String   @unique // R2 object key
-  url          String // Full URL to access the file
-  filename     String // Original filename
-  mimeType     String
-  size         Int // File size in bytes
-  width        Int? // For images
-  height       Int? // For images
-  altText      String?
-  caption      String?
-  uploadedById String?
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
-
-  // Relations
-  uploadedBy User? @relation(fields: [uploadedById], references: [id])
+  id        String   @id @default(uuid())
+  key       String   @unique // R2 object key
+  url       String // Full URL to access the file
+  filename  String // Original filename
+  mimeType  String
+  size      Int // File size in bytes
+  altText   String?
+  caption   String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@index([mimeType])
-  @@index([uploadedById])
   @@map("media")
 }
 
@@ -211,8 +143,6 @@ model Comment {
   authorId   String? // If registered user
   guestName  String? // For guest comments
   guestEmail String? // For guest comments
-  userAgent  String?
-  ipAddress  String?
   createdAt  DateTime      @default(now())
   updatedAt  DateTime      @updatedAt
   parentId   String? // For threaded comments
@@ -226,71 +156,6 @@ model Comment {
   @@index([postId, status])
   @@index([authorId])
   @@map("comments")
-}
-
-model Session {
-  id         String   @id @default(uuid())
-  userId     String
-  token      String   @unique
-  expiresAt  DateTime
-  userAgent  String?
-  ipAddress  String?
-  createdAt  DateTime @default(now())
-  lastUsedAt DateTime @default(now())
-
-  // Relations
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@index([token])
-  @@index([userId])
-  @@index([expiresAt])
-  @@map("sessions")
-}
-
-model SiteSettings {
-  id          String   @id @default(uuid())
-  key         String   @unique
-  value       Json
-  updatedAt   DateTime @updatedAt
-  updatedById String?
-
-  @@map("site_settings")
-}
-
-model AuditLog {
-  id        String   @id @default(uuid())
-  entity    String // "post", "user", "media", etc.
-  entityId  String
-  action    String // "create", "update", "delete", "publish", etc.
-  details   Json? // Additional context
-  userId    String?
-  ipAddress String?
-  userAgent String?
-  createdAt DateTime @default(now())
-
-  // Relations
-  user User? @relation(fields: [userId], references: [id])
-
-  @@index([entity, entityId])
-  @@index([userId])
-  @@index([createdAt])
-  @@map("audit_logs")
-}
-
-model Invitation {
-  id          String           @id @default(uuid())
-  email       String
-  token       String           @unique
-  roleIds     String[] // Array of role IDs
-  status      InvitationStatus @default(PENDING)
-  expiresAt   DateTime
-  createdAt   DateTime         @default(now())
-  usedAt      DateTime?
-  invitedById String
-
-  @@index([token])
-  @@index([email])
-  @@map("invitations")
 }
 
 // Enums
@@ -312,11 +177,4 @@ enum CommentStatus {
   APPROVED
   REJECTED
   SPAM
-}
-
-enum InvitationStatus {
-  PENDING
-  ACCEPTED
-  EXPIRED
-  REVOKED
 }

@@ -27,7 +27,7 @@
           <UBadge
             v-if="badge"
             :label="badge.toString()"
-            color="red"
+            color="error"
             variant="solid"
             class="ml-2"
           />
