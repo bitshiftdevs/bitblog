@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import type { Post } from '~~/shared/types';
+
 const route = useRoute();
 
 const slug = route.params.slug as string;
@@ -42,7 +44,7 @@ if (!post.value) {
           <UBadge
             v-for="category in post.categories"
             :key="category.id"
-            :label="category.category.name"
+            :label="category.name"
             variant="soft"
             class="mr-2"
           />
@@ -116,9 +118,9 @@ if (!post.value) {
           <UBadge
             v-for="tag in post.tags"
             :key="tag.id"
-            :label="tag.tag.name"
+            :label="tag.name"
             variant="outline"
-            :style="{ borderColor: tag.tag.color, color: tag.tag.color }"
+            :style="{ borderColor: tag.color, color: tag.color }"
           />
         </div>
       </div>

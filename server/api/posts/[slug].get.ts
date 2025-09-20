@@ -3,20 +3,12 @@ import prisma from "~~/server/db";
 export default defineEventHandler(async (event) => {
   try {
     const slug = getRouterParam(event, "id");
-
-    if (!slug) {
-      throw createError({
-        statusCode: 400,
-        statusMessage: "Slug parameter is required",
-      });
-    }
-
-    // Get post by slug
-    const post = await prisma.post.findUnique({
+    const post = await prisma.post.update({
       where: {
         slug,
-        AND: [{ status: "PUBLISHED" }, { visibility: "PUBLIC" }],
+        AND: [{ status: "PUBLISHED" }],
       },
+      data: { viewCount: { increment: 1 } },
       include: {
         author: {
           select: {
@@ -37,49 +29,22 @@ export default defineEventHandler(async (event) => {
           },
         },
         tags: {
-          select: {
-            id: true,
-            name: true,
-            color: true,
-            description: true,
-          },
+          select: { id: true, name: true, color: true, description: true },
         },
-        categories: {
-          select: {
-            id: true,
-            name: true,
-            description: true,
-          },
-        },
+        categories: { select: { id: true, name: true, description: true } },
         comments: {
           where: {
             status: "APPROVED",
             parentId: null, // Only top-level comments
           },
           include: {
-            author: {
-              select: {
-                id: true,
-                name: true,
-                avatarUrl: true,
-              },
-            },
+            author: { select: { id: true, name: true, avatarUrl: true } },
             replies: {
-              where: {
-                status: "APPROVED",
-              },
+              where: { status: "APPROVED" },
               include: {
-                author: {
-                  select: {
-                    id: true,
-                    name: true,
-                    avatarUrl: true,
-                  },
-                },
+                author: { select: { id: true, name: true, avatarUrl: true } },
               },
-              orderBy: {
-                createdAt: "asc",
-              },
+              orderBy: { createdAt: "asc" },
             },
           },
           orderBy: {
@@ -104,12 +69,6 @@ export default defineEventHandler(async (event) => {
         statusMessage: "Post not found",
       });
     }
-
-    // Increment view count
-    await prisma.post.update({
-      where: { id: post.id },
-      data: { viewCount: { increment: 1 } },
-    });
 
     // Get related posts
     const relatedPosts = await prisma.post.findMany({
