@@ -7,16 +7,11 @@
     >
       Skip to main content
     </a>
-
-    <!-- Header -->
     <PublicHeader />
-
-    <!-- Main content -->
     <main id="main-content">
       <slot />
     </main>
-
-    <!-- Footer -->
+    <LogoSeparator />
     <PublicFooter />
   </div>
 </template>

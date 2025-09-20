@@ -6,21 +6,12 @@
         <!-- Brand -->
         <div class="col-span-1 md:col-span-2">
           <div class="flex items-center space-x-2 mb-4">
-            <img
-              v-if="siteSettings?.logo"
-              :src="siteSettings.logo"
-              :alt="`${siteSettings.title} Logo`"
-              class="h-8 w-8"
+            <NuxtImg
+              src="/favicon.ico"
+              format="webp"
+              alt="BitShift Logo"
+              class="h-6 w-auto"
             />
-            <div
-              v-else
-              class="h-8 w-8 bg-primary-600 rounded-md flex items-center justify-center"
-            >
-              <UIcon name="i-lucide-square-pen" class="h-5 w-5 text-white" />
-            </div>
-            <span class="text-xl font-bold">{{
-              siteSettings?.title || "BitBlog"
-            }}</span>
           </div>
 
           <p class="text-gray-300 mb-6 max-w-md">
