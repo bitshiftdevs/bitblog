@@ -57,9 +57,7 @@ useSeoMeta({
 <template>
   <div>
     <AdminHeader />
-    <UDashboardGroup>
-      <!-- Admin Header -->
-
+    <UMain class="flex">
       <AdminSidebar />
       <!-- Main content area -->
       <div class="flex-1 min-w-0">
@@ -94,6 +92,6 @@ useSeoMeta({
       </div>
 
       <UModal />
-    </UDashboardGroup>
+    </UMain>
   </div>
 </template>

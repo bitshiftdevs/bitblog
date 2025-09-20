@@ -1,5 +1,5 @@
 <template>
-  <div class="min-h-screen bg-gray-50 dark:bg-gray-900">
+  <div>
     <!-- Skip to content link for accessibility -->
     <a
       href="#main-content"
@@ -8,9 +8,9 @@
       Skip to main content
     </a>
     <PublicHeader />
-    <main id="main-content">
+    <UMain id="main-content">
       <slot />
-    </main>
+    </UMain>
     <LogoSeparator />
     <PublicFooter />
   </div>

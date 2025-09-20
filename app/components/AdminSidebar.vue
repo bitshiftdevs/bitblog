@@ -1,14 +1,76 @@
+<script setup lang="ts">
+import { useAuthStore } from '~/stores/auth';
+
+defineEmits<{
+  close: [];
+}>();
+
+const authStore = useAuthStore();
+const user = computed(() => authStore.user);
+
+// Permission checks
+const canManageUsers = computed(
+  () =>
+    authStore.hasPermission('users.manage') || authStore.hasPermission('admin'),
+);
+
+const canManageSettings = computed(
+  () =>
+    authStore.hasPermission('settings.write') ||
+    authStore.hasPermission('admin'),
+);
+
+const canManageSystem = computed(() => authStore.hasPermission('admin'));
+
+// Stats for badges (would be fetched from API)
+const postStats = ref({ draft: 0, scheduled: 0 });
+const commentStats = ref({ pending: 0 });
+const invitationStats = ref({ pending: 0 });
+
+// Fetch stats
+const { data: statsData } = await useFetch('/api/admin/stats');
+if (statsData.value?.data) {
+  postStats.value = statsData.value.data.posts || postStats.value;
+  commentStats.value = statsData.value.data.comments || commentStats.value;
+  invitationStats.value =
+    statsData.value.data.invitations || invitationStats.value;
+}
+
+// User menu items
+const userMenuItems = computed(() => [
+  [
+    {
+      label: 'View Site',
+      icon: 'i-lucide-arrow-top-right-on-square',
+      to: '/',
+      target: '_blank',
+    },
+  ],
+  [
+    {
+      label: 'Profile',
+      icon: 'i-lucide-user',
+      to: '/admin/profile',
+    },
+  ],
+  [
+    {
+      label: 'Sign Out',
+      icon: 'i-lucide-arrow-right-on-rectangle',
+      click: async () => {
+        await authStore.logout();
+        await navigateTo('/auth/login');
+      },
+    },
+  ],
+]);
+</script>
 <template>
-  <!-- Sidebar -->
   <UDashboardSidebar collapsible resizable>
     <!-- Logo -->
-    <div class="flex items-center justify-between h-16 px-4 bg-gray-800">
+    <template #header>
       <NuxtLink to="/admin" class="flex items-center space-x-2">
-        <div
-          class="h-8 w-8 bg-primary-600 rounded-md flex items-center justify-center"
-        >
-          <UIcon name="i-lucide-settings" class="h-5 w-5 text-white" />
-        </div>
+        <UIcon name="i-lucide-settings" class="h-5 w-5 text-white" />
         <span class="text-white font-semibold">Admin Panel</span>
       </NuxtLink>
 
@@ -19,7 +81,7 @@
         class="lg:hidden text-gray-400 hover:text-white"
         @click="$emit('close')"
       />
-    </div>
+    </template>
 
     <!-- Navigation -->
     <nav class="flex-1 px-2 py-4 space-y-1 overflow-y-auto">
@@ -156,8 +218,8 @@
       </SidebarSection>
     </nav>
 
-    <!-- User info -->
-    <div class="flex-shrink-0 border-t border-gray-700 p-4">
+    <template #footer>
+      <!-- User info -->
       <div class="flex items-center">
         <UAvatar :src="user?.avatarUrl" :alt="user?.name" size="sm" />
         <div class="ml-3 flex-1 min-w-0">
@@ -179,74 +241,6 @@
           />
         </UDropdownMenu>
       </div>
-    </div>
+    </template>
   </UDashboardSidebar>
 </template>
-
-<script setup lang="ts">
-import { useAuthStore } from '~/stores/auth';
-
-defineEmits<{
-  close: [];
-}>();
-
-const authStore = useAuthStore();
-const user = computed(() => authStore.user);
-
-// Permission checks
-const canManageUsers = computed(
-  () =>
-    authStore.hasPermission('users.manage') || authStore.hasPermission('admin'),
-);
-
-const canManageSettings = computed(
-  () =>
-    authStore.hasPermission('settings.write') ||
-    authStore.hasPermission('admin'),
-);
-
-const canManageSystem = computed(() => authStore.hasPermission('admin'));
-
-// Stats for badges (would be fetched from API)
-const postStats = ref({ draft: 0, scheduled: 0 });
-const commentStats = ref({ pending: 0 });
-const invitationStats = ref({ pending: 0 });
-
-// Fetch stats
-const { data: statsData } = await useFetch('/api/admin/stats');
-if (statsData.value?.data) {
-  postStats.value = statsData.value.data.posts || postStats.value;
-  commentStats.value = statsData.value.data.comments || commentStats.value;
-  invitationStats.value =
-    statsData.value.data.invitations || invitationStats.value;
-}
-
-// User menu items
-const userMenuItems = computed(() => [
-  [
-    {
-      label: 'View Site',
-      icon: 'i-lucide-arrow-top-right-on-square',
-      to: '/',
-      target: '_blank',
-    },
-  ],
-  [
-    {
-      label: 'Profile',
-      icon: 'i-lucide-user',
-      to: '/admin/profile',
-    },
-  ],
-  [
-    {
-      label: 'Sign Out',
-      icon: 'i-lucide-arrow-right-on-rectangle',
-      click: async () => {
-        await authStore.logout();
-        await navigateTo('/auth/login');
-      },
-    },
-  ],
-]);
-</script>
