@@ -1,5 +1,4 @@
 import { useEditor, type AnyExtension } from '@tiptap/vue-3';
-import TOC from '~/utils/TOCExtension';
 
 export function useBlogEditor() {
   const editorStore = useEditorStore();
@@ -42,7 +41,6 @@ export function useBlogEditor() {
       // CodeBlockLowlight.configure({
       //   lowlight,
       // }),
-      TextStyle,
       Color,
       Highlight,
       // Table.configure({

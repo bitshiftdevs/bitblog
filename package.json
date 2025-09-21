@@ -26,6 +26,7 @@
     "@prisma/client": "^6.16.1",
     "@prisma/nuxt": "^0.3.0",
     "@tailwindcss/vite": "^4.1.13",
+    "@tiptap/pm": "^3.4.4",
     "@tiptap/vue-3": "^3.4.4",
     "@unhead/vue": "^2.0.14",
     "@vueuse/nuxt": "13.9.0",

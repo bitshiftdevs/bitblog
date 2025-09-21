@@ -27,7 +27,9 @@ const blog = useBlogEditor();
 
     <div class="px-6 py-4 min-h-[500px]">
       <!-- <TipTapBubbleMenu :editor="blog.editor.value" /> -->
-      <EditorContent :editor="blog.editor.value" class="prose max-w-none" />
+      <ClientOnly
+        ><EditorContent :editor="blog.editor.value" class="prose max-w-none" />
+      </ClientOnly>
     </div>
     <!-- <LinkModal :editor /> -->
     <!-- <ImageModal :editor /> -->
@@ -35,32 +37,4 @@ const blog = useBlogEditor();
   </div>
 </template>
 
-<style>
-/* Custom TipTap editor styles */
-.ProseMirror {
-  outline: none;
-  min-height: 400px;
-}
-
-.ProseMirror p.is-editor-empty:first-child::before {
-  color: #adb5bd;
-  content: attr(data-placeholder);
-  float: left;
-  height: 0;
-  pointer-events: none;
-}
-
-/* Add some spacing between blocks */
-.ProseMirror > * + * {
-  margin-top: 0.75em;
-}
-
-/* Placeholder styling */
-.ProseMirror p.is-empty::before {
-  color: #adb5bd;
-  content: attr(data-placeholder);
-  float: left;
-  height: 0;
-  pointer-events: none;
-}
-</style>
+<style></style>
