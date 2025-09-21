@@ -1,7 +1,5 @@
-export default defineNuxtRouteMiddleware((to, from) => {
+export default defineNuxtRouteMiddleware(async (to, from) => {
   const auth = useAuthStore();
-
-  console.log('Auth middleware: ', auth.canAccessAdmin);
   if (!auth.canAccessAdmin) {
     // Show error toast
     const toast = useToast();

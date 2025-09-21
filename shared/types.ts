@@ -13,6 +13,7 @@ export type EditorState = Post & {
   linkText: string;
   showImageModal: boolean;
   showLinkModal: boolean;
+  contentText: string;
   showYoutubeModal: boolean;
   view: EditorView;
   isFeatured: boolean;
@@ -47,6 +48,7 @@ export interface User {
   emailVerified: boolean;
   createdAt: string;
   updatedAt: string;
+  isAdmin: boolean;
 }
 
 export type PostResponse = Post & {
@@ -87,7 +89,7 @@ export type Post = {
   seoDescription?: string;
   seoKeywords?: string;
   author?: User;
-  authorId: string;
+  authorId?: string;
   coAuthors: User[];
   tags: Tag[];
   categories: Category[];
@@ -273,10 +275,6 @@ export interface RegisterRequest {
   email: string;
   password: string;
   token?: string; // Invitation token
-}
-
-export interface AuthUser extends User {
-  isAdmin: boolean;
 }
 
 // Media upload types

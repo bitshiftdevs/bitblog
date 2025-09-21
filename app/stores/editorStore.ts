@@ -14,8 +14,9 @@ export const useEditorStore = defineStore('editor', {
       title: '',
       id: '',
       authorId: auth.user?.id,
-      author: auth.user,
+      author: auth.user ?? undefined,
       content: '',
+      contentText: '',
       wordCount: 0,
       excerpt: '',
       visibility: 'PUBLIC',
@@ -98,8 +99,9 @@ export const useEditorStore = defineStore('editor', {
         .replace(/^-+|-+$/g, '');
     },
 
-    setContent(content: JSON) {
+    setContent(content: JSON, text: string) {
       this.content = content;
+      this.contentText = text;
       this.isDirty = true;
     },
     setFeaturedImage(url: string) {

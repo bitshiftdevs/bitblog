@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { MutationType } from 'pinia';
 
-definePageMeta({ layout: 'editor' });
+definePageMeta({ layout: 'editor', middleware: ['admin'] });
 const editorStore = useEditorStore();
 const blog = useBlogEditor();
 const { analyzeSeo } = useSeo();
@@ -22,7 +22,7 @@ onMounted(() => {
 // Watch editor content and analyze SEO when content changes
 editorStore.$subscribe((mutation, state) => {
   if (mutation.type === MutationType.direct) {
-    analyzeSeo(state.content);
+    analyzeSeo(state.contentText);
   }
 });
 </script>

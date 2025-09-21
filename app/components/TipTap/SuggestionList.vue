@@ -21,12 +21,12 @@ const selectItem = (props?: TiptapCommandType) => {
 };
 
 function onKeyDown(event: KeyboardEvent, props: TiptapCommandType) {
-  if (event.key === 'ArrowUp') {
+  if (event.key === 'ArrowUp' || (event.shiftKey && event.key === 'Tab')) {
     upHandler();
     return true;
   }
 
-  if (event.key === 'ArrowDown') {
+  if (event.key === 'ArrowDown' || event.key === 'Tab') {
     downHandler();
     return true;
   }

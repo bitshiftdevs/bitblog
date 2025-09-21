@@ -24,7 +24,8 @@ export function useSeo() {
 
   // Analyze the SEO of the content
   const analyzeSeo = (content: string) => {
-    const plainText = content ? content.replace(/<\/?[^>]+(>|$)/g, ' ') : '';
+    const plainText = content;
+    // const plainText = content ? content.replace(/<\/?[^>]+(>|$)/g, ' ') : '';
     const { focusKeyword, metaTitle } = seoStore;
     const firstParagraph = getFirstParagraph(content);
     const headings = getHeadings(content);

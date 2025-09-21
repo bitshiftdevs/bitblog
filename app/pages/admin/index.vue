@@ -1,3 +1,81 @@
+<script setup lang="ts">
+definePageMeta({
+  layout: 'admin',
+  middleware: ['admin'],
+});
+
+// Mock data for now - replace with actual API call
+const dashboardData = ref({
+  data: {
+    stats: {
+      posts: {
+        total: 25,
+        published: 18,
+        draft: 5,
+        scheduled: 2,
+      },
+      comments: {
+        total: 147,
+        pending: 3,
+        approved: 144,
+      },
+    },
+    recentPosts: [
+      {
+        id: '1',
+        title: 'Getting Started with TypeScript',
+        status: 'PUBLISHED',
+        updatedAt: new Date().toISOString(),
+      },
+      {
+        id: '2',
+        title: 'Modern CSS Layout Techniques',
+        status: 'DRAFT',
+        updatedAt: new Date(Date.now() - 86400000).toISOString(),
+      },
+    ],
+    pendingComments: [
+      {
+        id: '1',
+        content: 'Great article! Thanks for sharing this.',
+        guestName: 'John Doe',
+        createdAt: new Date().toISOString(),
+      },
+    ],
+  },
+});
+
+const stats = computed(() => dashboardData.value?.data?.stats || {});
+const recentPosts = computed(
+  () => dashboardData.value?.data?.recentPosts || [],
+);
+const pendingComments = computed(
+  () => dashboardData.value?.data?.pendingComments || [],
+);
+
+const getStatusColor = (status: string) => {
+  switch (status) {
+    case 'PUBLISHED':
+      return 'green';
+    case 'DRAFT':
+      return 'yellow';
+    case 'SCHEDULED':
+      return 'blue';
+    case 'ARCHIVED':
+      return 'gray';
+    default:
+      return 'gray';
+  }
+};
+
+const stripHtml = (html: string): string => {
+  return html.replace(/<[^>]*>/g, '');
+};
+
+// Set breadcrumbs
+const setBreadcrumbs = inject('setBreadcrumbs', () => {});
+setBreadcrumbs([{ label: 'Dashboard' }]);
+</script>
 <template>
   <div class="space-y-6">
     <!-- Page Header -->
@@ -169,82 +247,3 @@
     </UCard>
   </div>
 </template>
-
-<script setup lang="ts">
-definePageMeta({
-  layout: 'admin',
-  middleware: ['admin'],
-});
-
-// Mock data for now - replace with actual API call
-const dashboardData = ref({
-  data: {
-    stats: {
-      posts: {
-        total: 25,
-        published: 18,
-        draft: 5,
-        scheduled: 2,
-      },
-      comments: {
-        total: 147,
-        pending: 3,
-        approved: 144,
-      },
-    },
-    recentPosts: [
-      {
-        id: '1',
-        title: 'Getting Started with TypeScript',
-        status: 'PUBLISHED',
-        updatedAt: new Date().toISOString(),
-      },
-      {
-        id: '2',
-        title: 'Modern CSS Layout Techniques',
-        status: 'DRAFT',
-        updatedAt: new Date(Date.now() - 86400000).toISOString(),
-      },
-    ],
-    pendingComments: [
-      {
-        id: '1',
-        content: 'Great article! Thanks for sharing this.',
-        guestName: 'John Doe',
-        createdAt: new Date().toISOString(),
-      },
-    ],
-  },
-});
-
-const stats = computed(() => dashboardData.value?.data?.stats || {});
-const recentPosts = computed(
-  () => dashboardData.value?.data?.recentPosts || [],
-);
-const pendingComments = computed(
-  () => dashboardData.value?.data?.pendingComments || [],
-);
-
-const getStatusColor = (status: string) => {
-  switch (status) {
-    case 'PUBLISHED':
-      return 'green';
-    case 'DRAFT':
-      return 'yellow';
-    case 'SCHEDULED':
-      return 'blue';
-    case 'ARCHIVED':
-      return 'gray';
-    default:
-      return 'gray';
-  }
-};
-
-const stripHtml = (html: string): string => {
-  return html.replace(/<[^>]*>/g, '');
-};
-
-// Set breadcrumbs
-const setBreadcrumbs = inject('setBreadcrumbs', () => {});
-setBreadcrumbs([{ label: 'Dashboard' }]);
-</script>

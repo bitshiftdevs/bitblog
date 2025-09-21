@@ -1,8 +1,8 @@
 import { defineStore } from 'pinia';
-import type { AuthUser, LoginRequest, RegisterRequest } from '~~/shared/types';
+import type { User, LoginRequest, RegisterRequest } from '~~/shared/types';
 
 interface AuthState {
-  user: AuthUser | null;
+  user: User | null;
   token: string | null;
   refreshToken: string | null;
   isLoading: boolean;
@@ -124,7 +124,7 @@ export const useAuthStore = defineStore('auth', {
       }
 
       try {
-        const { data } = await $fetch<{ data: AuthUser }>('/api/auth/me', {
+        const { data } = await $fetch<{ data: User }>('/api/auth/me', {
           headers: {
             Authorization: `Bearer ${this.token}`,
           },
@@ -166,13 +166,13 @@ export const useAuthStore = defineStore('auth', {
       }
     },
 
-    async updateProfile(profileData: Partial<AuthUser>) {
+    async updateProfile(profileData: Partial<User>) {
       if (!this.token) {
         throw new Error('Not authenticated');
       }
 
       try {
-        const { data } = await $fetch<{ data: AuthUser }>('/api/auth/profile', {
+        const { data } = await $fetch<{ data: User }>('/api/auth/profile', {
           method: 'PUT',
           headers: {
             Authorization: `Bearer ${this.token}`,

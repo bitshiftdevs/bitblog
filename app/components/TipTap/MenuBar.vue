@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { DropdownMenuItem } from '@nuxt/ui';
-import type { Editor } from '@tiptap/vue-3';
+import type { Content, Editor } from '@tiptap/vue-3';
 import { computed, watch } from 'vue';
 import { getTemplate, templates } from '~/utils/templates';
 

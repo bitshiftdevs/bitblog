@@ -1,9 +1,5 @@
 import * as argon2 from "argon2";
 import { getDb } from "../server/db";
-import {
-  CommentCreateManyPostInput,
-  PostCreateManyInput,
-} from "../shared/generated/prisma/models";
 
 async function main() {
   console.log("🌱 Seeding database...");
