@@ -1,7 +1,6 @@
 <script setup lang="ts">
-import { ref } from 'vue';
-import { Modal, useEditorStore } from '../../stores/editorStore';
-import type { PostStatus } from '~~/shared/types';
+import { Modal } from '~~/shared/types';
+import { useEditorStore } from '../../stores/editorStore';
 import type { SelectMenuItem } from '@nuxt/ui';
 
 const editorStore = useEditorStore();

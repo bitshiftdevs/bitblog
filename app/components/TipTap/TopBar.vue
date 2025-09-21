@@ -1,27 +1,14 @@
 <script setup lang="ts">
 import type { NavigationMenuItem } from '@nuxt/ui';
-import type { EditorView } from '~~/shared/types';
 
 const editorStore = useEditorStore();
 const seoStore = useSeoStore();
 const auth = useAuth();
 
-const view = ref<EditorView>('editor');
 // Define emits
-const emit = defineEmits([
-  'toggle-sidebar',
-  'status-change',
-  'change-view',
-  'change-device',
-  'open-modal',
-]);
+const emit = defineEmits(['status-change', 'change-view', 'open-modal']);
 
-const changeView = (newView: EditorView) => {
-  view.value = newView;
-  emit('change-view', newView);
-};
-
-const items: NavigationMenuItem[][] = [
+const items = computed<NavigationMenuItem[][]>(() => [
   [
     { icon: 'i-lucide-menu', as: 'button', click: 'toggleSidebar' },
     { label: editorStore.title || 'Untitled' },
@@ -37,26 +24,20 @@ const items: NavigationMenuItem[][] = [
     {
       label: 'Editor',
       icon: 'i-lucide-pencil-line',
-      active: view.value === 'editor',
-      onSelect() {
-        changeView('editor');
-      },
+      active: editorStore.view === 'editor',
+      onSelect: () => editorStore.setView('editor'),
     },
     {
       label: 'Preview',
       icon: 'i-lucide-view',
-      active: view.value === 'preview',
-      onSelect() {
-        changeView('editor');
-      },
+      active: editorStore.view === 'preview',
+      onSelect: () => editorStore.setView('preview'),
     },
     {
       label: 'Code',
       icon: 'i-lucide-code-xml',
-      active: view.value === 'code',
-      onSelect() {
-        changeView('code');
-      },
+      active: editorStore.view === 'code',
+      onSelect: () => editorStore.setView('code'),
     },
   ],
   [
@@ -83,7 +64,7 @@ const items: NavigationMenuItem[][] = [
       icon: 'i-lucide-backpack',
     },
   ],
-];
+]);
 </script>
 
 <template>

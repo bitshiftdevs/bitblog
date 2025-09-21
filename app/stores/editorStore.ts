@@ -1,60 +1,39 @@
 import { defineStore } from 'pinia';
-import type { PostStatus } from '~~/shared/types';
-
-export type EditorState = {
-  title: string;
-  content: string;
-  wordCount: number;
-  excerpt: string;
-  slug: string;
-  featuredImage: string | undefined;
-  categories: string[];
-  tags: string[];
-  status: PostStatus;
-  publishedAt: Date | undefined;
-  lastSaved: string | null;
-  likeCount: number;
-  commentCount: number;
-  linkUrl: string;
-  linkText: string;
-  showImageModal: boolean;
-  showLinkModal: boolean;
-  showYoutubeModal: boolean;
-  isFeatured: boolean;
-  history: Array<{
-    content: string;
-    timestamp: string;
-  }>;
-  isDirty: boolean;
-};
-
-export enum Modal {
-  link,
-  image,
-  imageFeatured,
-  youtube,
-}
+import type {
+  EditorView,
+  EditorState,
+  PostResponse,
+  PostStatus,
+} from '~~/shared/types';
+import { Modal } from '~~/shared/types';
 
 export const useEditorStore = defineStore('editor', {
   state: (): EditorState => {
+    const auth = useAuthStore();
     return {
       title: '',
+      id: '',
+      authorId: auth.user?.id,
+      author: auth.user,
       content: '',
       wordCount: 0,
       excerpt: '',
+      visibility: 'PUBLIC',
       slug: '',
+      coAuthors: [],
       featuredImage: '',
       categories: [],
       tags: [],
       status: 'DRAFT',
       publishedAt: new Date(),
       lastSaved: null,
+      viewCount: 0,
       commentCount: 0,
-      likeCount: 0,
       isDirty: false,
       history: [],
       linkUrl: '',
       linkText: '',
+      view: 'editor',
       showImageModal: false,
       showLinkModal: false,
       showYoutubeModal: false,
@@ -69,7 +48,7 @@ export const useEditorStore = defineStore('editor', {
       if (!state.content) return 0;
       // Remove HTML tags and count words
       const text = state.content.replace(/<\/?[^>]+(>|$)/g, ' ');
-      return text.split(/\s+/).filter((word) => word.length > 0).length;
+      return text.split(/\s+/).filter((word: string) => word.length > 0).length;
     },
     readingTime: (state) => {
       // Average reading speed: 200 words per minute
@@ -85,11 +64,13 @@ export const useEditorStore = defineStore('editor', {
         .replace(/^-+|-+$/g, '');
     },
     getPost: (state) => {
+      // FIX: return proper post
       return {
         title: state.title,
         excerpt: state.excerpt,
         content: state.content,
         categories: state.categories,
+        author: state.author,
         tags: state.tags,
         slug: state.slug,
         publishedAt: state.publishedAt,
@@ -99,11 +80,13 @@ export const useEditorStore = defineStore('editor', {
         status: state.status,
         authorId: 'authj',
         commentCount: state.commentCount,
-        likeCount: state.likeCount,
-      };
+      } as unknown as PostResponse;
     },
   },
   actions: {
+    setView(view: EditorView) {
+      this.view = view;
+    },
     setTitle() {
       // this.title = title
       this.isDirty = true;
@@ -115,32 +98,12 @@ export const useEditorStore = defineStore('editor', {
         .replace(/^-+|-+$/g, '');
     },
 
-    setContent(content: string) {
+    setContent(content: JSON) {
       this.content = content;
       this.isDirty = true;
     },
     setFeaturedImage(url: string) {
       this.featuredImage = url;
-      this.isDirty = true;
-    },
-    addCategory(cat: string) {
-      if (!this.categories.includes(cat)) {
-        this.categories.push(cat);
-        this.isDirty = true;
-      }
-    },
-    removeCategory(category: string) {
-      this.categories = this.categories.filter((c) => c !== category);
-      this.isDirty = true;
-    },
-    addTag(tag: string) {
-      if (!this.tags.includes(tag)) {
-        this.tags.push(tag);
-        this.isDirty = true;
-      }
-    },
-    removeTag(tag: string) {
-      this.tags = this.tags.filter((t) => t !== tag);
       this.isDirty = true;
     },
     setStatus(status: PostStatus) {
@@ -198,7 +161,6 @@ export const useEditorStore = defineStore('editor', {
       this.title = edit.title;
       this.content = edit.content;
       this.publishedAt = edit.publishedAt;
-      this.likeCount = edit.likeCount;
       this.commentCount = edit.commentCount;
       this.status = edit.status;
       this.excerpt = edit.excerpt;

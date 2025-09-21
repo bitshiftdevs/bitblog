@@ -5,6 +5,30 @@ export type PostVisibility = "PUBLIC" | "PRIVATE" | "UNLISTED";
 export type CommentStatus = "PENDING" | "APPROVED" | "REJECTED" | "SPAM";
 export type InvitationStatus = "PENDING" | "ACCEPTED" | "EXPIRED" | "REVOKED";
 
+export type EditorState = Post & {
+  wordCount: number;
+  lastSaved: string | null;
+  commentCount: number;
+  linkUrl: string;
+  linkText: string;
+  showImageModal: boolean;
+  showLinkModal: boolean;
+  showYoutubeModal: boolean;
+  view: EditorView;
+  isFeatured: boolean;
+  history: Array<{
+    content: string;
+    timestamp: string;
+  }>;
+  isDirty: boolean;
+};
+
+export enum Modal {
+  link,
+  image,
+  imageFeatured,
+  youtube,
+}
 export type TiptapCommandType = {
   editor: Editor;
   range: Range;
@@ -23,26 +47,27 @@ export interface User {
   emailVerified: boolean;
   createdAt: string;
   updatedAt: string;
-  roles: UserRole[];
 }
 
-export interface Role {
-  id: string;
-  name: string;
-  description?: string;
-  permissions: Record<string, string[]>;
-  createdAt: string;
-  updatedAt: string;
-}
+export type PostResponse = Post & {
+  relatedPosts: {
+    id: string;
+    slug: string;
+    title: string;
+    excerpt: string | null;
+    featuredImage: string | null;
+    readingTime: number | null;
+    viewCount: number;
+    publishedAt: Date | null;
+    author: {
+      id: string;
+      name: string;
+      avatarUrl: string | null;
+    };
+  }[];
+};
 
-export interface UserRole {
-  id: string;
-  userId: string;
-  roleId: string;
-  role: Role;
-}
-
-export interface Post {
+export type Post = {
   id: string;
   slug: string;
   title: string;
@@ -54,14 +79,14 @@ export interface Post {
   canonicalUrl?: string;
   readingTime?: number;
   viewCount: number;
-  publishedAt?: string;
-  scheduledAt?: string;
-  createdAt: string;
-  updatedAt: string;
+  publishedAt?: Date;
+  scheduledAt?: Date;
+  createdAt?: Date;
+  updatedAt?: Date;
   seoTitle?: string;
   seoDescription?: string;
   seoKeywords?: string;
-  author: User;
+  author?: User;
   authorId: string;
   coAuthors: User[];
   tags: Tag[];
@@ -69,7 +94,7 @@ export interface Post {
   _count?: {
     comments: number;
   };
-}
+};
 
 export interface PostSummary {
   id: string;
@@ -178,87 +203,6 @@ export interface Comment {
   replies?: Comment[];
   _count?: {
     replies: number;
-  };
-}
-
-export interface Session {
-  id: string;
-  userId: string;
-  token: string;
-  expiresAt: string;
-  userAgent?: string;
-  ipAddress?: string;
-  createdAt: string;
-  lastUsedAt: string;
-}
-
-export interface AuditLog {
-  id: string;
-  entity: string;
-  entityId: string;
-  action: string;
-  details?: any;
-  userId?: string;
-  ipAddress?: string;
-  userAgent?: string;
-  createdAt: string;
-  user?: {
-    id: string;
-    name: string;
-    email: string;
-  };
-}
-
-export interface Invitation {
-  id: string;
-  email: string;
-  token: string;
-  roleIds: string[];
-  status: InvitationStatus;
-  expiresAt: string;
-  createdAt: string;
-  usedAt?: string;
-  invitedById: string;
-}
-
-export interface SiteSettings {
-  id?: string;
-  key?: string;
-  value?: any;
-  updatedAt?: string;
-  updatedById?: string;
-  general?: {
-    title?: string;
-    description?: string;
-    logo?: string;
-    favicon?: string;
-  };
-  seo?: {
-    defaultTitle?: string;
-    defaultDescription?: string;
-    defaultImage?: string;
-  };
-  social?: {
-    twitter?: string;
-    facebook?: string;
-    instagram?: string;
-    linkedin?: string;
-    github?: string;
-  };
-  comments?: {
-    enabled?: boolean;
-    requireApproval?: boolean;
-    allowGuestComments?: boolean;
-    enableNotifications?: boolean;
-  };
-  analytics?: {
-    googleAnalyticsId?: string;
-    facebookPixelId?: string;
-  };
-  email?: {
-    fromName?: string;
-    fromEmail?: string;
-    replyTo?: string;
   };
 }
 
@@ -381,7 +325,6 @@ export interface DashboardStats {
     total: number;
     totalSize: number;
   };
-  recentActivity: AuditLog[];
 }
 
 // SEO and metadata

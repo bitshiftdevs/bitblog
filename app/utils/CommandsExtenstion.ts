@@ -2,7 +2,7 @@ import Suggestion from '@tiptap/suggestion';
 import { Extension, VueRenderer } from '@tiptap/vue-3';
 import { useTippy } from 'vue-tippy';
 import SuggestionList from '~/components/TipTap/SuggestionList.vue';
-import type { TiptapCommandType } from '~~/shared/types';
+import { Modal, type TiptapCommandType } from '~~/shared/types';
 
 export const SlashCommands = Extension.create({
   name: 'slashcommands',

@@ -1,24 +1,5 @@
-import {
-  mergeAttributes,
-  useEditor,
-  VueRenderer,
-  type AnyExtension,
-} from '@tiptap/vue-3';
-import { useTippy } from 'vue-tippy';
-import SuggestionList from '~/components/TipTap/SuggestionList.vue';
+import { useEditor, type AnyExtension } from '@tiptap/vue-3';
 import TOC from '~/utils/TOCExtension';
-
-function updatePopup(
-  popup: ReturnType<typeof useTippy>,
-  component: VueRenderer,
-  props: any,
-) {
-  component.updateProps(props);
-  popup.setProps({
-    getReferenceClientRect: props.clientRect as () => DOMRect,
-    content: component.el?.getHTML(),
-  });
-}
 
 export function useBlogEditor() {
   const editorStore = useEditorStore();
@@ -91,13 +72,7 @@ export function useBlogEditor() {
     editable: true,
     injectCSS: true,
     onUpdate: ({ editor }) => {
-      editorStore.setContent(editor.getHTML());
-    },
-    onFocus: ({ editor }) => {
-      console.log('Editor focused');
-    },
-    onBlur: () => {
-      console.log('Editor blurred');
+      editorStore.setContent(editor.getJSON() as unknown as JSON);
     },
   });
 

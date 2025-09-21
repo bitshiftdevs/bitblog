@@ -162,7 +162,7 @@
                     title="View Post"
                   />
                   <UButton
-                    :to="`/admin/posts/${post.id}/edit`"
+                    :to="`/admin/posts/${post.id}`"
                     variant="ghost"
                     size="sm"
                     icon="i-lucide-square-pen"
