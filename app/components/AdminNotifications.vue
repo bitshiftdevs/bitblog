@@ -104,7 +104,7 @@ const notificationItems = computed(() => {
 const getNotificationIcon = (type: string) => {
   switch (type) {
     case 'comment':
-      return 'i-lucide-chat-bubble-left';
+      return 'i-lucide-message-circle-dashed';
     case 'post':
       return 'i-lucide-file-text';
     case 'user':

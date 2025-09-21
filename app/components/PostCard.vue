@@ -95,7 +95,7 @@
           </span>
 
           <span v-if="post._count?.comments" class="flex items-center">
-            <UIcon name="i-lucide-chat-bubble-left" class="h-4 w-4 mr-1" />
+            <UIcon name="i-lucide-message-circle" class="h-4 w-4 mr-1" />
             {{ post._count.comments }}
           </span>
         </div>

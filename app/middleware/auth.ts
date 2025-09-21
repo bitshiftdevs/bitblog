@@ -1,8 +1,7 @@
 // apps/web/middleware/auth.ts
 export default defineNuxtRouteMiddleware((to, from) => {
-  const auth = useAuth();
+  const auth = useAuthStore();
 
-  console.log('Auth middleware: ', auth.isAuthenticated);
   // Check if user is authenticated
   if (!auth.isAuthenticated) {
     // Store the intended destination

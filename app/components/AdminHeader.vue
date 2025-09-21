@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import type { DropdownMenuItem } from '@nuxt/ui';
 import { useAuthStore } from '~/stores/auth';
 
 const authStore = useAuthStore();
@@ -22,7 +23,7 @@ const pageTitle = computed(() => {
 const toggleSidebar = inject('toggleSidebar', () => {});
 
 // User menu items
-const userMenuItems = computed(() => [
+const userMenuItems = computed<DropdownMenuItem[][]>(() => [
   [
     {
       label: user.value?.name || 'User',
@@ -52,7 +53,7 @@ const userMenuItems = computed(() => [
     {
       label: 'Keyboard Shortcuts',
       icon: 'i-lucide-terminal',
-      click: () => {
+      onSelect: () => {
         // Show keyboard shortcuts modal
       },
     },
@@ -61,7 +62,7 @@ const userMenuItems = computed(() => [
     {
       label: 'Sign Out',
       icon: 'i-lucide-log-out',
-      click: async () => {
+      onSelect: async () => {
         await authStore.logout();
         await navigateTo('/auth/login');
       },

@@ -1,10 +1,4 @@
 <script setup lang="ts">
-// Middleware to protect admin routes
-definePageMeta({
-  middleware: ['auth', 'admin'],
-});
-
-// Sidebar state
 const sidebarOpen = ref(false);
 
 // Provide sidebar toggle function to child components

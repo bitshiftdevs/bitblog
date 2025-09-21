@@ -1,5 +1,5 @@
 export default defineNuxtRouteMiddleware((to, from) => {
-  const auth = useAuth();
+  const auth = useAuthStore();
 
   console.log('Auth middleware: ', auth.canAccessAdmin);
   if (!auth.canAccessAdmin) {
@@ -11,8 +11,12 @@ export default defineNuxtRouteMiddleware((to, from) => {
       color: 'error',
       duration: 5000,
     });
-
-    // Redirect to home page
-    return navigateTo('/');
+    const redirectPath = to.fullPath !== '/auth/login' ? to.fullPath : '/';
+    return navigateTo({
+      path: '/auth/login',
+      query: {
+        redirect: redirectPath,
+      },
+    });
   }
 });
