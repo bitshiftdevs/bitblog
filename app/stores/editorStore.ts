@@ -72,9 +72,7 @@ export const useEditorStore = defineStore('editor', {
         tags: state.tags,
         slug: state.slug,
         publishedAt: state.publishedAt,
-        featuredImage: state.featuredImageFile
-          ? URL.createObjectURL(state.featuredImageFile)
-          : state.featuredImage,
+        featuredImage: state.featuredImage,
         readTime: Math.ceil(state.wordCount / 200),
         updatedAt: new Date(),
         status: state.status,
