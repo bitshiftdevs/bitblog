@@ -5,9 +5,6 @@ import type { SelectMenuItem } from '@nuxt/ui';
 
 const editorStore = useEditorStore();
 
-// Form fields
-const status = ref(editorStore.status);
-
 const postStatusList: SelectMenuItem[] = [
   { label: 'DRAFT' },
   { label: 'PUBLISHED' },
@@ -28,41 +25,53 @@ const viewRevisions = () => {
   // In a real app, this would open a modal with revision history
   alert('Revision history feature would open here');
 };
-
-// Update references when store changes
-editorStore.$subscribe((mutation, state) => {
-  if (mutation.type.includes('set')) {
-    status.value = state.status;
-  }
-});
 </script>
 <template>
-  <UDashboardSidebar>
+  <UDashboardSidebar class="w-96">
     <div class="p-4">
       <h3 class="text-lg font-semibold mb-3">Post Settings</h3>
 
       <UFormField label="Post Status">
-        <USelectMenu :items="postStatusList" v-model="editorStore.getStatus" />
+        <USelectMenu :items="postStatusList" v-model="editorStore.status" />
       </UFormField>
 
       <!-- Publish Date (show if scheduled) -->
-      <div class="mb-4" v-if="editorStore.getStatus === 'SCHEDULED'">
-        <label class="block text-sm font-medium text-gray-400 mb-1"
-          >Publish Date</label
-        >
-        <input
-          type="datetime-local"
+      <UFormField
+        label="Schedule Date"
+        v-if="editorStore.status === 'SCHEDULED'"
+      >
+        <UInput
+          type="text"
           v-model="editorStore.publishedAt"
-          class="input input-info"
+          placeholder="Select publish date"
         />
-      </div>
+      </UFormField>
 
       <UFormField label="slug">
         <UInput type="text" :placeholder="editorStore.slug" disabled />
       </UFormField>
 
       <UFormField label="Featured Image">
-        <UFileUpload />
+        <div v-if="editorStore.featuredImage" class="mb-2">
+          <NuxtImg
+            :src="editorStore.featuredImage"
+            class="w-full h-auto rounded-md"
+            format="webp"
+            alt="Featured Image"
+          />
+          <button
+            @click="removeFeaturedImage"
+            class="text-red-500 text-sm mt-1"
+          >
+            Remove
+          </button>
+        </div>
+        <UButton
+          @click="selectFeaturedImage"
+          class="w-1/2"
+          icon="i-lucide-image-plus"
+          :label="editorStore.featuredImage ? 'Change Image' : 'Add Image'"
+        />
       </UFormField>
 
       <UFormField label="Excerpt">

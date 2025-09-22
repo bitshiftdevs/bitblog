@@ -1,70 +1,65 @@
-import { useEditor, type AnyExtension } from '@tiptap/vue-3';
+import type { AnyExtension, Extensions } from '@tiptap/core';
 
+const lowlight = createLowlight(commonLanguages);
+export const tiptapExtenstions: Extensions = [
+  StarterKit.configure({
+    heading: {
+      levels: [1, 2, 3, 4, 5, 6],
+    },
+    codeBlock: false,
+  }),
+  MentionExtension,
+  CodeBlockLowlight.configure({ lowlight }),
+  SlashCommands,
+  // Callout,
+  TOC.configure({
+    levels: [1, 2, 3],
+    updateEvent: 'update:toc',
+  }),
+  // BubbleMenu.configure({
+  //   element: document.querySelector('#bubblemenu') as any,
+  //   shouldShow: ({ editor, view, state, oldState, from, to }) => {
+  //     return editor.isActive('myMark')
+  //   },
+  // }),
+  TipTapImage.configure({
+    allowBase64: true,
+    inline: true,
+  }),
+  TextAlign.configure({
+    types: ['heading', 'paragraph'],
+  }),
+  Placeholder.configure({
+    placeholder: 'Start writing your amazing blog post...',
+  }),
+  Color,
+  // Highlight,
+  // Table.configure({
+  //   resizable: true,
+  // }),
+  // TableRow,
+  // TableCell,
+  // TableHeader,
+  Youtube.configure({
+    width: 640,
+    height: 480,
+    controls: true,
+  }),
+  TaskList,
+  TaskItem,
+  CharacterCount,
+  // Dropcursor,
+  Focus.configure({
+    className: 'has-focus',
+    mode: 'all',
+  }),
+  Shortcode,
+  Widget,
+];
 export function useBlogEditor() {
   const editorStore = useEditorStore();
   const editor = useEditor({
-    extensions: [
-      StarterKit.configure({
-        heading: {
-          levels: [1, 2, 3, 4, 5, 6],
-        },
-      }) as AnyExtension,
-      MentionExtension,
-      SlashCommands,
-      TOC.configure({
-        levels: [1, 2, 3],
-        updateEvent: 'update:toc',
-      }),
-      // BubbleMenu.configure({
-      //   element: document.querySelector('#bubblemenu') as any,
-      //   shouldShow: ({ editor, view, state, oldState, from, to }) => {
-      //     return editor.isActive('myMark')
-      //   },
-      // }),
-      // Link.configure({
-      //   openOnClick: false,
-      //   linkOnPaste: true,
-      //   HTMLAttributes: {
-      //     class: 'text-primary underline',
-      //   },
-      // }),
-      TipTapImage.configure({
-        allowBase64: true,
-        inline: true,
-      }),
-      TextAlign.configure({
-        types: ['heading', 'paragraph'],
-      }),
-      Placeholder.configure({
-        placeholder: 'Start writing your amazing blog post...',
-      }),
-      // CodeBlockLowlight.configure({
-      //   lowlight,
-      // }),
-      Color,
-      Highlight,
-      // Table.configure({
-      //   resizable: true,
-      // }),
-      // TableRow,
-      // TableCell,
-      // TableHeader,
-      Youtube.configure({
-        width: 640,
-        height: 480,
-        controls: true,
-      }),
-      TaskList,
-      TaskItem,
-      CharacterCount,
-      // Dropcursor,
-      Focus.configure({
-        className: 'has-focus',
-        mode: 'all',
-      }),
-      Shortcode,
-      Widget,
-    ],
+    extensions: tiptapExtenstions,
     content: editorStore.content || '',
     autofocus: 'end',
     editable: true,

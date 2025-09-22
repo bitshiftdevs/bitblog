@@ -44,6 +44,7 @@ editorStore.$subscribe((mutation, state) => {
         <div class="max-w-4xl mx-auto bg-base-200 shadow-md rounded-lg">
           <TipTapContent v-if="editorStore.view === 'editor'" />
           <pre
+            class="prose prose-slate dark:prose-invert"
             v-else-if="editorStore.view === 'code'"
           ><code>{{ editorStore.content }}</code></pre>
         </div>

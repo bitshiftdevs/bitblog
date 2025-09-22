@@ -26,7 +26,7 @@ export const useEditorStore = defineStore('editor', {
       categories: [],
       tags: [],
       status: 'DRAFT',
-      publishedAt: new Date(),
+      publishedAt: new Date().toISOString(),
       lastSaved: null,
       viewCount: 0,
       commentCount: 0,
@@ -42,9 +42,6 @@ export const useEditorStore = defineStore('editor', {
     };
   },
   getters: {
-    getStatus: (state) => {
-      return state.status;
-    },
     getWordCount: (state) => {
       if (!state.content) return 0;
       // Remove HTML tags and count words
@@ -75,7 +72,9 @@ export const useEditorStore = defineStore('editor', {
         tags: state.tags,
         slug: state.slug,
         publishedAt: state.publishedAt,
-        featuredImage: state.featuredImage,
+        featuredImage: state.featuredImageFile
+          ? URL.createObjectURL(state.featuredImageFile)
+          : state.featuredImage,
         readTime: Math.ceil(state.wordCount / 200),
         updatedAt: new Date(),
         status: state.status,
@@ -211,7 +210,7 @@ export const useEditorStore = defineStore('editor', {
       this.categories = [];
       this.tags = [];
       this.status = 'DRAFT';
-      this.publishedAt = new Date();
+      this.publishedAt = new Date().toISOString();
       this.lastSaved = null;
       this.history = [];
       this.isDirty = false;

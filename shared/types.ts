@@ -78,13 +78,14 @@ export type Post = {
   status: PostStatus;
   visibility: PostVisibility;
   featuredImage?: string;
+  featuredImageFile?: File;
   canonicalUrl?: string;
   readingTime?: number;
   viewCount: number;
-  publishedAt?: Date;
-  scheduledAt?: Date;
-  createdAt?: Date;
-  updatedAt?: Date;
+  publishedAt?: string;
+  scheduledAt?: string;
+  createdAt?: string;
+  updatedAt?: string;
   seoTitle?: string;
   seoDescription?: string;
   seoKeywords?: string;

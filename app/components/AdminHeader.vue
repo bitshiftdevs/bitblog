@@ -5,7 +5,6 @@ import { useAuthStore } from '~/stores/auth';
 const authStore = useAuthStore();
 const user = computed(() => authStore.user);
 const route = useRoute();
-
 // Get page title from route meta or generate from path
 const pageTitle = computed(() => {
   if (route.meta.title) return route.meta.title;

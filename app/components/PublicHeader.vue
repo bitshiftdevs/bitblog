@@ -1,34 +1,63 @@
 <script setup lang="ts">
-import type { DropdownMenuItem, NavigationMenuItem } from '@nuxt/ui';
+import type {
+  DropdownMenuItem,
+  NavigationMenuChildItem,
+  NavigationMenuItem,
+} from '@nuxt/ui';
 import { useAuthStore } from '~/stores/auth';
 
 const authStore = useAuthStore();
 
 // Close mobile menu on route change
 const route = useRoute();
+const { data: categoriesData, pending: categoriesLoading } = await useFetch(
+  '/api/categories',
+  {
+    query: {
+      limit: 8,
+      sortBy: 'posts',
+      sortOrder: 'desc',
+    },
+  },
+);
+
+const categories = computed(() => categoriesData.value?.data?.items || []);
 
 const navItems = computed<NavigationMenuItem[]>(() => [
   {
     label: 'Home',
+    icon: 'i-lucide-house',
     to: '/',
     active: route.path === '/',
   },
   {
     label: 'Posts',
     to: '/posts',
+    icon: 'i-lucide-newspaper',
     active: route.path.startsWith('/posts'),
   },
   {
     label: 'Categories',
     to: '/categories',
+    icon: 'i-lucide-box',
     active: route.path.startsWith('/categories'),
+    children: categories.value.map((cat): NavigationMenuChildItem => {
+      return {
+        label: cat.name,
+        description: cat.description ?? undefined,
+        icon: 'i-lucide-group',
+        to: `/categories/${cat.id}`,
+      };
+    }),
   },
   {
+    icon: 'i-lucide-tags',
     label: 'Tags',
     to: '/tags',
   },
   {
     label: 'Authors',
+    icon: 'i-lucide-user-star',
     to: '/authors',
     target: '_blank',
   },

@@ -100,13 +100,7 @@ export default defineEventHandler(
           viewCount: true,
           readingTime: true,
           publishedAt: true,
-          author: {
-            select: {
-              id: true,
-              name: true,
-              avatarUrl: true,
-            },
-          },
+          author: { select: { id: true, name: true, avatarUrl: true } },
         },
         orderBy: {
           publishedAt: "desc",

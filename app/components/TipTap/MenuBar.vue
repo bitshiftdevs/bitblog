@@ -17,6 +17,8 @@ const blockItems: DropdownMenuItem[] = [
   { label: 'Button', onSelect: () => insertButton() },
   { label: 'Accordion', onSelect: () => insertAccordion() },
   { label: 'Tabs', onSelect: () => insertTabs() },
+  { label: 'Card', onSelect: () => insertCard() },
+  { label: 'callout', onSelect: () => insertCallout() },
 ];
 
 const colorItems: any = [];
@@ -28,6 +30,10 @@ watch(
   },
   { once: true },
 );
+
+const insertCallout = () => {
+  editor.chain().focus().insertCallout({}).run();
+};
 
 function insertTemplate(type: string) {
   editor.commands.insertContent(getTemplate(type));
@@ -135,6 +141,18 @@ const insertButton = () => {
     .chain()
     .focus()
     .insertContent('<a class="btn btn-primary">Button Text</a>')
+    .run();
+};
+const insertCard = () => {
+  editor
+    .chain()
+    .focus()
+    .insertContent(
+      `::card{title="Startup" icon="i-lucide-users" color="primary" to="https://nuxt.lemonsqueezy.com" target="_blank"}
+Best suited for small teams, startups and agencies with up to 5 developers.
+::
+`,
+    )
     .run();
 };
 

@@ -6,9 +6,9 @@ import {
   createSearchFilter,
 } from "~~/server/utils/database";
 import { PostFiltersSchema, PaginationSchema } from "~~/shared/schemas";
-import { PostSummary } from "~~/shared/types";
 import prisma from "~~/server/db";
 import { PostWhereInput } from "~~/shared/generated/prisma/models";
+import { PostSummary } from "~~/shared/types";
 
 const QuerySchema = PostFiltersSchema.merge(PaginationSchema).extend({
   includeDrafts: z.boolean().optional(),
@@ -34,44 +34,13 @@ export default defineEventHandler(async (event) => {
       createPaginationOptions(paginationOptions);
 
     // Build where clause
-    const where: PostWhereInput = {};
-
-    // Status filter - only published posts for public API unless includeDrafts is true
-    if (status) {
-      where.status = status;
-    } else if (!includeDrafts) {
-      where.status = "PUBLISHED";
-    }
-
-    // Visibility filter
-    if (visibility) {
-      where.visibility = visibility;
-    } else {
-      where.visibility = "PUBLIC"; // Only public posts by default
-    }
-
-    // Author filter
-    if (authorId) {
-      where.authorId = authorId;
-    }
-
-    // Tag filter
-    if (tagId) {
-      where.tags = {
-        some: {
-          id: tagId,
-        },
-      };
-    }
-
-    // Category filter
-    if (categoryId) {
-      where.categories = {
-        some: {
-          id: categoryId,
-        },
-      };
-    }
+    const where: PostWhereInput = {
+      status: status ?? "PUBLISHED",
+      visibility: visibility ?? "PUBLIC",
+      ...(authorId && { authorId }),
+      ...(tagId && { tags: { some: { id: tagId } } }),
+      ...(categoryId && { categories: { some: { id: categoryId } } }),
+    };
 
     // Date range filter
     if (fromDate || toDate) {
@@ -104,7 +73,19 @@ export default defineEventHandler(async (event) => {
     // Get posts
     const posts = await prisma.post.findMany({
       where,
-      include: {
+      select: {
+        id: true,
+        slug: true,
+        title: true,
+        excerpt: true,
+        status: true,
+        visibility: true,
+        featuredImage: true,
+        readingTime: true,
+        viewCount: true,
+        publishedAt: true,
+        createdAt: true,
+        updatedAt: true,
         author: {
           select: { id: true, name: true, email: true, avatarUrl: true },
         },
@@ -119,33 +100,14 @@ export default defineEventHandler(async (event) => {
       take: limit,
     });
 
-    // Transform posts for response
-    const transformedPosts = posts.map(
-      (post) =>
-        ({
-          id: post.id,
-          slug: post.slug,
-          title: post.title,
-          excerpt: post.excerpt,
-          status: post.status,
-          visibility: post.visibility,
-          featuredImage: post.featuredImage,
-          readingTime: post.readingTime,
-          viewCount: post.viewCount,
-          publishedAt: post.publishedAt?.toISOString(),
-          createdAt: post.createdAt.toISOString(),
-          updatedAt: post.updatedAt.toISOString(),
-          author: post.author,
-          tags: post.tags,
-          categories: post.categories,
-          _count: post._count,
-        }) as unknown as PostSummary,
+    const result = createPaginationResult(
+      posts as unknown as PostSummary[],
+      total,
+      {
+        page,
+        limit,
+      },
     );
-
-    const result = createPaginationResult(transformedPosts, total, {
-      page,
-      limit,
-    });
 
     return {
       success: true,

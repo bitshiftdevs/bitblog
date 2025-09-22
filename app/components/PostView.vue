@@ -42,13 +42,13 @@ const { post } = defineProps<{ post: PostResponse }>();
           <div class="flex items-center space-x-4">
             <div class="flex items-center space-x-2">
               <UAvatar
-                :src="post.author.avatarUrl"
-                :alt="post.author.name"
+                :src="post.author?.avatarUrl"
+                :alt="post.author?.name"
                 size="sm"
               />
               <div>
                 <p class="font-medium text-gray-900 dark:text-white">
-                  {{ post.author.name }}
+                  {{ post.author?.name }}
                 </p>
                 <p class="text-xs">{{ formatDate(post.publishedAt) }}</p>
               </div>
@@ -65,7 +65,7 @@ const { post } = defineProps<{ post: PostResponse }>();
 
     <!-- Featured Image -->
     <div v-if="post.featuredImage" class="aspect-video max-w-4xl mx-auto">
-      <img
+      <NuxtImg
         :src="post.featuredImage"
         :alt="post.title"
         class="w-full h-full object-cover"
@@ -101,16 +101,16 @@ const { post } = defineProps<{ post: PostResponse }>();
       <div class="mt-8 pt-8 border-t border-gray-200 dark:border-gray-700">
         <div class="flex items-start space-x-4">
           <UAvatar
-            :src="post.author.avatarUrl"
-            :alt="post.author.name"
+            :src="post.author?.avatarUrl"
+            :alt="post.author?.name"
             size="lg"
           />
           <div class="flex-1">
             <h3 class="text-lg font-medium text-gray-900 dark:text-white">
-              {{ post.author.name }}
+              {{ post.author?.name }}
             </h3>
             <p
-              v-if="post.author.bio"
+              v-if="post.author?.bio"
               class="text-gray-600 dark:text-gray-300 mt-1"
             >
               {{ post.author.bio }}

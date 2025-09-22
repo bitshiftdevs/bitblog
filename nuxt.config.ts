@@ -7,15 +7,15 @@ export default defineNuxtConfig({
     '@nuxt/image',
     '@nuxt/scripts',
     '@nuxt/ui',
-    '@prisma/nuxt',
     '@pinia/nuxt',
     '@vueuse/nuxt',
+    'nuxt-tiptap-editor',
   ],
-  prisma: {
-    generateClient: false,
-    installStudio: true,
-    autoSetupPrisma: false,
-    runMigration: false,
+  tiptap: {
+    prefix: '',
+    lowlight: {
+      theme: 'tokyo-night-dark',
+    },
   },
   pinia: {
     storesDirs: ['./app/stores/**'],
@@ -37,12 +37,6 @@ export default defineNuxtConfig({
   },
   vite: {
     plugins: [tailwindcss()],
-    resolve: {
-      alias: {
-        '.prisma/client/index-browser': './shared/generated/prisma/browser.ts',
-        // '.prisma/client/default': './node_modules/@prisma/client/client.ts',
-      },
-    },
     build: {
       rollupOptions: {
         output: {

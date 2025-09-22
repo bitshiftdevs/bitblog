@@ -1,6 +1,8 @@
 @import "tailwindcss";
 @import "@nuxt/ui";
 
+@plugin "@tailwindcss/typography";
+
 @theme {
   --color-primary: #1e88e5; /* A bright blue for light mode */
 }

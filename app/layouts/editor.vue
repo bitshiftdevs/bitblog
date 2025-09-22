@@ -1,7 +1,7 @@
 <template>
   <div class="min-h-screen bg-gray-50 dark:bg-gray-900">
     <!-- Header -->
-    <TipTapTopBar />
+    <TipTapHeader />
 
     <!-- Main content -->
     <main id="main-content">

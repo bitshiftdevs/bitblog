@@ -10,7 +10,6 @@ const emit = defineEmits(['status-change', 'change-view', 'open-modal']);
 
 const items = computed<NavigationMenuItem[][]>(() => [
   [
-    { icon: 'i-lucide-menu', as: 'button', click: 'toggleSidebar' },
     { label: editorStore.title || 'Untitled' },
     {
       badge: {
@@ -54,8 +53,21 @@ const items = computed<NavigationMenuItem[][]>(() => [
       label: 'Save',
       icon: 'i-lucide-save',
       children: [
-        { description: 'Save Draft', label: 'Sa' },
-        { description: 'Publish' },
+        {
+          label: 'Save Draft',
+          icon: 'i-lucide-save',
+          onSelect: () => editorStore.saveContent('DRAFT'),
+        },
+        {
+          label: 'Save Version',
+          icon: 'i-lucide-save',
+          onSelect: () => editorStore.saveContent('ARCHIVED'),
+        },
+        {
+          label: 'Save Publish',
+          icon: 'i-lucide-save',
+          onSelect: () => editorStore.saveContent('PUBLISHED'),
+        },
       ],
       class: 'cursor-pointer',
     },
@@ -68,9 +80,10 @@ const items = computed<NavigationMenuItem[][]>(() => [
 </script>
 
 <template>
-  <header>
-    <UDashboardToolbar>
-      <UNavigationMenu :items="items" highlight class="flex-1" />
-    </UDashboardToolbar>
-  </header>
+  <UHeader>
+    <template #title>
+      <NuxtImg src="/favicon.ico" class="h-6 w-auto" format="webp" />
+    </template>
+    <UNavigationMenu :items="items" highlight class="flex-1" />
+  </UHeader>
 </template>
