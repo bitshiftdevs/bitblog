@@ -1,6 +1,10 @@
 import * as argon2 from "argon2";
 import { getDb } from "../server/db";
 
+import * as dot from "dotenv";
+
+dot.config();
+
 async function main() {
   console.log("🌱 Seeding database...");
   const prisma = getDb({ connectionString: process.env.DATABASE_URL! });
@@ -176,11 +180,12 @@ async function main() {
         content: [
           {
             type: "heading",
-            attrs: { level: 1 },
+            attrs: { id: "h-1", textAlign: null, level: 1 },
             content: [{ type: "text", text: "Modern CSS Layout Techniques" }],
           },
           {
             type: "paragraph",
+            attrs: { textAlign: null },
             content: [
               {
                 type: "text",
@@ -189,7 +194,7 @@ async function main() {
             ],
           },
         ],
-      } as any,
+      },
       status: "PUBLISHED",
       visibility: "PUBLIC",
       readingTime: 8,
@@ -210,13 +215,14 @@ async function main() {
         content: [
           {
             type: "heading",
-            attrs: { level: 1 },
+            attrs: { id: "h-1", textAlign: null, level: 1 },
             content: [
               { type: "text", text: "Building Scalable React Applications" },
             ],
           },
           {
             type: "paragraph",
+            attrs: { textAlign: null },
             content: [
               {
                 type: "text",
@@ -244,11 +250,12 @@ async function main() {
         content: [
           {
             type: "heading",
-            attrs: { level: 1 },
+            attrs: { id: "h-1", textAlign: null, level: 1 },
             content: [{ type: "text", text: "The Future of Web Development" }],
           },
           {
             type: "paragraph",
+            attrs: { textAlign: null },
             content: [
               {
                 type: "text",

@@ -4,7 +4,7 @@ export default defineNuxtRouteMiddleware((to, from) => {
     const token = localStorage.getItem('auth.token');
 
     if (token) {
-      const redirectTo = (from.query.redirect as string) || '/admin';
+      const redirectTo = (from.query.redirect as string) || '/';
       return navigateTo(redirectTo);
     }
   }

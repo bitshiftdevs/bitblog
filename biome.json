@@ -8,17 +8,12 @@
   "root": true,
   "files": {
     "ignoreUnknown": true,
-    "includes": [
-      "app/**/*",
-      "lib/**/*",
-      "nuxt.config.ts",
-      "package.json",
-      "tsconfig.json"
-    ]
+    "includes": ["app/**/*", "lib/**/*", "nuxt.config.ts", "package.json", "tsconfig.json"]
   },
   "formatter": {
     "enabled": true,
-    "indentStyle": "space"
+    "indentStyle": "space",
+    "lineWidth": 120
   },
   "linter": {
     "enabled": true,
@@ -31,7 +26,8 @@
   },
   "javascript": {
     "formatter": {
-      "quoteStyle": "single"
+      "quoteStyle": "single",
+      "lineWidth": 120
     }
   },
   "assist": {

@@ -1,10 +1,5 @@
 import { defineStore } from 'pinia';
-import type {
-  EditorView,
-  EditorState,
-  PostResponse,
-  PostStatus,
-} from '~~/shared/types';
+import type { EditorView, EditorState, PostResponse, PostStatus, Post } from '~~/shared/types';
 import { Modal } from '~~/shared/types';
 
 export const useEditorStore = defineStore('editor', {
@@ -28,8 +23,7 @@ export const useEditorStore = defineStore('editor', {
       status: 'DRAFT',
       publishedAt: new Date().toISOString(),
       lastSaved: null,
-      viewCount: 0,
-      commentCount: 0,
+      viewCount: 10,
       isDirty: false,
       history: [],
       linkUrl: '',
@@ -77,7 +71,7 @@ export const useEditorStore = defineStore('editor', {
         updatedAt: new Date(),
         status: state.status,
         authorId: 'authj',
-        commentCount: state.commentCount,
+        commentCount: 50,
       } as unknown as PostResponse;
     },
   },
@@ -96,7 +90,7 @@ export const useEditorStore = defineStore('editor', {
         .replace(/^-+|-+$/g, '');
     },
 
-    setContent(content: JSON, text: string) {
+    setContent(content: any, text: string) {
       this.content = content;
       this.contentText = text;
       this.isDirty = true;
@@ -107,10 +101,6 @@ export const useEditorStore = defineStore('editor', {
     },
     setStatus(status: PostStatus) {
       this.status = status;
-      this.isDirty = true;
-    },
-    setPublishDate(date: Date) {
-      this.publishedAt = date;
       this.isDirty = true;
     },
     async saveContent(status: PostStatus, authorId?: string) {
@@ -153,19 +143,21 @@ export const useEditorStore = defineStore('editor', {
         };
       }
     },
-    async loadPost(slug: string) {
-      // const edit = (await getPostBySlug(slug))!;
-      let edit: any;
-      this.slug = edit.slug;
-      this.title = edit.title;
-      this.content = edit.content;
-      this.publishedAt = edit.publishedAt;
-      this.commentCount = edit.commentCount;
-      this.status = edit.status;
-      this.excerpt = edit.excerpt;
-      this.tags = edit.tags || [];
-      this.categories = edit.categories;
-      this.featuredImage = edit.featuredImage;
+    async loadPost(post: Post) {
+      this.slug = post.slug;
+      this.title = post.title;
+      this.content = post.content;
+      this.publishedAt = post.publishedAt;
+      this.status = post.status;
+      this.excerpt = post.excerpt;
+      this.tags = post.tags || [];
+      this.categories = post.categories;
+      this.featuredImage = post.featuredImage;
+      this.author = post.author;
+      this.authorId = post.authorId;
+      this.coAuthors = post.coAuthors;
+      this.visibility = post.visibility;
+      this.status = post.status;
     },
     restoreVersion(index: number) {
       if (index >= 0 && index < this.history.length) {

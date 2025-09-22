@@ -8,7 +8,6 @@ export type InvitationStatus = "PENDING" | "ACCEPTED" | "EXPIRED" | "REVOKED";
 export type EditorState = Post & {
   wordCount: number;
   lastSaved: string | null;
-  commentCount: number;
   linkUrl: string;
   linkText: string;
   showImageModal: boolean;
@@ -74,11 +73,10 @@ export type Post = {
   slug: string;
   title: string;
   excerpt?: string;
-  content: any; // TipTap JSON
+  content: JSON; // TipTap JSON
   status: PostStatus;
   visibility: PostVisibility;
   featuredImage?: string;
-  featuredImageFile?: File;
   canonicalUrl?: string;
   readingTime?: number;
   viewCount: number;

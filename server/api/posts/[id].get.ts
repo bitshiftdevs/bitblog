@@ -1,68 +1,23 @@
 import prisma from "~~/server/db";
+import {
+  postEditInclude,
+  postInclude,
+  postRelated,
+} from "~~/server/utils/post.select";
 import { ApiResponse, PostResponse } from "~~/shared/types";
 
 export default defineEventHandler(
   async (event): Promise<ApiResponse<PostResponse>> => {
     try {
       const slug = getRouterParam(event, "id");
+      const { isEditing } = getQuery(event);
       const post = await prisma.post.update({
         where: {
           slug,
-          AND: [{ status: "PUBLISHED" }],
+          ...(!isEditing && { status: "PUBLISHED" }),
         },
-        data: { viewCount: { increment: 1 } },
-        include: {
-          author: {
-            select: {
-              id: true,
-              name: true,
-              email: true,
-              avatarUrl: true,
-              bio: true,
-            },
-          },
-          coAuthors: {
-            select: {
-              id: true,
-              name: true,
-              email: true,
-              avatarUrl: true,
-              bio: true,
-            },
-          },
-          tags: {
-            select: { id: true, name: true, color: true, description: true },
-          },
-          categories: { select: { id: true, name: true, description: true } },
-          comments: {
-            where: {
-              status: "APPROVED",
-              parentId: null, // Only top-level comments
-            },
-            include: {
-              author: { select: { id: true, name: true, avatarUrl: true } },
-              replies: {
-                where: { status: "APPROVED" },
-                include: {
-                  author: { select: { id: true, name: true, avatarUrl: true } },
-                },
-                orderBy: { createdAt: "asc" },
-              },
-            },
-            orderBy: {
-              createdAt: "desc",
-            },
-          },
-          _count: {
-            select: {
-              comments: {
-                where: {
-                  status: "APPROVED",
-                },
-              },
-            },
-          },
-        },
+        data: { ...(!isEditing && { viewCount: { increment: 1 } }) },
+        include: isEditing ? postEditInclude : postInclude,
       });
 
       if (!post) {
@@ -72,41 +27,33 @@ export default defineEventHandler(
         });
       }
 
-      const relatedPosts = await prisma.post.findMany({
-        where: {
-          AND: [
-            { id: { not: post.id } },
-            { status: "PUBLISHED" },
-            { visibility: "PUBLIC" },
-            {
-              OR: [
-                { tags: { some: { id: { in: post.tags.map((t) => t.id) } } } },
-                {
-                  categories: {
-                    some: { id: { in: post.categories.map((c) => c.id) } },
+      const relatedPosts =
+        !isEditing &&
+        (await prisma.post.findMany({
+          where: {
+            AND: [
+              { id: { not: post.id } },
+              { status: "PUBLISHED" },
+              { visibility: "PUBLIC" },
+              {
+                OR: [
+                  {
+                    tags: { some: { id: { in: post.tags.map((t) => t.id) } } },
                   },
-                },
-                { authorId: post.authorId },
-              ],
-            },
-          ],
-        },
-        select: {
-          id: true,
-          slug: true,
-          title: true,
-          excerpt: true,
-          featuredImage: true,
-          viewCount: true,
-          readingTime: true,
-          publishedAt: true,
-          author: { select: { id: true, name: true, avatarUrl: true } },
-        },
-        orderBy: {
-          publishedAt: "desc",
-        },
-        take: 3,
-      });
+                  {
+                    categories: {
+                      some: { id: { in: post.categories.map((c) => c.id) } },
+                    },
+                  },
+                  { authorId: post.authorId },
+                ],
+              },
+            ],
+          },
+          select: postRelated,
+          orderBy: { publishedAt: "desc" },
+          take: 3,
+        }));
 
       return {
         success: true,

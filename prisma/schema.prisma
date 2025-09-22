@@ -38,7 +38,7 @@ model Post {
   slug           String         @unique
   title          String
   excerpt        String?
-  content        String // TipTap JSON content
+  content        Json           @db.JsonB // TipTap JSON content
   status         PostStatus     @default(DRAFT)
   visibility     PostVisibility @default(PUBLIC)
   featuredImage  String?

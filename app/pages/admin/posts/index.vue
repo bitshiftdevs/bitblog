@@ -1,3 +1,92 @@
+<script setup lang="ts">
+definePageMeta({
+  layout: 'admin',
+});
+
+// Reactive state
+const selectedStatus = ref(null);
+const selectedAuthor = ref(null);
+const searchQuery = ref('');
+
+const { data } = await useFetch('/api/posts');
+
+// Mock data - replace with actual API calls
+const posts = ref(data.value?.data.items || []);
+
+// Filter options
+const statusOptions = [
+  { label: 'All Statuses', value: null },
+  { label: 'Published', value: 'PUBLISHED' },
+  { label: 'Draft', value: 'DRAFT' },
+  { label: 'Scheduled', value: 'SCHEDULED' },
+  { label: 'Archived', value: 'ARCHIVED' },
+];
+
+const authorOptions = computed(() => [
+  { label: 'All Authors', value: null },
+  ...Array.from(new Set(posts.value.map((p) => p.author.name))).map((name) => ({
+    label: name,
+    value: name,
+  })),
+]);
+
+// Filtered posts
+const filteredPosts = computed(() => {
+  return posts.value.filter((post) => {
+    const matchesStatus = !selectedStatus.value || post.status === selectedStatus.value;
+    const matchesAuthor = !selectedAuthor.value || post.author.name === selectedAuthor.value;
+    const matchesSearch =
+      !searchQuery.value ||
+      post.title.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
+      post.excerpt?.toLowerCase().includes(searchQuery.value.toLowerCase());
+
+    return matchesStatus && matchesAuthor && matchesSearch;
+  });
+});
+
+// Helper functions
+const formatDate = (dateString: string): string => {
+  return new Intl.DateTimeFormat('en-US', {
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric',
+  }).format(new Date(dateString));
+};
+
+const getStatusColor = (status: string) => {
+  switch (status) {
+    case 'PUBLISHED':
+      return 'green';
+    case 'DRAFT':
+      return 'yellow';
+    case 'SCHEDULED':
+      return 'blue';
+    case 'ARCHIVED':
+      return 'gray';
+    default:
+      return 'gray';
+  }
+};
+
+const clearFilters = () => {
+  selectedStatus.value = null;
+  selectedAuthor.value = null;
+  searchQuery.value = '';
+};
+
+const deletePost = async (post: any) => {
+  // Show confirmation dialog and delete post
+  const confirmed = confirm(`Are you sure you want to delete "${post.title}"?`);
+  if (confirmed) {
+    // TODO: Implement delete API call
+    posts.value = posts.value.filter((p) => p.id !== post.id);
+  }
+};
+
+// Set breadcrumbs
+const setBreadcrumbs = inject('setBreadcrumbs', () => {});
+setBreadcrumbs([{ label: 'Dashboard', to: '/admin' }, { label: 'Posts' }]);
+</script>
 <template>
   <div class="space-y-6">
     <!-- Page Header -->
@@ -162,7 +251,7 @@
                     title="View Post"
                   />
                   <UButton
-                    :to="`/admin/posts/${post.id}`"
+                    :to="`/admin/posts/${post.slug}`"
                     variant="ghost"
                     size="sm"
                     icon="i-lucide-square-pen"
@@ -208,138 +297,3 @@
     </UCard>
   </div>
 </template>
-
-<script setup lang="ts">
-definePageMeta({
-  layout: 'admin',
-});
-
-// Reactive state
-const selectedStatus = ref(null);
-const selectedAuthor = ref(null);
-const searchQuery = ref('');
-
-// Mock data - replace with actual API calls
-const posts = ref([
-  {
-    id: '1',
-    title: 'Getting Started with TypeScript',
-    slug: 'getting-started-with-typescript',
-    excerpt:
-      'Learn the basics of TypeScript and how it can improve your development workflow.',
-    status: 'PUBLISHED',
-    publishedAt: '2024-01-15T10:00:00Z',
-    viewCount: 1250,
-    featuredImage: null,
-    author: {
-      name: 'John Smith',
-      avatarUrl: null,
-    },
-  },
-  {
-    id: '2',
-    title: 'Modern CSS Layout Techniques',
-    slug: 'modern-css-layout-techniques',
-    excerpt:
-      'Explore modern CSS layout methods including Grid, Flexbox, and Container Queries.',
-    status: 'DRAFT',
-    publishedAt: null,
-    viewCount: 0,
-    featuredImage: null,
-    author: {
-      name: 'Sarah Johnson',
-      avatarUrl: null,
-    },
-  },
-  {
-    id: '3',
-    title: 'Building Scalable React Applications',
-    slug: 'building-scalable-react-applications',
-    excerpt: 'Best practices for structuring and scaling React applications.',
-    status: 'SCHEDULED',
-    publishedAt: '2024-02-01T09:00:00Z',
-    viewCount: 0,
-    featuredImage: null,
-    author: {
-      name: 'Mike Chen',
-      avatarUrl: null,
-    },
-  },
-]);
-
-// Filter options
-const statusOptions = [
-  { label: 'All Statuses', value: null },
-  { label: 'Published', value: 'PUBLISHED' },
-  { label: 'Draft', value: 'DRAFT' },
-  { label: 'Scheduled', value: 'SCHEDULED' },
-  { label: 'Archived', value: 'ARCHIVED' },
-];
-
-const authorOptions = computed(() => [
-  { label: 'All Authors', value: null },
-  ...Array.from(new Set(posts.value.map((p) => p.author.name))).map((name) => ({
-    label: name,
-    value: name,
-  })),
-]);
-
-// Filtered posts
-const filteredPosts = computed(() => {
-  return posts.value.filter((post) => {
-    const matchesStatus =
-      !selectedStatus.value || post.status === selectedStatus.value;
-    const matchesAuthor =
-      !selectedAuthor.value || post.author.name === selectedAuthor.value;
-    const matchesSearch =
-      !searchQuery.value ||
-      post.title.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
-      post.excerpt?.toLowerCase().includes(searchQuery.value.toLowerCase());
-
-    return matchesStatus && matchesAuthor && matchesSearch;
-  });
-});
-
-// Helper functions
-const formatDate = (dateString: string): string => {
-  return new Intl.DateTimeFormat('en-US', {
-    year: 'numeric',
-    month: 'short',
-    day: 'numeric',
-  }).format(new Date(dateString));
-};
-
-const getStatusColor = (status: string) => {
-  switch (status) {
-    case 'PUBLISHED':
-      return 'green';
-    case 'DRAFT':
-      return 'yellow';
-    case 'SCHEDULED':
-      return 'blue';
-    case 'ARCHIVED':
-      return 'gray';
-    default:
-      return 'gray';
-  }
-};
-
-const clearFilters = () => {
-  selectedStatus.value = null;
-  selectedAuthor.value = null;
-  searchQuery.value = '';
-};
-
-const deletePost = async (post: any) => {
-  // Show confirmation dialog and delete post
-  const confirmed = confirm(`Are you sure you want to delete "${post.title}"?`);
-  if (confirmed) {
-    // TODO: Implement delete API call
-    posts.value = posts.value.filter((p) => p.id !== post.id);
-  }
-};
-
-// Set breadcrumbs
-const setBreadcrumbs = inject('setBreadcrumbs', () => {});
-setBreadcrumbs([{ label: 'Dashboard', to: '/admin' }, { label: 'Posts' }]);
-</script>

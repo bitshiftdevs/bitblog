@@ -65,10 +65,7 @@ export function useBlogEditor() {
     editable: true,
     injectCSS: true,
     onUpdate: ({ editor }) => {
-      editorStore.setContent(
-        editor.getJSON() as unknown as JSON,
-        editor.getText(),
-      );
+      editorStore.setContent(editor.getJSON(), editor.getText());
     },
   });
 
