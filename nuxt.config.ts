@@ -3,14 +3,7 @@ import tailwindcss from '@tailwindcss/vite';
 export default defineNuxtConfig({
   compatibilityDate: '2025-07-15',
   devtools: { enabled: true },
-  modules: [
-    '@nuxt/image',
-    '@nuxt/scripts',
-    '@nuxt/ui',
-    '@pinia/nuxt',
-    '@vueuse/nuxt',
-    'nuxt-tiptap-editor',
-  ],
+  modules: ['@nuxt/image', '@nuxt/scripts', '@nuxt/ui', '@pinia/nuxt', '@vueuse/nuxt', 'nuxt-tiptap-editor'],
   tiptap: {
     prefix: '',
     lowlight: {
@@ -22,17 +15,7 @@ export default defineNuxtConfig({
   },
   ui: {
     theme: {
-      colors: [
-        'primary',
-        'secondary',
-        'accent',
-        'neutral',
-        'base',
-        'info',
-        'success',
-        'warning',
-        'error',
-      ],
+      colors: ['primary', 'secondary', 'accent', 'neutral', 'base', 'info', 'success', 'warning', 'error'],
     },
   },
   vite: {
@@ -55,8 +38,16 @@ export default defineNuxtConfig({
     //   // _global: {}, // Instead of 'global: ({})' :cite[4]
     // },
   },
+  fonts: {
+    families: [
+      {
+        name: 'Inter',
+        provider: 'google',
+      },
+    ],
+  },
   nitro: {
-    // preset: 'cloudflareWorker',
+    preset: 'vercel',
     // wasm: {
     //   esmImport: true,
     // },
