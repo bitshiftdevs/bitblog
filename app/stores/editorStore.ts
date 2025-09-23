@@ -4,7 +4,7 @@ import { Modal } from '~~/shared/types';
 
 export const useEditorStore = defineStore('editor', {
   state: (): EditorState => {
-    const auth = useAuthStore();
+    const auth = useAuth();
     return {
       title: '',
       id: '',

@@ -40,7 +40,7 @@ const handleLogin = async (event: FormSubmitEvent<LoginType>) => {
 
     // Redirect to intended page or dashboard
     const redirectTo = (route.query.redirect as string) || '/';
-    await router.push(redirectTo);
+    await router.replace(redirectTo);
   } catch (error: any) {
     toast.add({
       title: 'Sign in failed',

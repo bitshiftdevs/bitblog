@@ -116,7 +116,7 @@
 </template>
 
 <script setup lang="ts">
-import { useAuthStore } from '~/stores/auth';
+ 
 
 definePageMeta({
   layout: false,
@@ -129,7 +129,7 @@ useSeoMeta({
   robots: 'noindex, nofollow',
 });
 
-const authStore = useAuthStore();
+const auth = useAuth();
 const router = useRouter();
 const toast = useToast();
 
@@ -158,7 +158,7 @@ const handleRegister = async () => {
   isLoading.value = true;
 
   try {
-    await authStore.register({
+    await auth.register({
       name: form.name,
       email: form.email,
       password: form.password,

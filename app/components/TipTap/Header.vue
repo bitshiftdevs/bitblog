@@ -3,7 +3,7 @@ import type { DropdownMenuItem, NavigationMenuItem } from '@nuxt/ui';
 
 const editorStore = useEditorStore();
 const seoStore = useSeoStore();
-const auth = useAuthStore();
+const auth = useAuth();
 
 // Define emits
 const emit = defineEmits(['status-change', 'change-view', 'open-modal']);

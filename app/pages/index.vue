@@ -1,6 +1,4 @@
 <script setup lang="ts">
-import { useAuthStore } from '~/stores/auth';
-
 // Meta tags
 useSeoMeta({
   title: 'Home',
@@ -12,9 +10,7 @@ useSeoMeta({
 });
 
 // Stores
-const authStore = useAuthStore();
-
-const user = computed(() => authStore.user);
+const auth = useAuth();
 
 // Fetch featured posts
 const { data: featuredPostsData, pending } = await useFetch('/api/posts', {
@@ -26,35 +22,27 @@ const { data: featuredPostsData, pending } = await useFetch('/api/posts', {
   },
 });
 
-const featuredPosts = computed(
-  () => featuredPostsData.value?.data?.items || [],
-);
+const featuredPosts = computed(() => featuredPostsData.value?.data?.items || []);
 
 // Fetch popular categories
-const { data: categoriesData, pending: categoriesLoading } = await useFetch(
-  '/api/categories',
-  {
-    query: {
-      limit: 8,
-      sortBy: 'posts',
-      sortOrder: 'desc',
-    },
+const { data: categoriesData, pending: categoriesLoading } = await useFetch('/api/categories', {
+  query: {
+    limit: 8,
+    sortBy: 'posts',
+    sortOrder: 'desc',
   },
-);
+});
 
 const categories = computed(() => categoriesData.value?.data?.items || []);
 
 // Fetch active authors
-const { data: authorsData, pending: authorsLoading } = await useFetch(
-  '/api/authors',
-  {
-    query: {
-      limit: 8,
-      sortBy: 'posts',
-      sortOrder: 'desc',
-    },
+const { data: authorsData, pending: authorsLoading } = await useFetch('/api/authors', {
+  query: {
+    limit: 8,
+    sortBy: 'posts',
+    sortOrder: 'desc',
   },
-);
+});
 
 const authors = computed(() => authorsData.value?.data?.items || []);
 </script>
@@ -91,7 +79,7 @@ const authors = computed(() => authorsData.value?.data?.items || []);
             </UButton>
 
             <UButton
-              v-if="!user"
+              v-if="!auth.user"
               to="/auth/login"
               variant="outline"
               size="lg"
@@ -183,7 +171,7 @@ const authors = computed(() => authorsData.value?.data?.items || []);
           class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4"
         >
           <CategoryCard
-            v-for="category in categories.slice(0, 8)"
+            v-for="category in categories"
             :key="category.id"
             :category="category"
           />

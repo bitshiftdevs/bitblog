@@ -1,9 +1,7 @@
 <script setup lang="ts">
 import type { DropdownMenuItem } from '@nuxt/ui';
-import { useAuthStore } from '~/stores/auth';
 
-const authStore = useAuthStore();
-const user = computed(() => authStore.user);
+const auth = useAuth();
 const route = useRoute();
 // Get page title from route meta or generate from path
 const pageTitle = computed(() => {
@@ -25,7 +23,7 @@ const toggleSidebar = inject('toggleSidebar', () => {});
 const userMenuItems = computed<DropdownMenuItem[][]>(() => [
   [
     {
-      label: user.value?.name || 'User',
+      label: auth.user?.name || 'User',
       slot: 'account',
       disabled: true,
     },
@@ -62,7 +60,7 @@ const userMenuItems = computed<DropdownMenuItem[][]>(() => [
       label: 'Sign Out',
       icon: 'i-lucide-log-out',
       onSelect: async () => {
-        await authStore.logout();
+        await auth.logout();
         await navigateTo('/auth/login');
       },
     },
@@ -117,12 +115,12 @@ const userMenuItems = computed<DropdownMenuItem[][]>(() => [
                 >
                   <UButton variant="ghost" class="flex items-center space-x-2">
                     <UAvatar
-                      :src="user?.avatarUrl"
-                      :alt="user?.name"
+                      :src="auth.user?.avatarUrl"
+                      :alt="auth.user?.name"
                       size="sm"
                     />
                     <span class="hidden md:block text-sm font-medium">{{
-                      user?.name
+                      auth.user?.name
                     }}</span>
                     <UIcon name="i-lucide-chevron-down" class="h-4 w-4" />
                   </UButton>

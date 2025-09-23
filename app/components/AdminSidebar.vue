@@ -1,12 +1,9 @@
 <script setup lang="ts">
-import { useAuthStore } from '~/stores/auth';
-
 defineEmits<{
   close: [];
 }>();
 
-const authStore = useAuthStore();
-const user = computed(() => authStore.user);
+const auth = useAuth();
 
 // Permission checks
 
@@ -42,10 +39,7 @@ const userMenuItems = computed(() => [
     {
       label: 'Sign Out',
       icon: 'i-lucide-log-out',
-      click: async () => {
-        await authStore.logout();
-        await navigateTo('/auth/login');
-      },
+      click: async () => await auth.logout(),
     },
   ],
 ]);
@@ -167,12 +161,12 @@ const userMenuItems = computed(() => [
     <template #footer>
       <!-- User info -->
       <div class="flex items-center">
-        <UAvatar :src="user?.avatarUrl" :alt="user?.name" size="sm" />
+        <UAvatar :src="auth.user?.avatarUrl" :alt="auth.user?.name" size="sm" />
         <div class="ml-3 flex-1 min-w-0">
           <p class="text-sm font-medium text-white truncate">
-            {{ user?.name }}
+            {{ auth.user?.name }}
           </p>
-          <p class="text-xs text-gray-400 truncate">{{ user?.email }}</p>
+          <p class="text-xs text-gray-400 truncate">{{ auth.user?.email }}</p>
         </div>
 
         <UDropdownMenu

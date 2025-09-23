@@ -1,21 +1,16 @@
 import type { LoginRequest, RegisterRequest, User } from '~~/shared/types';
 
 export const useAuth = () => {
-  // const authStore = useAuthStore();
+  // const auth = useAuth();
   const { loggedIn, session, user, ready, openInPopup, clear, fetch: refreshSession } = useUserSession();
   const isLoading = ref(false);
 
   const login = async (credentials: LoginRequest) => {
-    $fetch('/api/auth/login', {
+    await $fetch('/api/auth/login', {
       method: 'POST',
       body: credentials,
-    })
-      .then(async () => {
-        // Refresh the session on client-side and redirect to the home page
-        await refreshSession();
-        await navigateTo('/');
-      })
-      .catch(() => alert('Bad credentials'));
+    });
+    await refreshSession();
   };
 
   return {

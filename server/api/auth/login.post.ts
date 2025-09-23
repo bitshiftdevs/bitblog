@@ -52,14 +52,6 @@ export default defineEventHandler(async (event) => {
       });
     }
 
-    // Create JWT token
-    const tokenPayload = {
-      sub: user.id,
-      email: user.email,
-      name: user.name,
-      isAdmin: user.isAdmin,
-    };
-
     await setUserSession(event, {
       user: {
         id: user.id,
@@ -75,69 +67,7 @@ export default defineEventHandler(async (event) => {
         isAdmin: user.isAdmin,
       },
     });
-
-    // const jwtSecret = new TextEncoder().encode(config.jwtSecret);
-    // const expiresIn = rememberMe ? "30d" : "24h";
-    // const expirationTime = rememberMe ? "30d" : "24h";
-    //
-    // const token = await new SignJWT(tokenPayload)
-    //   .setProtectedHeader({ alg: "HS256" })
-    //   .setIssuedAt()
-    //   .setExpirationTime(expirationTime)
-    //   .sign(jwtSecret);
-    //
-    // // Create refresh token if remember me is enabled
-    // let refreshToken = null;
-    // if (rememberMe) {
-    //   const refreshTokenPayload = {
-    //     sub: user.id,
-    //     type: "refresh",
-    //     iat: Math.floor(Date.now() / 1000),
-    //   };
-    //
-    //   const refreshJwtSecret = new TextEncoder().encode(
-    //     config.jwtRefreshSecret,
-    //   );
-    //   refreshToken = await new SignJWT(refreshTokenPayload)
-    //     .setProtectedHeader({ alg: "HS256" })
-    //     .setIssuedAt()
-    //     .setExpirationTime("30d")
-    //     .sign(refreshJwtSecret);
-    // }
-    //
-    // // Create session record
-    // const sessionToken = randomUUID();
-    // const expiresAt = new Date();
-    // expiresAt.setTime(
-    //   expiresAt.getTime() +
-    //     (rememberMe ? 30 * 24 * 60 * 60 * 1000 : 24 * 60 * 60 * 1000),
-    // );
-    //
-    // Transform user data for response
-    const userData = {
-      id: user.id,
-      name: user.name,
-      email: user.email,
-      avatarUrl: user.avatarUrl,
-      bio: user.bio,
-      isActive: user.isActive,
-      twoFactorEnabled: user.twoFactorEnabled,
-      emailVerified: user.emailVerified,
-      createdAt: user.createdAt,
-      updatedAt: user.updatedAt,
-      isAdmin: user.isAdmin,
-    };
-
-    return {
-      success: true,
-      data: {
-        user: userData,
-        // token,
-        // refreshToken,
-        // expiresAt: expiresAt.toISOString(),
-        // sessionId: sessionToken,
-      },
-    };
+    return {};
   } catch (error) {
     console.error("Login error:", error);
 
