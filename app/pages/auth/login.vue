@@ -2,7 +2,6 @@
 import type { FormSubmitEvent } from '@nuxt/ui';
 import { LoginSchema, type LoginType } from '~~/shared/schemas';
 
-const { loggedIn, user, fetch: refreshSession } = useUserSession();
 definePageMeta({
   layout: false,
 });
@@ -26,6 +25,7 @@ const state = reactive({
   rememberMe: false,
 });
 
+const redirectTo = (route.query.redirect as string) || '/';
 const handleLogin = async (event: FormSubmitEvent<LoginType>) => {
   isLoading.value = true;
 
@@ -39,7 +39,6 @@ const handleLogin = async (event: FormSubmitEvent<LoginType>) => {
     });
 
     // Redirect to intended page or dashboard
-    const redirectTo = (route.query.redirect as string) || '/';
     await router.replace(redirectTo);
   } catch (error: any) {
     toast.add({
@@ -51,6 +50,30 @@ const handleLogin = async (event: FormSubmitEvent<LoginType>) => {
     isLoading.value = false;
   }
 };
+
+const handleOAuthLogin = (provider: 'github' | 'google') => {
+  const redirectTo = (route.query.redirect as string) || '/';
+  const loginUrl = `/api/auth/${provider}?redirect=${encodeURIComponent(redirectTo)}`;
+  auth.openInPopup(loginUrl);
+};
+
+// Check for OAuth error messages in URL
+onMounted(() => {
+  const error = route.query.error as string;
+  if (error === 'oauth_error') {
+    toast.add({
+      title: 'OAuth Error',
+      description: 'There was an error during the OAuth login process.',
+      color: 'error',
+    });
+  } else if (error === 'oauth_failed') {
+    toast.add({
+      title: 'OAuth Failed',
+      description: 'OAuth login failed. Please try again.',
+      color: 'error',
+    });
+  }
+});
 </script>
 
 <template>
@@ -147,19 +170,19 @@ const handleLogin = async (event: FormSubmitEvent<LoginType>) => {
             <UButton
               variant="outline"
               icon="i-simple-icons-github"
-              disabled
               class="justify-center"
-            >
-              GitHub
-            </UButton>
+              label="Github"
+              @click="handleOAuthLogin('github')"
+              :disabled="isLoading"
+            />
             <UButton
               variant="outline"
               icon="i-simple-icons-google"
-              disabled
               class="justify-center"
-            >
-              Google
-            </UButton>
+              label="Google"
+              @click="handleOAuthLogin('google')"
+              :disabled="isLoading"
+            />
           </div>
         </div>
       </UCard>

@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import type { DropdownMenuItem, NavigationMenuChildItem, NavigationMenuItem } from '@nuxt/ui';
- 
 
 const auth = useAuth();
 
@@ -60,7 +59,6 @@ const navItems = computed<NavigationMenuItem[]>(() => [
 const handleLogout = async () => {
   console.log('Logging out...');
   await auth.logout();
-  await navigateTo('/');
 };
 
 // User menu items

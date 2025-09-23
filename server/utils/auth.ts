@@ -29,29 +29,26 @@ export async function verifyJWT(event: any) {
   }
 }
 
-export function requireAuth(event: any) {
-  return requireUserSession(event).then((user) => {
-    if (!user) {
-      throw createError({
-        statusCode: 401,
-        statusMessage: "Authentication required",
-      });
-    }
-    return user;
-  });
+export async function requireAuth(event: any) {
+  const user = await requireUserSession(event);
+  if (!user) {
+    throw createError({
+      statusCode: 401,
+      statusMessage: "Authentication required",
+    });
+  }
+  return user;
 }
 
-export function requireAdmin() {
-  return async (event: any) => {
-    const user = await requireAuth(event);
+export async function requireAdmin(event: any) {
+  const user = await requireAuth(event);
 
-    if (!user.isAdmin) {
-      throw createError({
-        statusCode: 403,
-        statusMessage: "Insufficient permissions",
-      });
-    }
+  if (!user.isAdmin) {
+    throw createError({
+      statusCode: 403,
+      statusMessage: "Insufficient permissions",
+    });
+  }
 
-    return user;
-  };
+  return user;
 }

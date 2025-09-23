@@ -1,11 +1,10 @@
 // apps/api/server/api/admin/dashboard.get.ts
 import prisma from "~~/server/db";
-import { verifyJWT } from "~~/server/utils/auth";
 
 export default defineEventHandler(async (event) => {
   try {
     // Verify authentication
-    const user = await verifyJWT(event);
+    const user = await requireAdmin(event);
     if (!user) {
       throw createError({
         statusCode: 401,

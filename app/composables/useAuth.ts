@@ -1,24 +1,23 @@
-import type { LoginRequest, RegisterRequest, User } from '~~/shared/types';
+import type { LoginRequest, RegisterRequest } from '~~/shared/types';
 
 export const useAuth = () => {
-  // const auth = useAuth();
   const { loggedIn, session, user, ready, openInPopup, clear, fetch: refreshSession } = useUserSession();
   const isLoading = ref(false);
 
-  const login = async (credentials: LoginRequest) => {
-    await $fetch('/api/auth/login', {
-      method: 'POST',
-      body: credentials,
-    });
-    await refreshSession();
-  };
-
   return {
-    user: user.value as User,
+    user: user.value,
     isAuthenticated: loggedIn.value,
     isReady: ready.value,
-    canAccessAdmin: computed(() => (user.value as User)?.isAdmin),
-    login,
+    canAccessAdmin: user.value?.isAdmin,
+    async login(credentials: LoginRequest) {
+      await $fetch('/api/auth/login', {
+        method: 'POST',
+        body: credentials,
+      });
+      await refreshSession();
+    },
+    refreshSession,
+    openInPopup,
     logout: async () => {
       await clear();
       await navigateTo('/auth/login');
@@ -27,7 +26,7 @@ export const useAuth = () => {
       isLoading.value = true;
 
       try {
-        const { data } = await $fetch<{ data: any }>('/api/auth/register', {
+        await $fetch<{ data: any }>('/api/auth/register', {
           method: 'POST',
           body: userData,
         });

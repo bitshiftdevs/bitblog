@@ -2,12 +2,11 @@ import * as argon2 from "argon2";
 import { getDb } from "../server/db";
 
 import * as dot from "dotenv";
-
 dot.config();
 
 async function main() {
   console.log("🌱 Seeding database...");
-  const prisma = getDb({ connectionString: process.env.DATABASE_URL! });
+  const prisma = getDb({ connectionString: process.env.NUXT_DATABASE_URL! });
   console.time("Seeding complete 🌱");
 
   // Create roles

@@ -12,5 +12,5 @@ export function getDb({ connectionString }: GetDbParams) {
   return prisma;
 }
 
-const prisma = getDb({ connectionString: process.env.DATABASE_URL! });
+const prisma = getDb({ connectionString: process.env.NUXT_DATABASE_URL || process.env.DATABASE_URL! });
 export default prisma;
