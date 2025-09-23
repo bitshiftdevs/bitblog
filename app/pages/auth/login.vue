@@ -1,11 +1,10 @@
 <script setup lang="ts">
 import type { FormSubmitEvent } from '@nuxt/ui';
-import { useAuthStore } from '~/stores/auth';
 import { LoginSchema, type LoginType } from '~~/shared/schemas';
 
+const { loggedIn, user, fetch: refreshSession } = useUserSession();
 definePageMeta({
   layout: false,
-  middleware: ['guest'],
 });
 
 useSeoMeta({
@@ -14,7 +13,7 @@ useSeoMeta({
   robots: 'noindex, nofollow',
 });
 
-const authStore = useAuthStore();
+const auth = useAuth();
 const route = useRoute();
 const router = useRouter();
 const toast = useToast();
@@ -31,7 +30,7 @@ const handleLogin = async (event: FormSubmitEvent<LoginType>) => {
   isLoading.value = true;
 
   try {
-    await authStore.login(event.data);
+    await auth.login(event.data);
 
     toast.add({
       title: 'Welcome back!',

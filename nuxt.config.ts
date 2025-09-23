@@ -3,7 +3,15 @@ import tailwindcss from '@tailwindcss/vite';
 export default defineNuxtConfig({
   compatibilityDate: '2025-07-15',
   devtools: { enabled: true },
-  modules: ['@nuxt/image', '@nuxt/scripts', '@nuxt/ui', '@pinia/nuxt', '@vueuse/nuxt', 'nuxt-tiptap-editor'],
+  modules: [
+    '@nuxt/image',
+    '@nuxt/scripts',
+    '@nuxt/ui',
+    '@pinia/nuxt',
+    '@vueuse/nuxt',
+    'nuxt-tiptap-editor',
+    'nuxt-auth-utils',
+  ],
   tiptap: {
     prefix: '',
     lowlight: {

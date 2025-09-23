@@ -8,12 +8,12 @@ import { randomUUID } from "node:crypto";
 
 export default defineEventHandler(async (event) => {
   try {
-    const body = await readBody(event);
-    const { email, password, rememberMe } = LoginSchema.parse(body);
+    const { email, password, rememberMe } = await readValidatedBody(
+      event,
+      LoginSchema.parse,
+    );
 
     const config = useRuntimeConfig();
-
-    // Find user by email
     const user = await prisma.user.findUnique({
       where: {
         email,
@@ -27,7 +27,6 @@ export default defineEventHandler(async (event) => {
       });
     }
 
-    // Check if user is active
     if (!user.isActive) {
       throw createError({
         statusCode: 403,
@@ -59,46 +58,61 @@ export default defineEventHandler(async (event) => {
       email: user.email,
       name: user.name,
       isAdmin: user.isAdmin,
-      iat: Math.floor(Date.now() / 1000),
     };
 
-    const jwtSecret = new TextEncoder().encode(config.jwtSecret);
-    const expiresIn = rememberMe ? "30d" : "24h";
-    const expirationTime = rememberMe ? "30d" : "24h";
+    await setUserSession(event, {
+      user: {
+        id: user.id,
+        name: user.name,
+        email: user.email,
+        avatarUrl: user.avatarUrl,
+        bio: user.bio,
+        isActive: user.isActive,
+        twoFactorEnabled: user.twoFactorEnabled,
+        emailVerified: user.emailVerified,
+        createdAt: user.createdAt,
+        updatedAt: user.updatedAt,
+        isAdmin: user.isAdmin,
+      },
+    });
 
-    const token = await new SignJWT(tokenPayload)
-      .setProtectedHeader({ alg: "HS256" })
-      .setIssuedAt()
-      .setExpirationTime(expirationTime)
-      .sign(jwtSecret);
-
-    // Create refresh token if remember me is enabled
-    let refreshToken = null;
-    if (rememberMe) {
-      const refreshTokenPayload = {
-        sub: user.id,
-        type: "refresh",
-        iat: Math.floor(Date.now() / 1000),
-      };
-
-      const refreshJwtSecret = new TextEncoder().encode(
-        config.jwtRefreshSecret,
-      );
-      refreshToken = await new SignJWT(refreshTokenPayload)
-        .setProtectedHeader({ alg: "HS256" })
-        .setIssuedAt()
-        .setExpirationTime("30d")
-        .sign(refreshJwtSecret);
-    }
-
-    // Create session record
-    const sessionToken = randomUUID();
-    const expiresAt = new Date();
-    expiresAt.setTime(
-      expiresAt.getTime() +
-        (rememberMe ? 30 * 24 * 60 * 60 * 1000 : 24 * 60 * 60 * 1000),
-    );
-
+    // const jwtSecret = new TextEncoder().encode(config.jwtSecret);
+    // const expiresIn = rememberMe ? "30d" : "24h";
+    // const expirationTime = rememberMe ? "30d" : "24h";
+    //
+    // const token = await new SignJWT(tokenPayload)
+    //   .setProtectedHeader({ alg: "HS256" })
+    //   .setIssuedAt()
+    //   .setExpirationTime(expirationTime)
+    //   .sign(jwtSecret);
+    //
+    // // Create refresh token if remember me is enabled
+    // let refreshToken = null;
+    // if (rememberMe) {
+    //   const refreshTokenPayload = {
+    //     sub: user.id,
+    //     type: "refresh",
+    //     iat: Math.floor(Date.now() / 1000),
+    //   };
+    //
+    //   const refreshJwtSecret = new TextEncoder().encode(
+    //     config.jwtRefreshSecret,
+    //   );
+    //   refreshToken = await new SignJWT(refreshTokenPayload)
+    //     .setProtectedHeader({ alg: "HS256" })
+    //     .setIssuedAt()
+    //     .setExpirationTime("30d")
+    //     .sign(refreshJwtSecret);
+    // }
+    //
+    // // Create session record
+    // const sessionToken = randomUUID();
+    // const expiresAt = new Date();
+    // expiresAt.setTime(
+    //   expiresAt.getTime() +
+    //     (rememberMe ? 30 * 24 * 60 * 60 * 1000 : 24 * 60 * 60 * 1000),
+    // );
+    //
     // Transform user data for response
     const userData = {
       id: user.id,
@@ -109,8 +123,8 @@ export default defineEventHandler(async (event) => {
       isActive: user.isActive,
       twoFactorEnabled: user.twoFactorEnabled,
       emailVerified: user.emailVerified,
-      createdAt: user.createdAt.toISOString(),
-      updatedAt: user.updatedAt.toISOString(),
+      createdAt: user.createdAt,
+      updatedAt: user.updatedAt,
       isAdmin: user.isAdmin,
     };
 
@@ -118,10 +132,10 @@ export default defineEventHandler(async (event) => {
       success: true,
       data: {
         user: userData,
-        token,
-        refreshToken,
-        expiresAt: expiresAt.toISOString(),
-        sessionId: sessionToken,
+        // token,
+        // refreshToken,
+        // expiresAt: expiresAt.toISOString(),
+        // sessionId: sessionToken,
       },
     };
   } catch (error) {

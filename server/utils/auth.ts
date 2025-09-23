@@ -30,7 +30,7 @@ export async function verifyJWT(event: any) {
 }
 
 export function requireAuth(event: any) {
-  return verifyJWT(event).then((user) => {
+  return requireUserSession(event).then((user) => {
     if (!user) {
       throw createError({
         statusCode: 401,
