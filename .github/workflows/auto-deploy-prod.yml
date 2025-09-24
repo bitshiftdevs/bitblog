@@ -1,0 +1,171 @@
+name: Auto Deploy to Production
+
+on:
+  push:
+    branches: [ main ]
+
+env:
+  PROD_BRANCH: prod
+  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+jobs:
+  auto-deploy:
+    name: Auto Deploy to Production Branch
+    runs-on: ubuntu-latest
+
+    # Only run if commit message contains (prod)
+    if: contains(github.event.head_commit.message, '(prod)')
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Fetch full history for proper branching
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Configure Git
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+
+      - name: Get commit details
+        id: commit-info
+        run: |
+          echo "commit-sha=${{ github.sha }}" >> $GITHUB_OUTPUT
+          echo "commit-message=${{ github.event.head_commit.message }}" >> $GITHUB_OUTPUT
+          echo "author=${{ github.event.head_commit.author.name }}" >> $GITHUB_OUTPUT
+
+      - name: Check if prod branch exists
+        id: check-branch
+        run: |
+          if git show-ref --verify --quiet refs/remotes/origin/${{ env.PROD_BRANCH }}; then
+            echo "branch-exists=true" >> $GITHUB_OUTPUT
+            echo "Production branch exists"
+          else
+            echo "branch-exists=false" >> $GITHUB_OUTPUT
+            echo "Production branch does not exist, will create it"
+          fi
+
+      - name: Create or update prod branch
+        run: |
+          if [ "${{ steps.check-branch.outputs.branch-exists }}" == "true" ]; then
+            # Branch exists, checkout and merge
+            git checkout ${{ env.PROD_BRANCH }}
+            git pull origin ${{ env.PROD_BRANCH }}
+            git merge ${{ github.sha }} --no-ff -m "Deploy to production: ${{ steps.commit-info.outputs.commit-message }}"
+          else
+            # Branch doesn't exist, create it
+            git checkout -b ${{ env.PROD_BRANCH }}
+          fi
+
+      - name: Push to production branch
+        run: |
+          git push origin ${{ env.PROD_BRANCH }}
+
+      - name: Create deployment tag
+        run: |
+          # Create a tag for this production deployment
+          timestamp=$(date +%Y%m%d-%H%M%S)
+          tag_name="prod-deploy-${timestamp}"
+          git tag -a "${tag_name}" -m "Production deployment at ${timestamp}"
+          git push origin "${tag_name}"
+          echo "Created deployment tag: ${tag_name}"
+
+      - name: Post deployment summary
+        run: |
+          echo "## 🚀 Production Deployment Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Commit:** \`${{ steps.commit-info.outputs.commit-sha }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "**Author:** ${{ steps.commit-info.outputs.author }}" >> $GITHUB_STEP_SUMMARY
+          echo "**Message:** ${{ steps.commit-info.outputs.commit-message }}" >> $GITHUB_STEP_SUMMARY
+          echo "**Branch:** \`${{ env.PROD_BRANCH }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "**Time:** $(date -u '+%Y-%m-%d %H:%M:%S UTC')" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "✅ Successfully deployed to production branch!" >> $GITHUB_STEP_SUMMARY
+
+      # Optional: Send Slack notification (requires SLACK_WEBHOOK_URL secret)
+      - name: Send Slack notification
+        if: env.SLACK_WEBHOOK_URL != ''
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+        run: |
+          curl -X POST -H 'Content-type: application/json' \
+            --data "{
+              \"text\": \"🚀 Production deployment completed!\",
+              \"attachments\": [
+                {
+                  \"color\": \"good\",
+                  \"fields\": [
+                    {
+                      \"title\": \"Commit\",
+                      \"value\": \"${{ steps.commit-info.outputs.commit-sha }}\",
+                      \"short\": true
+                    },
+                    {
+                      \"title\": \"Author\",
+                      \"value\": \"${{ steps.commit-info.outputs.author }}\",
+                      \"short\": true
+                    },
+                    {
+                      \"title\": \"Message\",
+                      \"value\": \"${{ steps.commit-info.outputs.commit-message }}\",
+                      \"short\": false
+                    }
+                  ]
+                }
+              ]
+            }" \
+            $SLACK_WEBHOOK_URL
+
+  # Rollback job (manual trigger only)
+  rollback:
+    name: Rollback Production (Manual)
+    runs-on: ubuntu-latest
+    if: github.event_name == 'workflow_dispatch'
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Configure Git
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action Rollback"
+
+      - name: Find previous production tag
+        id: previous-tag
+        run: |
+          # Get the second most recent production deployment tag
+          previous_tag=$(git tag -l "prod-deploy-*" --sort=-version:refname | sed -n '2p')
+          if [ -z "$previous_tag" ]; then
+            echo "No previous deployment tag found"
+            exit 1
+          fi
+          echo "previous-tag=$previous_tag" >> $GITHUB_OUTPUT
+          echo "Found previous deployment: $previous_tag"
+
+      - name: Rollback to previous version
+        run: |
+          git checkout ${{ env.PROD_BRANCH }}
+          git reset --hard ${{ steps.previous-tag.outputs.previous-tag }}
+          git push --force-with-lease origin ${{ env.PROD_BRANCH }}
+
+      - name: Create rollback tag
+        run: |
+          timestamp=$(date +%Y%m%d-%H%M%S)
+          rollback_tag="prod-rollback-${timestamp}"
+          git tag -a "${rollback_tag}" -m "Production rollback at ${timestamp}"
+          git push origin "${rollback_tag}"
+          echo "Created rollback tag: ${rollback_tag}"
+
+      - name: Post rollback summary
+        run: |
+          echo "## 🔄 Production Rollback Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Rolled back to:** \`${{ steps.previous-tag.outputs.previous-tag }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "**Time:** $(date -u '+%Y-%m-%d %H:%M:%S UTC')" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "⚠️ Production has been rolled back to previous version!" >> $GITHUB_STEP_SUMMARY
