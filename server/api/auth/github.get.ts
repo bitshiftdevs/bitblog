@@ -1,40 +1,25 @@
 import prisma from "~~/server/db";
 
 export default defineOAuthGitHubEventHandler({
-  config: {
-    emailRequired: true,
-  },
   async onSuccess(event, { user, tokens }) {
     try {
       // Check if user already exists by email
-      let dbUser = await prisma.user.findUnique({
-        where: { email: user.email },
+      let dbUser = await prisma.user.upsert({
+        where: { email: user.email! },
+        omit: { createdAt: true, updatedAt: true },
+        create: {
+          name: user.name || user.login || "GitHub User",
+          email: user.email!,
+          avatarUrl: user.avatar_url,
+          bio: user.bio,
+          emailVerified: true, // GitHub emails are verified
+          isActive: true,
+          isAdmin: false,
+        },
+        update: {
+          emailVerified: true,
+        },
       });
-
-      if (!dbUser) {
-        // Create new user
-        dbUser = await prisma.user.create({
-          data: {
-            name: user.name || user.login || "GitHub User",
-            email: user.email,
-            avatarUrl: user.avatar_url,
-            bio: user.bio,
-            emailVerified: true, // GitHub emails are verified
-            isActive: true,
-            isAdmin: false,
-          },
-        });
-      } else {
-        // Update existing user with GitHub info if needed
-        dbUser = await prisma.user.update({
-          where: { id: dbUser.id },
-          data: {
-            avatarUrl: user.avatar_url || dbUser.avatarUrl,
-            bio: user.bio || dbUser.bio,
-            emailVerified: true,
-          },
-        });
-      }
 
       // Set full user session
       await setUserSession(event, {
@@ -47,8 +32,6 @@ export default defineOAuthGitHubEventHandler({
           isActive: dbUser.isActive,
           twoFactorEnabled: dbUser.twoFactorEnabled,
           emailVerified: dbUser.emailVerified,
-          createdAt: dbUser.createdAt,
-          updatedAt: dbUser.updatedAt,
           isAdmin: dbUser.isAdmin,
         },
       });

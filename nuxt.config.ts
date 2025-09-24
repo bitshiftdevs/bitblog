@@ -12,6 +12,13 @@ export default defineNuxtConfig({
     'nuxt-tiptap-editor',
     'nuxt-auth-utils',
   ],
+  typescript: {
+    sharedTsConfig: {
+      compilerOptions: {
+        strictNullChecks: false,
+      },
+    },
+  },
   tiptap: {
     prefix: '',
     lowlight: {

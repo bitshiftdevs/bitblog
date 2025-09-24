@@ -1,10 +1,8 @@
 // server/api/auth/login.post.ts
 import { z } from "zod";
 import * as argon2 from "argon2";
-import { SignJWT } from "jose";
 import { LoginSchema } from "~~/shared/schemas";
 import prisma from "~~/server/db";
-import { randomUUID } from "node:crypto";
 
 export default defineEventHandler(async (event) => {
   try {
@@ -13,11 +11,11 @@ export default defineEventHandler(async (event) => {
       LoginSchema.parse,
     );
 
-    const config = useRuntimeConfig();
     const user = await prisma.user.findUnique({
       where: {
         email,
       },
+      omit: { createdAt: true, updatedAt: true },
     });
 
     if (!user || !user.passwordHash) {
@@ -35,7 +33,7 @@ export default defineEventHandler(async (event) => {
     }
 
     // Verify password
-    const isValidPassword = await argon2.verify(user.passwordHash, password);
+    const isValidPassword = await verifyPassword(user.passwordHash, password);
 
     if (!isValidPassword) {
       throw createError({
@@ -62,8 +60,6 @@ export default defineEventHandler(async (event) => {
         isActive: user.isActive,
         twoFactorEnabled: user.twoFactorEnabled,
         emailVerified: user.emailVerified,
-        createdAt: user.createdAt,
-        updatedAt: user.updatedAt,
         isAdmin: user.isAdmin,
       },
     });

@@ -54,7 +54,8 @@ const handleLogin = async (event: FormSubmitEvent<LoginType>) => {
 const handleOAuthLogin = (provider: 'github' | 'google') => {
   const redirectTo = (route.query.redirect as string) || '/';
   const loginUrl = `/api/auth/${provider}?redirect=${encodeURIComponent(redirectTo)}`;
-  auth.openInPopup(loginUrl);
+  window.location.href = loginUrl;
+  // auth.openInPopup(loginUrl);
 };
 
 // Check for OAuth error messages in URL
