@@ -30,14 +30,14 @@ export async function verifyJWT(event: any) {
 }
 
 export async function requireAuth(event: any) {
-  const user = await requireUserSession(event);
-  if (!user) {
+  const session = await requireUserSession(event);
+  if (!session) {
     throw createError({
       statusCode: 401,
       statusMessage: "Authentication required",
     });
   }
-  return user;
+  return session.user;
 }
 
 export async function requireAdmin(event: any) {
