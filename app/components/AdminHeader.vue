@@ -2,19 +2,6 @@
 import type { DropdownMenuItem } from '@nuxt/ui';
 
 const auth = useAuth();
-const route = useRoute();
-// Get page title from route meta or generate from path
-const pageTitle = computed(() => {
-  if (route.meta.title) return route.meta.title;
-
-  const segments = route.path.split('/').filter(Boolean);
-  if (segments.length >= 2) {
-    const section = segments[1];
-    return section.charAt(0).toUpperCase() + section.slice(1);
-  }
-
-  return 'Dashboard';
-});
 
 // Sidebar toggle (injected from layout)
 const toggleSidebar = inject('toggleSidebar', () => {});

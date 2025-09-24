@@ -1,5 +1,6 @@
 import { PrismaPg } from "@prisma/adapter-pg";
 import { PrismaClient } from "../shared/generated/prisma/client";
+import { withAccelerate } from "@prisma/extension-accelerate";
 
 export type GetDbParams = {
   connectionString: string;
@@ -7,10 +8,12 @@ export type GetDbParams = {
 
 export function getDb({ connectionString }: GetDbParams) {
   const pool = new PrismaPg({ connectionString });
-  const prisma = new PrismaClient({ adapter: pool });
+  const prisma = new PrismaClient({ adapter: pool }).$extends(withAccelerate());
 
   return prisma;
 }
 
-const prisma = getDb({ connectionString: process.env.NUXT_DATABASE_URL || process.env.DATABASE_URL! });
+const prisma = getDb({
+  connectionString: process.env.NUXT_DATABASE_URL || process.env.DATABASE_URL!,
+});
 export default prisma;
