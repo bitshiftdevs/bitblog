@@ -39,11 +39,11 @@ export default defineOAuthGoogleEventHandler({
       return sendRedirect(event, "/");
     } catch (error) {
       console.error("GitHub OAuth success handler error:", error);
-      return sendRedirect(event, "/auth/login?error=oauth_error");
+      return sendRedirect(event, "/auth?error=oauth_error");
     }
   },
   onError(event, error) {
     console.error("GitHub OAuth error:", error);
-    return sendRedirect(event, "/auth/login?error=oauth_failed");
+    return sendRedirect(event, "/auth?error=oauth_failed");
   },
 });
