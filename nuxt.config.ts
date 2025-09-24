@@ -3,16 +3,29 @@ import tailwindcss from '@tailwindcss/vite';
 export default defineNuxtConfig({
   compatibilityDate: '2025-07-15',
   devtools: { enabled: true },
-  modules: ['@nuxt/image', '@nuxt/scripts', '@nuxt/ui', '@pinia/nuxt', '@vueuse/nuxt', 'nuxt-tiptap-editor'],
+  modules: [
+    '@nuxt/image',
+    '@nuxt/scripts',
+    '@nuxt/ui',
+    '@pinia/nuxt',
+    '@vueuse/nuxt',
+    'nuxt-tiptap-editor',
+    'nuxt-auth-utils',
+  ],
+  typescript: {
+    sharedTsConfig: {
+      compilerOptions: {
+        strictNullChecks: false,
+      },
+    },
+  },
   tiptap: {
     prefix: '',
     lowlight: {
       theme: 'tokyo-night-dark',
     },
   },
-  pinia: {
-    storesDirs: ['./app/stores/**'],
-  },
+  pinia: { storesDirs: ['./app/stores/**'] },
   ui: {
     theme: {
       colors: ['primary', 'secondary', 'accent', 'neutral', 'base', 'info', 'success', 'warning', 'error'],
@@ -22,59 +35,20 @@ export default defineNuxtConfig({
     plugins: [tailwindcss()],
     build: {
       rollupOptions: {
-        output: {
-          manualChunks: {
-            vendor: ['vue', 'vue-router', 'pinia'],
-          },
-        },
+        output: { manualChunks: { vendor: ['vue', 'vue-router', 'pinia'] } },
       },
     },
-    // assetsInclude: ['**/*.wasm'],
-    // optimizeDeps: {
-    //   exclude: ['@prisma/client'],
-    // },
-    // define: {
-    //   __VUE_PROD_HYDRATION_MISMATCH_DETAILS__: false,
-    //   // _global: {}, // Instead of 'global: ({})' :cite[4]
-    // },
   },
-  fonts: {
-    families: [
-      {
-        name: 'Inter',
-        provider: 'google',
-      },
-    ],
-  },
-  nitro: {
-    preset: 'vercel',
-    // wasm: {
-    //   esmImport: true,
-    // },
-    // cloudflare: {
-    //   nodeCompat: true,
-    // },
-    // experimental: { wasm: true },
-  },
+  fonts: { families: [{ name: 'Inter', provider: 'google' }] },
+  nitro: { preset: 'vercel' },
   experimental: { typedPages: true, viewTransition: true },
   serverDir: './server/',
-  image: {
-    cloudflare: {
-      //TODO: add base url
-    },
-  },
   css: ['~/assets/css/global.css'],
-  vue: {
-    propsDestructure: true,
-  },
-  // typescript: {
-  // 	strict: true,
-  // 	typeCheck: true,
-  // },
+  vue: { propsDestructure: true },
   runtimeConfig: {
     // Private keys (only available on server-side)
-    jwtSecret: process.env.JWT_SECRET,
-    databaseUrl: process.env.DATABASE_URL,
+    jwtSecret: '',
+    databaseUrl: '',
     r2BucketName: '',
     r2AccessKeyId: '',
     r2SecretAccessKey: '',
@@ -93,6 +67,18 @@ export default defineNuxtConfig({
       r2PublicUrl: '',
       cloudflareImagesUrl: '',
       nodeEnv: '',
+    },
+    oauth: {
+      google: {
+        clientId: '',
+        clientSecret: '',
+        redirectURL: '',
+      },
+      github: {
+        clientId: '',
+        clientSecret: '',
+        redirectURL: '',
+      },
     },
   },
   app: {

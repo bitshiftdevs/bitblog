@@ -1,5 +1,6 @@
 export default defineNuxtRouteMiddleware(async (to, from) => {
-  const auth = useAuthStore();
+  const auth = useAuth();
+  // if (!auth.isReady) await auth.refreshSession();
   if (!auth.canAccessAdmin) {
     // Show error toast
     const toast = useToast();

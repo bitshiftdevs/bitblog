@@ -1,25 +1,17 @@
 <script setup lang="ts">
-import type {
-  DropdownMenuItem,
-  NavigationMenuChildItem,
-  NavigationMenuItem,
-} from '@nuxt/ui';
-import { useAuthStore } from '~/stores/auth';
+import type { DropdownMenuItem, NavigationMenuChildItem, NavigationMenuItem } from '@nuxt/ui';
 
-const authStore = useAuthStore();
+const auth = useAuth();
 
 // Close mobile menu on route change
 const route = useRoute();
-const { data: categoriesData, pending: categoriesLoading } = await useFetch(
-  '/api/categories',
-  {
-    query: {
-      limit: 8,
-      sortBy: 'posts',
-      sortOrder: 'desc',
-    },
+const { data: categoriesData, pending: categoriesLoading } = await useFetch('/api/categories', {
+  query: {
+    limit: 8,
+    sortBy: 'posts',
+    sortOrder: 'desc',
   },
-);
+});
 
 const categories = computed(() => categoriesData.value?.data?.items || []);
 
@@ -66,15 +58,14 @@ const navItems = computed<NavigationMenuItem[]>(() => [
 // Logout handler
 const handleLogout = async () => {
   console.log('Logging out...');
-  await authStore.logout();
-  await navigateTo('/');
+  await auth.logout();
 };
 
 // User menu items
 const userMenuItems = computed<DropdownMenuItem[]>(() => [
   {
-    label: authStore.user?.name || 'Profile',
-    avatar: { src: authStore.user?.avatarUrl },
+    label: auth.user?.name || 'Profile',
+    avatar: { src: auth.user?.avatarUrl },
     disabled: true,
   },
 
@@ -83,7 +74,7 @@ const userMenuItems = computed<DropdownMenuItem[]>(() => [
     icon: 'i-lucide-user',
     to: '/profile',
   },
-  ...(authStore.canAccessAdmin
+  ...(auth.canAccessAdmin
     ? [
         {
           label: 'Admin Dashboard',
@@ -115,8 +106,8 @@ const userMenuItems = computed<DropdownMenuItem[]>(() => [
         <UColorModeSwitch />
 
         <!-- Auth buttons -->
-        <template v-if="!authStore.user">
-          <ULink to="/auth/login">Sign..In</ULink>
+        <template v-if="!auth.user">
+          <ULink to="/auth">Sign..In</ULink>
         </template>
 
         <template v-else>
@@ -125,8 +116,8 @@ const userMenuItems = computed<DropdownMenuItem[]>(() => [
             :popper="{ placement: 'bottom-end' }"
           >
             <UAvatar
-              :src="authStore.user.avatarUrl"
-              :alt="authStore.user.name"
+              :src="auth.user.avatarUrl"
+              :alt="auth.user.name"
               size="sm"
               class="cursor-pointer"
             />
@@ -179,11 +170,11 @@ const userMenuItems = computed<DropdownMenuItem[]>(() => [
 
           <!-- Mobile auth -->
           <div
-            v-if="!authStore.user"
+            v-if="!auth.user"
             class="border-t border-gray-200 dark:border-gray-700 pt-4"
           >
             <NuxtLink
-              to="/auth/login"
+              to="/auth"
               class="block px-2 py-1 text-primary-600 dark:text-primary-400 font-medium"
             >
               Sign In
@@ -196,22 +187,22 @@ const userMenuItems = computed<DropdownMenuItem[]>(() => [
           >
             <div class="flex items-center space-x-3 px-2 py-1">
               <UAvatar
-                :src="authStore.user.avatarUrl"
-                :alt="authStore.user.name"
+                :src="auth.user.avatarUrl"
+                :alt="auth.user.name"
                 size="sm"
               />
               <div>
                 <p class="text-sm font-medium text-gray-900 dark:text-white">
-                  {{ authStore.user.name }}
+                  {{ auth.user.name }}
                 </p>
                 <p class="text-xs text-gray-500 dark:text-gray-400">
-                  {{ authStore.user.email }}
+                  {{ auth.user.email }}
                 </p>
               </div>
             </div>
 
             <NuxtLink
-              v-if="authStore.canAccessAdmin"
+              v-if="auth.canAccessAdmin"
               to="/admin"
               class="block px-2 py-1 mt-2 text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition-colors"
             >

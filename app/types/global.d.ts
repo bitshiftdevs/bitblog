@@ -3,7 +3,7 @@ import type { SiteStore } from '~/stores/site';
 
 declare module '#app' {
   interface NuxtApp {
-    $authStore: AuthStore;
+    $auth: AuthStore;
     $siteStore: SiteStore;
   }
 }

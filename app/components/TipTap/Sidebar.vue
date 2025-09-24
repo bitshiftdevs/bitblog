@@ -5,15 +5,85 @@ import type { SelectMenuItem } from '@nuxt/ui';
 
 const editorStore = useEditorStore();
 
+// Fetch available categories and tags
+const { data: categoriesData } = await useFetch('/api/categories');
+const { data: tagsData } = await useFetch('/api/tags');
+
+const availableCategories = computed(() => categoriesData.value?.data?.items || []);
+const availableTags = computed(() => tagsData.value?.data?.items || []);
+
+// Transform categories and tags for display
+const selectedCategoryNames = computed({
+  get: () => editorStore.categories.map(cat => cat.name),
+  set: (value) => {
+    // Convert string names back to category objects
+    editorStore.categories = value.map(name => {
+      const existing = availableCategories.value.find(cat => cat.name === name);
+      return existing || { id: name.toLowerCase().replace(/\s+/g, '-'), name };
+    });
+  }
+});
+
+const selectedTagNames = computed({
+  get: () => editorStore.tags.map(tag => tag.name),
+  set: (value) => {
+    // Convert string names back to tag objects
+    editorStore.tags = value.map(name => {
+      const existing = availableTags.value.find(tag => tag.name === name);
+      return existing || { id: name.toLowerCase().replace(/\s+/g, '-'), name };
+    });
+  }
+});
+
 const postStatusList: SelectMenuItem[] = [
   { label: 'DRAFT' },
   { label: 'PUBLISHED' },
   { label: 'SCHEDULED' },
 ];
 
+const fileInputRef = ref<HTMLInputElement>();
+
 const selectFeaturedImage = () => {
-  // In a real app, you would use a media library component
-  editorStore.openModal(Modal.imageFeatured);
+  fileInputRef.value?.click();
+};
+
+const handleFileUpload = async (event: Event) => {
+  const target = event.target as HTMLInputElement;
+  const file = target.files?.[0];
+
+  if (!file) return;
+
+  const formData = new FormData();
+  formData.append('file', file);
+
+  try {
+    const response = await $fetch<{success: boolean, data: any}>('/api/media/upload', {
+      method: 'POST',
+      body: formData
+    });
+
+    if (response.success) {
+      editorStore.setFeaturedImage(response.data.url);
+      // Show success message
+      const toast = useToast();
+      toast.add({
+        title: 'Success',
+        description: 'Image uploaded successfully',
+        color: 'success'
+      });
+    }
+  } catch (error: any) {
+    console.error('Upload error:', error);
+    const toast = useToast();
+    toast.add({
+      title: 'Upload failed',
+      description: error.data?.message || 'Failed to upload image',
+      color: 'error'
+    });
+  }
+
+  // Reset input
+  target.value = '';
 };
 
 const removeFeaturedImage = () => {
@@ -66,6 +136,13 @@ const viewRevisions = () => {
             Remove
           </button>
         </div>
+        <input
+          ref="fileInputRef"
+          type="file"
+          accept="image/*"
+          @change="handleFileUpload"
+          class="hidden"
+        />
         <UButton
           @click="selectFeaturedImage"
           class="w-1/2"
@@ -83,21 +160,31 @@ const viewRevisions = () => {
       </UFormField>
 
       <!-- Categories -->
-      <UFormField label="Categories" required>
+      <UFormField label="Categories">
         <UInputTags
-          v-model="editorStore.categories"
-          class="input input-info"
-          placeholder="Add category"
+          v-model="selectedCategoryNames"
+          placeholder="Add or select category"
+          :suggestions="availableCategories.map(cat => cat.name)"
         />
+        <template #description>
+          <div v-if="availableCategories.length" class="text-xs text-gray-500 mt-1">
+            Available: {{ availableCategories.slice(0, 3).map(c => c.name).join(', ') }}{{ availableCategories.length > 3 ? '...' : '' }}
+          </div>
+        </template>
       </UFormField>
 
       <!-- Tags -->
-      <UFormField label="Tags" required>
+      <UFormField label="Tags">
         <UInputTags
-          v-model="editorStore.tags"
-          class="input input-info"
-          placeholder="Add tag"
+          v-model="selectedTagNames"
+          placeholder="Add or select tag"
+          :suggestions="availableTags.map(tag => tag.name)"
         />
+        <template #description>
+          <div v-if="availableTags.length" class="text-xs text-gray-500 mt-1">
+            Available: {{ availableTags.slice(0, 3).map(t => t.name).join(', ') }}{{ availableTags.length > 3 ? '...' : '' }}
+          </div>
+        </template>
       </UFormField>
       <!-- Word Count Stats -->
       <div class="mb-6">

@@ -56,7 +56,7 @@ const pendingComments = computed(
 const getStatusColor = (status: string) => {
   switch (status) {
     case 'PUBLISHED':
-      return 'green';
+      return 'success';
     case 'DRAFT':
       return 'yellow';
     case 'SCHEDULED':

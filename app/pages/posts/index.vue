@@ -81,8 +81,6 @@
 </template>
 
 <script setup lang="ts">
-import type { PostSummary } from '@blog-platform/shared/types';
-
 // Meta tags
 useSeoMeta({
   title: 'All Posts',
@@ -130,10 +128,7 @@ const categoryOptions = computed(() => [
 
 // Fetch tags for filter
 const { data: tagsData } = await useFetch('/api/tags');
-const tagOptions = computed(() => [
-  { id: null, name: 'All Tags' },
-  ...(tagsData.value?.data?.items || []),
-]);
+const tagOptions = computed(() => [{ id: null, name: 'All Tags' }, ...(tagsData.value?.data?.items || [])]);
 
 // Reset page when filters change
 watch([selectedCategory, selectedTag, searchQuery], () => {

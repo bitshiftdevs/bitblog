@@ -1,12 +1,12 @@
 export const usePermissions = () => {
-  const authStore = useAuthStore();
+  const auth = useAuth();
 
   const hasPermission = (permission: string): boolean => {
-    return authStore.hasPermission(permission);
+    return auth.hasPermission(permission);
   };
 
   const hasAnyPermission = (permissions: string[]): boolean => {
-    return authStore.hasAnyPermission(permissions);
+    return auth.hasAnyPermission(permissions);
   };
 
   const requirePermission = (permission: string) => {

@@ -1,12 +1,16 @@
 export const useAuth = () => {
-  const authStore = useAuthStore();
+  const { loggedIn, user, ready, openInPopup, clear, fetch: refreshSession } = useUserSession();
 
   return {
-    user: computed(() => authStore.user),
-    isAuthenticated: computed(() => authStore.isAuthenticated),
-    canAccessAdmin: computed(() => authStore.canAccessAdmin),
-    login: authStore.login,
-    logout: authStore.logout,
-    register: authStore.register,
+    user: user.value,
+    isAuthenticated: loggedIn.value,
+    isReady: ready.value,
+    canAccessAdmin: user.value?.isAdmin,
+    refreshSession,
+    openInPopup,
+    logout: async () => {
+      await clear();
+      await navigateTo('/auth');
+    },
   };
 };
