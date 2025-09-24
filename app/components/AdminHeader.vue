@@ -38,7 +38,7 @@ const userMenuItems = computed<DropdownMenuItem[][]>(() => [
     {
       label: 'Profile Settings',
       icon: 'i-lucide-user',
-      to: '/admin/profile',
+      to: '/profile',
     },
   ],
   [

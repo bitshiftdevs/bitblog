@@ -32,7 +32,7 @@ const userMenuItems = computed(() => [
     {
       label: 'Profile',
       icon: 'i-lucide-user',
-      to: '/admin/profile',
+      to: '/profile',
     },
   ],
   [
@@ -45,7 +45,7 @@ const userMenuItems = computed(() => [
 ]);
 </script>
 <template>
-  <UDashboardSidebar collapsible resizable>
+  <UDashboardSidebar collapsible class="w-96">
     <!-- Logo -->
     <template #header>
       <NuxtLink to="/admin" class="flex items-center space-x-2">
