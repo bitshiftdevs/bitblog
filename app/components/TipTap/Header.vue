@@ -3,10 +3,30 @@ import type { DropdownMenuItem, NavigationMenuItem } from '@nuxt/ui';
 
 const editorStore = useEditorStore();
 const seoStore = useSeoStore();
-const auth = useAuthStore();
+const auth = useAuth();
+const toast = useToast();
 
 // Define emits
 const emit = defineEmits(['status-change', 'change-view', 'open-modal']);
+
+// Save handlers with notifications
+const handleSave = async (status: 'DRAFT' | 'PUBLISHED' | 'ARCHIVED') => {
+  const result = await editorStore.saveContent(status);
+
+  if (result.success) {
+    toast.add({
+      title: 'Success',
+      description: result.msg,
+      color: 'success'
+    });
+  } else {
+    toast.add({
+      title: 'Error',
+      description: result.msg,
+      color: 'error'
+    });
+  }
+};
 const userMenuItems = computed<DropdownMenuItem[][]>(() => [
   [
     {
@@ -25,7 +45,7 @@ const userMenuItems = computed<DropdownMenuItem[][]>(() => [
     {
       label: 'Profile Settings',
       icon: 'i-lucide-user',
-      to: '/admin/profile',
+      to: '/profile',
     },
   ],
   [
@@ -48,7 +68,7 @@ const userMenuItems = computed<DropdownMenuItem[][]>(() => [
       icon: 'i-lucide-log-out',
       onSelect: async () => {
         await auth.logout();
-        await navigateTo('/auth/login');
+        await navigateTo('/auth');
       },
     },
   ],
@@ -101,17 +121,17 @@ const items = computed<NavigationMenuItem[][]>(() => [
         {
           label: 'Save Draft',
           icon: 'i-lucide-save',
-          onSelect: () => editorStore.saveContent('DRAFT'),
+          onSelect: () => handleSave('DRAFT'),
         },
         {
           label: 'Save Version',
           icon: 'i-lucide-save',
-          onSelect: () => editorStore.saveContent('ARCHIVED'),
+          onSelect: () => handleSave('ARCHIVED'),
         },
         {
-          label: 'Save Publish',
+          label: 'Save & Publish',
           icon: 'i-lucide-save',
-          onSelect: () => editorStore.saveContent('PUBLISHED'),
+          onSelect: () => handleSave('PUBLISHED'),
         },
       ],
       class: 'cursor-pointer',

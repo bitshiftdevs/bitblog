@@ -255,27 +255,6 @@ export interface ListParams extends PaginationParams, SortParams {
   search?: string;
 }
 
-// Auth types
-export interface LoginRequest {
-  email: string;
-  password: string;
-  rememberMe?: boolean;
-}
-
-export interface LoginResponse {
-  user: User;
-  token: string;
-  refreshToken?: string;
-  expiresAt: string;
-}
-
-export interface RegisterRequest {
-  name: string;
-  email: string;
-  password: string;
-  token?: string; // Invitation token
-}
-
 // Media upload types
 export interface UploadSignedUrlRequest {
   filename: string;

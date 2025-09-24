@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { useAuthStore } from '~/stores/auth';
 import type { Comment } from '~~/shared/types';
 
 interface Props {
@@ -10,10 +9,8 @@ interface Props {
 
 const props = defineProps<Props>();
 
-const authStore = useAuthStore();
+const auth = useAuth();
 const toast = useToast();
-
-const user = computed(() => authStore.user);
 
 const isSubmitting = ref(false);
 const commentForm = reactive({
@@ -25,9 +22,7 @@ const commentForm = reactive({
 
 const isFormValid = computed(() => {
   const hasContent = commentForm.content.trim().length > 0;
-  const hasGuestInfo =
-    user.value ||
-    (commentForm.guestName.trim() && commentForm.guestEmail.trim());
+  const hasGuestInfo = auth.user || (commentForm.guestName.trim() && commentForm.guestEmail.trim());
   return hasContent && hasGuestInfo;
 });
 
@@ -43,7 +38,7 @@ const submitComment = async () => {
         postId: props.postId,
         content: commentForm.content,
         parentId: commentForm.parentId,
-        ...(user.value
+        ...(auth.user
           ? {}
           : {
               guestName: commentForm.guestName,
@@ -61,7 +56,7 @@ const submitComment = async () => {
     // Reset form
     commentForm.content = '';
     commentForm.parentId = null;
-    if (!user.value) {
+    if (!auth.user) {
       commentForm.guestName = '';
       commentForm.guestEmail = '';
     }
@@ -71,8 +66,7 @@ const submitComment = async () => {
   } catch (error: any) {
     toast.add({
       title: 'Comment failed',
-      description:
-        error.data?.message || 'Failed to submit comment. Please try again.',
+      description: error.data?.message || 'Failed to submit comment. Please try again.',
       color: 'error',
     });
   } finally {

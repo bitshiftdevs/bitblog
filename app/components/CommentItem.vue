@@ -60,6 +60,6 @@ defineEmits<{
 </script>
 
 <!-- apps/web/middleware/guest.ts -->
-export default defineNuxtRouteMiddleware((to, from) => { const { $authStore } =
+export default defineNuxtRouteMiddleware((to, from) => { const { $auth } =
 useNuxtApp() // If user is authenticated, redirect away from auth pages if
-($authStore.isAuthenticated) { return navigateTo('/admin') } })
+($auth.isAuthenticated) { return navigateTo('/admin') } })

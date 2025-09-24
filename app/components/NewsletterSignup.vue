@@ -48,7 +48,7 @@ const handleSubmit = async () => {
     toast.add({
       title: 'Successfully subscribed!',
       description: 'Thank you for subscribing to our newsletter.',
-      color: 'green'
+      color: 'success'
     })
     
     email.value = ''
@@ -56,7 +56,7 @@ const handleSubmit = async () => {
     toast.add({
       title: 'Subscription failed',
       description: 'Please try again later.',
-      color: 'red'
+      color: 'error'
     })
   } finally {
     isLoading.value = false

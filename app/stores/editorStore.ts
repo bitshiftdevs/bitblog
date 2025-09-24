@@ -4,7 +4,7 @@ import { Modal } from '~~/shared/types';
 
 export const useEditorStore = defineStore('editor', {
   state: (): EditorState => {
-    const auth = useAuthStore();
+    const auth = useAuth();
     return {
       title: '',
       id: '',
@@ -56,8 +56,8 @@ export const useEditorStore = defineStore('editor', {
         .replace(/^-+|-+$/g, '');
     },
     getPost: (state) => {
-      // FIX: return proper post
       return {
+        id: state.id,
         title: state.title,
         excerpt: state.excerpt,
         content: state.content,
@@ -67,20 +67,24 @@ export const useEditorStore = defineStore('editor', {
         slug: state.slug,
         publishedAt: state.publishedAt,
         featuredImage: state.featuredImage,
-        readTime: Math.ceil(state.wordCount / 200),
-        updatedAt: new Date(),
+        readingTime: Math.ceil(state.wordCount / 200),
+        updatedAt: new Date().toISOString(),
         status: state.status,
-        authorId: 'authj',
-        commentCount: 50,
-      } as unknown as PostResponse;
+        visibility: state.visibility,
+        authorId: state.authorId,
+        coAuthors: state.coAuthors,
+        viewCount: state.viewCount,
+        createdAt: new Date().toISOString(),
+        relatedPosts: []
+      } as PostResponse;
     },
   },
   actions: {
     setView(view: EditorView) {
       this.view = view;
     },
-    setTitle() {
-      // this.title = title
+    setTitle(title: string) {
+      this.title = title;
       this.isDirty = true;
       this.slug = this.title
         .toLowerCase()
@@ -103,7 +107,7 @@ export const useEditorStore = defineStore('editor', {
       this.status = status;
       this.isDirty = true;
     },
-    async saveContent(status: PostStatus, authorId?: string) {
+    async saveContent(status: PostStatus) {
       // Create a snapshot for history
       if (this.content) {
         this.history.push({
@@ -117,29 +121,70 @@ export const useEditorStore = defineStore('editor', {
         }
       }
 
-      this.lastSaved = new Date().toISOString();
-      this.isDirty = false;
-
       try {
-        let msg = 'saved to local storage';
-        if (authorId) {
-          // msg = await savePostOrUpdate({
-          //   ...this.getPost,
-          //   status: status,
-          //   authorId: authorId,
-          // });
+        const postData = {
+          title: this.title,
+          slug: this.getSlug,
+          excerpt: this.excerpt,
+          content: this.content,
+          status: status,
+          visibility: this.visibility,
+          featuredImage: this.featuredImage || undefined,
+          seoTitle: undefined,
+          seoDescription: undefined,
+          seoKeywords: undefined,
+          coAuthorIds: this.coAuthors.map(author => author.id).filter(id => id),
+          // Use existing IDs for existing tags/categories, names for new ones
+          tagIds: this.tags.filter(tag => tag.id && !tag.id.includes('-')).map(tag => tag.id),
+          categoryIds: this.categories.filter(cat => cat.id && !cat.id.includes('-')).map(cat => cat.id),
+          // Send new tag/category names to be created
+          newTagNames: this.tags.filter(tag => !tag.id || tag.id.includes('-')).map(tag => tag.name),
+          newCategoryNames: this.categories.filter(cat => !cat.id || cat.id.includes('-')).map(cat => cat.name),
+          scheduledAt: status === 'SCHEDULED' ? this.publishedAt : undefined
+        };
+
+        let response;
+        let msg = '';
+
+        if (this.id) {
+          // Update existing post
+          response = await $fetch(`/api/posts/${this.id}`, {
+            method: 'PUT',
+            body: postData
+          });
+          msg = `Post updated as ${status.toLowerCase()}`;
+        } else {
+          // Create new post
+          response = await $fetch('/api/posts', {
+            method: 'POST',
+            body: postData
+          });
+          msg = `Post created as ${status.toLowerCase()}`;
+
+          // Update store with new post ID and data
+          if (response.success && response.data) {
+            this.id = response.data.id;
+            this.slug = response.data.slug;
+          }
         }
+
+        this.lastSaved = new Date().toISOString();
+        this.isDirty = false;
 
         return {
           success: true,
           msg,
           timestamp: this.lastSaved,
+          data: response.data
         };
       } catch (e: any) {
+        console.error('Save error:', e);
+        this.isDirty = true; // Reset dirty state on error
+
         return {
           success: false,
-          msg: e.message,
-          timestamp: this.lastSaved,
+          msg: e.data?.message || e.message || 'Failed to save post',
+          timestamp: new Date().toISOString(),
         };
       }
     },

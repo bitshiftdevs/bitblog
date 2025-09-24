@@ -42,7 +42,7 @@ interface Props {
   title: string;
   value: number;
   icon: string;
-  color?: 'blue' | 'green' | 'yellow' | 'purple' | 'red' | 'gray';
+  color?: 'blue' | 'success' | 'yellow' | 'purple' | 'error' | 'gray';
   badge?: number;
 }
 
