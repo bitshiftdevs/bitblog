@@ -1,8 +1,8 @@
-import * as argon2 from "argon2";
 import { getDb } from "../server/db";
 
 import * as dot from "dotenv";
 dot.config();
+const passwordHash = "dlfhdlfjdofhosdkjfkdjfohodsfjd";
 
 async function main() {
   console.log("🌱 Seeding database...");
@@ -13,14 +13,13 @@ async function main() {
   console.log("Creating roles...");
   // Create admin user
   console.log("Creating admin user...");
-  const adminPassword = await argon2.hash("28935617Aa@");
   const adminUser = await prisma.user.upsert({
     where: { email: "gado@gmail.com" },
     update: {},
     create: {
       name: "Kratosgado",
       email: "gado@gmail.com",
-      passwordHash: adminPassword,
+      passwordHash,
       bio: "Platform administrator",
       emailVerified: true,
       isAdmin: true,
@@ -35,21 +34,21 @@ async function main() {
       email: "kratos@bgmail.com",
       avatarUrl: "https://i.pravatar.cc/150?img=3",
       bio: "Technology enthusiast and software developer",
-      passwordHash: await argon2.hash("28935617Aa@"),
+      passwordHash,
     },
     {
       name: "Sarah Johnson",
       avatarUrl: "https://i.pravatar.cc/150?img=7",
       email: "sarah@blogplatform.com",
       bio: "Design expert and UX researcher",
-      passwordHash: await argon2.hash("28935617Aa@"),
+      passwordHash,
     },
     {
       name: "Mike Chen",
       avatarUrl: "https://i.pravatar.cc/150?img=9",
       email: "mike@blogplatform.com",
       bio: "Data scientist and machine learning expert",
-      passwordHash: await argon2.hash("28935617Aa@"),
+      passwordHash,
     },
   ];
 
