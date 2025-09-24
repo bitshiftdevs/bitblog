@@ -107,7 +107,7 @@ const userMenuItems = computed<DropdownMenuItem[]>(() => [
 
         <!-- Auth buttons -->
         <template v-if="!auth.user">
-          <ULink to="/auth/login">Sign..In</ULink>
+          <ULink to="/auth">Sign..In</ULink>
         </template>
 
         <template v-else>
@@ -174,7 +174,7 @@ const userMenuItems = computed<DropdownMenuItem[]>(() => [
             class="border-t border-gray-200 dark:border-gray-700 pt-4"
           >
             <NuxtLink
-              to="/auth/login"
+              to="/auth"
               class="block px-2 py-1 text-primary-600 dark:text-primary-400 font-medium"
             >
               Sign In

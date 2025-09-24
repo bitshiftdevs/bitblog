@@ -80,7 +80,7 @@ const authors = computed(() => authorsData.value?.data?.items || []);
 
             <UButton
               v-if="!auth.user"
-              to="/auth/login"
+              to="/auth"
               variant="outline"
               size="lg"
               icon="i-lucide-user-plus"

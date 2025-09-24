@@ -36,47 +36,10 @@ export const ListParamsSchema = PaginationSchema.merge(SortSchema).extend({
   search: z.string().optional(),
 });
 
-// Auth schemas
-export const LoginSchema = z.object({
-  email: z.string().email(),
-  password: z.string().min(8),
-  rememberMe: z.boolean().optional(),
-});
-export type LoginType = z.output<typeof LoginSchema>;
-
-export const RegisterSchema = z.object({
-  name: z.string().min(2).max(100),
-  email: z.string().email(),
-  password: z.string().min(8).max(128),
-  token: z.string().optional(), // Invitation token
-});
-
-export const ForgotPasswordSchema = z.object({
-  email: z.string().email(),
-});
-
-export const ResetPasswordSchema = z.object({
-  token: z.string(),
-  password: z.string().min(8).max(128),
-});
-
-export const ChangePasswordSchema = z.object({
-  currentPassword: z.string(),
-  newPassword: z.string().min(8).max(128),
-});
-
 export const UpdateProfileSchema = z.object({
   name: z.string().min(2).max(100),
   bio: z.string().max(500).optional(),
   avatarUrl: z.string().url().optional(),
-});
-
-// User and role schemas
-export const CreateUserSchema = z.object({
-  name: z.string().min(2).max(100),
-  email: z.string().email(),
-  password: z.string().min(8).max(128),
-  roleIds: z.array(z.string().uuid()).min(1),
 });
 
 export const UpdateUserSchema = z.object({
@@ -87,14 +50,6 @@ export const UpdateUserSchema = z.object({
   isActive: z.boolean().optional(),
   roleIds: z.array(z.string().uuid()).optional(),
 });
-
-export const CreateRoleSchema = z.object({
-  name: z.string().min(2).max(50),
-  description: z.string().max(200).optional(),
-  permissions: z.record(z.array(z.string())),
-});
-
-export const UpdateRoleSchema = CreateRoleSchema.partial();
 
 // Post schemas
 export const CreatePostSchema = z.object({
@@ -301,19 +256,7 @@ export const BulkPostActionSchema = z.object({
 
 // Export all schemas as a single object for easy importing
 export const schemas = {
-  // Auth
-  LoginSchema,
-  RegisterSchema,
-  ForgotPasswordSchema,
-  ResetPasswordSchema,
-  ChangePasswordSchema,
   UpdateProfileSchema,
-
-  // Users and roles
-  CreateUserSchema,
-  UpdateUserSchema,
-  CreateRoleSchema,
-  UpdateRoleSchema,
 
   // Posts
   CreatePostSchema,
