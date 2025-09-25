@@ -3,12 +3,15 @@ const route = useRoute();
 const id = route.params.id as string;
 const currentPage = ref(1);
 
-// Fetch author
-const { data: authorData } = await useFetch(`/api/authors/${id}`);
+// Fetch author (non-blocking)
+const { data: authorData, pending: authorLoading } = useLazyFetch(`/api/authors/${id}`, {
+  key: `author-${id}`
+});
 const author = computed(() => authorData.value?.data);
 
-// Fetch author's posts
-const { data: postsData, pending } = await useFetch('/api/posts', {
+// Fetch author's posts (non-blocking)
+const { data: postsData, pending } = useLazyFetch('/api/posts', {
+  key: `author-${id}-posts`,
   query: computed(() => ({
     authorId: id,
     page: currentPage.value,

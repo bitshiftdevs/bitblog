@@ -94,8 +94,9 @@ useSeoMeta({
   description: 'Search our blog for articles and insights',
 });
 
-// Fetch search results
-const { data: searchData, pending } = await useFetch('/api/search', {
+// Fetch search results (non-blocking)
+const { data: searchData, pending } = useLazyFetch('/api/search', {
+  key: 'search-results',
   query: computed(() => ({
     q: searchQuery.value,
     page: currentPage.value,

@@ -3,12 +3,15 @@ const route = useRoute();
 const id = route.params.id as string;
 const currentPage = ref(1);
 
-// Fetch category
-const { data: categoryData } = await useFetch(`/api/categories/${id}`);
+// Fetch category (non-blocking)
+const { data: categoryData, pending: categoryLoading } = useLazyFetch(`/api/categories/${id}`, {
+  key: `category-${id}`
+});
 const category = computed(() => categoryData.value?.data);
 
-// Fetch posts in category
-const { data: postsData, pending } = await useFetch('/api/posts', {
+// Fetch posts in category (non-blocking)
+const { data: postsData, pending } = useLazyFetch('/api/posts', {
+  key: `category-${id}-posts`,
   query: computed(() => ({
     categoryId: category.value?.id,
     page: currentPage.value,
@@ -31,13 +34,20 @@ useSeoMeta({
   ),
 });
 
-if (!category.value) {
-  throw createError({ statusCode: 404, statusMessage: 'Category not found' });
-}
 </script>
 
 <template>
-  <div v-if="category" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+  <div v-if="categoryLoading" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div class="animate-pulse space-y-6">
+      <div class="h-8 bg-gray-300 dark:bg-gray-600 rounded w-1/3"></div>
+      <div class="h-4 bg-gray-300 dark:bg-gray-600 rounded w-2/3"></div>
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <PostCardSkeleton v-for="i in 6" :key="i" />
+      </div>
+    </div>
+  </div>
+
+  <div v-else-if="category" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
     <!-- Category Header -->
     <div class="mb-8">
       <h1 class="text-3xl font-bold text-gray-900 dark:text-white mb-4">

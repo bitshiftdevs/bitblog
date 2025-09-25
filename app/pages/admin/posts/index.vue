@@ -8,10 +8,11 @@ const selectedStatus = ref(null);
 const selectedAuthor = ref(null);
 const searchQuery = ref('');
 
-const { data } = await useFetch('/api/posts');
+const { data, pending: postsLoading } = useLazyFetch('/api/posts', {
+  key: 'admin-posts-list'
+});
 
-// Mock data - replace with actual API calls
-const posts = ref(data.value?.data.items || []);
+const posts = computed(() => data.value?.data?.items || []);
 
 // Filter options
 const statusOptions = [
@@ -134,7 +135,15 @@ setBreadcrumbs([{ label: 'Dashboard', to: '/admin' }, { label: 'Posts' }]);
 
     <!-- Posts Table -->
     <UCard>
-      <div class="overflow-x-auto">
+      <div v-if="postsLoading" class="p-8">
+        <div class="animate-pulse space-y-4">
+          <div class="h-4 bg-gray-300 dark:bg-gray-600 rounded w-3/4"></div>
+          <div class="h-4 bg-gray-300 dark:bg-gray-600 rounded w-1/2"></div>
+          <div class="h-4 bg-gray-300 dark:bg-gray-600 rounded w-2/3"></div>
+          <div class="h-4 bg-gray-300 dark:bg-gray-600 rounded w-full"></div>
+        </div>
+      </div>
+      <div v-else class="overflow-x-auto">
         <table class="w-full">
           <thead class="bg-gray-50 dark:bg-gray-800">
             <tr>

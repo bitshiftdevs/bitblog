@@ -7,11 +7,18 @@ const editorStore = useEditorStore();
 const blog = useBlogEditor();
 const slug = useRoute().params.slug as string;
 
-const { data } = await useFetch<ApiResponse<Post>>(`/api/posts/${slug}`, {
+const { data, pending: postLoading } = useLazyFetch<ApiResponse<Post>>(`/api/posts/${slug}`, {
+  key: `admin-post-${slug}`,
   query: { isEditing: true },
 });
-const post = data.value?.data!;
-editorStore.loadPost(post);
+const post = computed(() => data.value?.data);
+
+// Load post into editor when data is available
+watch(() => data.value?.data, (newPost) => {
+  if (newPost) {
+    editorStore.loadPost(newPost);
+  }
+}, { immediate: true });
 
 const { analyzeSeo } = useSeo();
 
@@ -37,7 +44,15 @@ editorStore.$subscribe((mutation, state) => {
 </script>
 
 <template>
+  <div v-if="postLoading" class="flex items-center justify-center h-screen">
+    <div class="animate-pulse text-center">
+      <div class="w-16 h-16 bg-gray-300 dark:bg-gray-600 rounded-lg mx-auto mb-4"></div>
+      <p class="text-gray-600 dark:text-gray-400">Loading post...</p>
+    </div>
+  </div>
+
   <div
+    v-else
     class="flex flex-col"
     :class="editorStore.view !== 'preview' && 'h-screen'"
   >

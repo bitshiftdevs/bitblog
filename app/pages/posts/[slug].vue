@@ -3,38 +3,42 @@ const route = useRoute();
 
 const slug = route.params.slug as string;
 
-// Fetch post
-const { data: postData } = await useFetch(`/api/posts/${slug}`);
+// Fetch post (non-blocking)
+const { data: postData, pending: postLoading } = useLazyFetch(`/api/posts/${slug}`, {
+  key: `post-${slug}`
+});
 const post = computed(() => postData.value?.data);
 
 // SEO
 useSeoMeta({
   title: computed(() => post.value?.seoTitle || post.value?.title),
-  description: computed(
-    () => post.value?.seoDescription || post.value?.excerpt,
-  ),
+  description: computed(() => post.value?.seoDescription || post.value?.excerpt),
   ogTitle: computed(() => post.value?.title),
   ogDescription: computed(() => post.value?.excerpt),
   ogImage: computed(() => post.value?.featuredImage),
   ogType: 'article',
-  articleAuthor: computed(() =>
-    post.value?.coAuthors.concat(post.value.author).map((au) => au.name),
-  ),
+  articleAuthor: computed(() => post.value?.coAuthors.concat(post.value.author).map((au) => au.name)),
   author: computed(() => post.value?.author.name),
   articlePublishedTime: computed(() => post.value?.publishedAt),
   articleModifiedTime: computed(() => post.value?.updatedAt),
 });
 
-// 404 if post not found
-if (!post.value) {
-  throw createError({
-    statusCode: 404,
-    statusMessage: 'Post not found',
-  });
-}
 </script>
 <template>
-  <PostView v-if="post" :post />
+  <div v-if="postLoading" class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div class="animate-pulse space-y-8">
+      <div class="h-12 bg-gray-300 dark:bg-gray-600 rounded w-3/4"></div>
+      <div class="h-4 bg-gray-300 dark:bg-gray-600 rounded w-1/2"></div>
+      <div class="h-64 bg-gray-300 dark:bg-gray-600 rounded"></div>
+      <div class="space-y-4">
+        <div class="h-4 bg-gray-300 dark:bg-gray-600 rounded"></div>
+        <div class="h-4 bg-gray-300 dark:bg-gray-600 rounded w-5/6"></div>
+        <div class="h-4 bg-gray-300 dark:bg-gray-600 rounded w-4/5"></div>
+      </div>
+    </div>
+  </div>
+
+  <PostView v-else-if="post" :post />
 
   <div v-else class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
     <div class="text-center">

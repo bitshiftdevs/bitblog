@@ -14,15 +14,7 @@
       v-if="pending"
       class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8"
     >
-      <div v-for="i in 8" :key="i" class="animate-pulse text-center">
-        <div
-          class="w-20 h-20 bg-gray-300 dark:bg-gray-600 rounded-full mx-auto mb-4"
-        ></div>
-        <div class="h-4 bg-gray-300 dark:bg-gray-600 rounded mb-2"></div>
-        <div
-          class="h-3 bg-gray-300 dark:bg-gray-600 rounded w-2/3 mx-auto"
-        ></div>
-      </div>
+      <AuthorCardSkeleton v-for="i in 8" :key="i" />
     </div>
 
     <div
@@ -60,6 +52,8 @@ useSeoMeta({
   description: 'Meet our talented writers and contributors',
 });
 
-const { data: authorsData, pending } = await useFetch('/api/authors');
+const { data: authorsData, pending } = useLazyFetch('/api/authors', {
+  key: 'authors-list'
+});
 const authors = computed(() => authorsData.value?.data?.items || []);
 </script>

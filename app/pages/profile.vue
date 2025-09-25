@@ -19,11 +19,12 @@ const form = ref({
   avatarUrl: auth.user?.avatarUrl || '',
 });
 
-// Profile data
-const { data: profile, refresh: refreshProfile } = await useFetch<{
+// Profile data (non-blocking)
+const { data: profile, refresh: refreshProfile, pending: profileLoading } = useLazyFetch<{
   success: boolean;
   data: User;
 }>('/api/profile', {
+  key: 'user-profile',
   default: () => ({ success: false, data: null as any }),
 });
 
@@ -121,14 +122,14 @@ const memberSince = computed(() => {
       </div>
 
       <!-- Loading state -->
-      <div v-if="!profile?.data" class="space-y-6">
+      <div v-if="profileLoading" class="space-y-6">
         <USkeleton class="h-32 w-full rounded-lg" />
         <USkeleton class="h-20 w-full rounded-lg" />
         <USkeleton class="h-16 w-full rounded-lg" />
       </div>
 
       <!-- Profile content -->
-      <div v-else class="space-y-6">
+      <div v-else-if="profile?.data" class="space-y-6">
         <!-- Profile Header Card -->
         <UCard>
           <div class="flex items-start justify-between">

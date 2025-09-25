@@ -13,8 +13,10 @@ const modal = overlay.create(CategoryModal);
 const isCreateModalOpen = ref(false);
 const isEditModalOpen = ref(false);
 
-// Fetch categories
-const { data: categoriesData, refresh } = await useFetch('/api/categories');
+// Fetch categories (non-blocking)
+const { data: categoriesData, refresh, pending: categoriesLoading } = useLazyFetch('/api/categories', {
+  key: 'admin-categories-list'
+});
 
 const categories = computed(() => categoriesData.value?.data?.items || []);
 
@@ -163,7 +165,15 @@ setBreadcrumbs([{ label: 'Dashboard', to: '/admin' }, { label: 'Categories' }]);
 
     <!-- Categories Table -->
     <UCard>
-      <div class="overflow-x-auto">
+      <div v-if="categoriesLoading" class="p-8">
+        <div class="animate-pulse space-y-4">
+          <div class="h-4 bg-gray-300 dark:bg-gray-600 rounded w-3/4"></div>
+          <div class="h-4 bg-gray-300 dark:bg-gray-600 rounded w-1/2"></div>
+          <div class="h-4 bg-gray-300 dark:bg-gray-600 rounded w-2/3"></div>
+          <div class="h-4 bg-gray-300 dark:bg-gray-600 rounded w-full"></div>
+        </div>
+      </div>
+      <div v-else class="overflow-x-auto">
         <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
           <thead class="bg-gray-50 dark:bg-gray-800">
             <tr>

@@ -93,8 +93,9 @@ const selectedCategory = ref(null);
 const selectedTag = ref(null);
 const searchQuery = ref('');
 
-// Fetch posts with filters
-const { data: postsData, pending } = await useFetch('/api/posts', {
+// Fetch posts with filters (non-blocking)
+const { data: postsData, pending } = useLazyFetch('/api/posts', {
+  key: 'posts-list',
   query: computed(() => ({
     page: currentPage.value,
     limit: 12,
@@ -119,15 +120,19 @@ const pagination = computed(
     },
 );
 
-// Fetch categories for filter
-const { data: categoriesData } = await useFetch('/api/categories');
+// Fetch categories for filter (non-blocking)
+const { data: categoriesData } = useLazyFetch('/api/categories', {
+  key: 'posts-filter-categories'
+});
 const categoryOptions = computed(() => [
   { id: null, name: 'All Categories' },
   ...(categoriesData.value?.data?.items || []),
 ]);
 
-// Fetch tags for filter
-const { data: tagsData } = await useFetch('/api/tags');
+// Fetch tags for filter (non-blocking)
+const { data: tagsData } = useLazyFetch('/api/tags', {
+  key: 'posts-filter-tags'
+});
 const tagOptions = computed(() => [{ id: null, name: 'All Tags' }, ...(tagsData.value?.data?.items || [])]);
 
 // Reset page when filters change

@@ -31,6 +31,15 @@ export default defineNuxtConfig({
       colors: ['primary', 'secondary', 'accent', 'neutral', 'base', 'info', 'success', 'warning', 'error'],
     },
   },
+  loadingIndicator: {
+    name: 'chasing-dots',
+    color: '#3b82f6',
+    background: 'rgba(255, 255, 255, 0.8)',
+    height: '4px',
+    throttle: 0,
+    duration: 300,
+    continuous: true
+  },
   vite: {
     plugins: [tailwindcss()],
     build: {
@@ -98,48 +107,51 @@ export default defineNuxtConfig({
         },
       ],
     },
+    pageTransition: { name: 'page', mode: 'out-in' },
+    layoutTransition: { name: 'layout', mode: 'out-in' }
   },
-  // routeRules: {
-  //   // Homepage pre-rendered at build time
-  //   '/': { prerender: true },
-  //
-  //   // Blog post pages cached for 1 hour
-  //   '/posts/**': {
-  //     headers: { 'cache-control': 's-maxage=3600' },
-  //     prerender: true,
-  //   },
-  //
-  //   // Tag and category pages cached
-  //   '/tags/**': {
-  //     headers: { 'cache-control': 's-maxage=1800' },
-  //     prerender: true,
-  //   },
-  //   '/categories/**': {
-  //     headers: { 'cache-control': 's-maxage=1800' },
-  //     prerender: true,
-  //   },
-  //
-  //   // Author pages cached
-  //   '/authors/**': {
-  //     headers: { 'cache-control': 's-maxage=1800' },
-  //     prerender: true,
-  //   },
-  //
-  //   // Admin pages - SPA mode, no caching
-  //   '/admin/**': {
-  //     ssr: false,
-  //     headers: { 'cache-control': 'no-cache' },
-  //   },
-  //
-  //   // API routes
-  //   '/api/**': {
-  //     headers: { 'cache-control': 'no-cache' },
-  //     cors: true,
-  //   },
-  //
-  //   // Static assets cached for 1 year
-  //   '/assets/**': {
-  //     headers: { 'cache-control': 'max-age=31536000' },
-  //   },
-  // },
+  routeRules: {
+    // Homepage pre-rendered at build time
+    '/': { prerender: true },
+
+    // Blog post pages cached for 1 hour
+    '/posts/**': {
+      headers: { 'cache-control': 's-maxage=3600' },
+      prerender: true,
+    },
+
+    // Tag and category pages cached
+    '/tags/**': {
+      headers: { 'cache-control': 's-maxage=1800' },
+      prerender: true,
+    },
+    '/categories/**': {
+      headers: { 'cache-control': 's-maxage=1800' },
+      prerender: true,
+    },
+
+    // Author pages cached
+    '/authors/**': {
+      headers: { 'cache-control': 's-maxage=1800' },
+      prerender: true,
+    },
+
+    // Admin pages - SPA mode, no caching
+    '/admin/**': {
+      ssr: false,
+      headers: { 'cache-control': 'no-cache' },
+    },
+
+    // API routes
+    '/api/**': {
+      headers: { 'cache-control': 'no-cache' },
+      cors: true,
+    },
+
+    // Static assets cached for 1 year
+    '/assets/**': {
+      headers: { 'cache-control': 'max-age=31536000' },
+    },
+  },
 });
+

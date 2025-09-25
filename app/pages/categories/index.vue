@@ -11,9 +11,7 @@
       v-if="pending"
       class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6"
     >
-      <div v-for="i in 8" :key="i" class="animate-pulse">
-        <div class="bg-white dark:bg-gray-700 rounded-lg p-6 h-32"></div>
-      </div>
+      <CategoryCardSkeleton v-for="i in 8" :key="i" />
     </div>
 
     <div
@@ -43,6 +41,8 @@ useSeoMeta({
   description: 'Browse all post categories',
 });
 
-const { data: categoriesData, pending } = await useFetch('/api/categories');
+const { data: categoriesData, pending } = useLazyFetch('/api/categories', {
+  key: 'categories-list'
+});
 const categories = computed(() => categoriesData.value?.data?.items || []);
 </script>
