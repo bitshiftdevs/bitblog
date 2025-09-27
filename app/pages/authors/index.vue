@@ -1,4 +1,3 @@
-<!-- apps/web/pages/authors/index.vue -->
 <template>
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
     <div class="mb-8">
@@ -35,15 +34,6 @@
       <p class="text-gray-500 dark:text-gray-400">Might be loading.</p>
     </div>
   </div>
-
-  <!-- <div v-else class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8"> -->
-  <!--   <div class="text-center"> -->
-  <!--     <h1 class="text-2xl font-bold text-gray-900 dark:text-white mb-4"> -->
-  <!--       Tag Not Found -->
-  <!--     </h1> -->
-  <!--     <UButton to="/tags">Back to Tags</UButton> -->
-  <!--   </div> -->
-  <!-- </div> -->
 </template>
 
 <script setup lang="ts">
@@ -53,7 +43,7 @@ useSeoMeta({
 });
 
 const { data: authorsData, pending } = useLazyFetch('/api/authors', {
-  key: 'authors-list'
+  key: 'authors-list',
 });
 const authors = computed(() => authorsData.value?.data?.items || []);
 </script>

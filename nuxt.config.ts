@@ -11,7 +11,13 @@ export default defineNuxtConfig({
     '@vueuse/nuxt',
     'nuxt-tiptap-editor',
     'nuxt-auth-utils',
+    '@nuxtjs/mdc',
   ],
+  mdc: {
+    components: {
+      prose: true,
+    },
+  },
   typescript: {
     sharedTsConfig: {
       compilerOptions: {
@@ -31,15 +37,7 @@ export default defineNuxtConfig({
       colors: ['primary', 'secondary', 'accent', 'neutral', 'base', 'info', 'success', 'warning', 'error'],
     },
   },
-  loadingIndicator: {
-    name: 'chasing-dots',
-    color: '#3b82f6',
-    background: 'rgba(255, 255, 255, 0.8)',
-    height: '4px',
-    throttle: 0,
-    duration: 300,
-    continuous: true
-  },
+
   vite: {
     plugins: [tailwindcss()],
     build: {
@@ -108,7 +106,7 @@ export default defineNuxtConfig({
       ],
     },
     pageTransition: { name: 'page', mode: 'out-in' },
-    layoutTransition: { name: 'layout', mode: 'out-in' }
+    layoutTransition: { name: 'layout', mode: 'out-in' },
   },
   routeRules: {
     // Homepage pre-rendered at build time
@@ -154,4 +152,3 @@ export default defineNuxtConfig({
     },
   },
 });
-
