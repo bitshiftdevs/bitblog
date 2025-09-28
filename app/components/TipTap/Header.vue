@@ -17,16 +17,17 @@ const handleSave = async (status: 'DRAFT' | 'PUBLISHED' | 'ARCHIVED') => {
     toast.add({
       title: 'Success',
       description: result.msg,
-      color: 'success'
+      color: 'success',
     });
   } else {
     toast.add({
       title: 'Error',
       description: result.msg,
-      color: 'error'
+      color: 'error',
     });
   }
 };
+
 const userMenuItems = computed<DropdownMenuItem[][]>(() => [
   [
     {

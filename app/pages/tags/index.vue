@@ -83,7 +83,9 @@ useSeoMeta({
   description: 'Explore posts by topic and tag',
 });
 
-const { data: tagsData, pending } = await useFetch('/api/tags');
+const { data: tagsData, pending } = useLazyFetch('/api/tags', {
+  key: 'tags-list'
+});
 const tags = computed(() => tagsData.value?.data?.items || []);
 
 const popularTags = computed(() =>

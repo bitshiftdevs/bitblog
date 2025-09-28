@@ -11,8 +11,13 @@ const toast = useToast();
 const overlay = useOverlay();
 const modal = overlay.create(TagModal);
 
-// Fetch tags
-const { data: tagsData, refresh } = await useFetch('/api/tags', {
+// Fetch tags (non-blocking)
+const {
+  data: tagsData,
+  refresh,
+  pending: tagsLoading,
+} = useLazyFetch('/api/tags', {
+  key: 'admin-tags-list',
   default: () => ({ success: false, data: { items: [] } }),
 });
 
@@ -20,7 +25,7 @@ const tags = computed(() => tagsData.value?.data?.items || []);
 
 // Search functionality
 const searchQuery = ref('');
-const filteerrorTags = computed(() => {
+const filteredTags = computed(() => {
   if (!searchQuery.value) return tags.value;
   return tags.value.filter(
     (tag: Tag) =>
@@ -69,6 +74,7 @@ const createTag = async () => {
 const editTag = async (tag: Tag) => {
   const instance = modal.open({
     title: 'Edit Tag',
+    tag,
     tags: (tags.value as unknown as Tag[]) ?? [],
     onSubmit: async (formData) => {
       try {
@@ -126,20 +132,6 @@ const deleteTag = async (tag: Tag) => {
   }
 };
 
-// Perrorefined colors
-const tagColors = [
-  '#3B82F6',
-  '#EF4444',
-  '#10B981',
-  '#F59E0B',
-  '#8B5CF6',
-  '#EC4899',
-  '#06B6D4',
-  '#84CC16',
-  '#F97316',
-  '#6366F1',
-];
-
 // Set breadcrumbs
 const setBreadcrumbs = inject('setBreadcrumbs', () => {});
 setBreadcrumbs([{ label: 'Dashboard', to: '/admin' }, { label: 'Tags' }]);
@@ -173,9 +165,17 @@ setBreadcrumbs([{ label: 'Dashboard', to: '/admin' }, { label: 'Tags' }]);
     </div>
 
     <!-- Tags Grid -->
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+    <div
+      v-if="tagsLoading"
+      class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"
+    >
+      <div v-for="i in 6" :key="i" class="animate-pulse">
+        <div class="bg-gray-300 dark:bg-gray-600 rounded-lg h-24"></div>
+      </div>
+    </div>
+    <div v-else class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
       <div
-        v-for="tag in filteerrorTags"
+        v-for="tag in filteredTags"
         :key="tag.id"
         class="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg p-4 hover:shadow-md transition-shadow"
       >
@@ -235,7 +235,7 @@ setBreadcrumbs([{ label: 'Dashboard', to: '/admin' }, { label: 'Tags' }]);
       </div>
     </div>
 
-    <div v-if="!filteerrorTags.length" class="text-center py-12">
+    <div v-if="!filteredTags.length && !tagsLoading" class="text-center py-12">
       <UIcon name="i-lucide-tag" class="mx-auto h-12 w-12 text-gray-400" />
       <h3 class="mt-2 text-sm font-medium text-gray-900 dark:text-white">
         No tags

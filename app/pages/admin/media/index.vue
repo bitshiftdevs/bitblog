@@ -11,8 +11,9 @@ const fileInputRef = ref<HTMLInputElement>();
 const selectedMedia = ref<Media[]>([]);
 const isUploading = ref(false);
 
-// Fetch media
-const { data: mediaData, refresh } = await useFetch('/api/media', {
+// Fetch media (non-blocking)
+const { data: mediaData, refresh, pending: mediaLoading } = useLazyFetch('/api/media', {
+  key: 'admin-media-list',
   default: () => ({ success: false, data: { items: [] } })
 });
 
@@ -240,7 +241,12 @@ setBreadcrumbs([
     </div>
 
     <!-- Media Grid -->
-    <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-4">
+    <div v-if="mediaLoading" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-4">
+      <div v-for="i in 12" :key="i" class="animate-pulse">
+        <div class="bg-gray-300 dark:bg-gray-600 rounded-lg aspect-square"></div>
+      </div>
+    </div>
+    <div v-else class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-4">
       <div
         v-for="media in filteredMedia"
         :key="media.id"
@@ -309,7 +315,7 @@ setBreadcrumbs([
     </div>
 
     <!-- Empty state -->
-    <div v-if="!filteredMedia.length" class="text-center py-12">
+    <div v-if="!filteredMedia.length && !mediaLoading" class="text-center py-12">
       <UIcon name="i-lucide-image" class="mx-auto h-12 w-12 text-gray-400" />
       <h3 class="mt-2 text-sm font-medium text-gray-900 dark:text-white">
         {{ searchQuery ? 'No files found' : 'No media files' }}

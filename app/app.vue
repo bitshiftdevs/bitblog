@@ -1,19 +1,22 @@
 <template>
   <UApp>
-    <!-- Global modals -->
-    <UModal />
-
-    <!-- Main app layout -->
+    <NuxtLoadingIndicator :height="4" :duration="300" :throttle="0" />
+    <Transition name="page" mode="out-in">
+      <div
+        v-if="pending"
+        class="fixed inset-0 bg-white/80 dark:bg-gray-900/80 backdrop-blur-sm z-50 flex items-center justify-center"
+      >
+        <div class="flex flex-col items-center space-y-4">
+          <div
+            class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"
+          ></div>
+          <p class="text-sm text-gray-600 dark:text-gray-400">Loading...</p>
+        </div>
+      </div>
+    </Transition>
     <NuxtLayout>
       <NuxtPage />
     </NuxtLayout>
-
-    <!-- Loading overlay -->
-    <UProgress
-      v-if="pending"
-      animation="carousel"
-      class="fixed top-0 left-0 right-0 z-50"
-    />
   </UApp>
 </template>
 
@@ -61,3 +64,39 @@ onMounted(() => {
   }
 });
 </script>
+
+<style>
+/* Page transitions */
+.page-enter-active,
+.page-leave-active {
+  transition: all 0.3s ease;
+}
+
+.page-enter-from,
+.page-leave-to {
+  opacity: 0;
+  transform: translateY(10px);
+}
+
+.page-enter-to,
+.page-leave-from {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Layout transitions */
+.layout-enter-active,
+.layout-leave-active {
+  transition: all 0.2s ease;
+}
+
+.layout-enter-from,
+.layout-leave-to {
+  opacity: 0;
+}
+
+.layout-enter-to,
+.layout-leave-from {
+  opacity: 1;
+}
+</style>

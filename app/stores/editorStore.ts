@@ -10,7 +10,7 @@ export const useEditorStore = defineStore('editor', {
       id: '',
       authorId: auth.user?.id,
       author: auth.user ?? undefined,
-      content: '',
+      content: {},
       contentText: '',
       wordCount: 0,
       excerpt: '',
@@ -75,7 +75,7 @@ export const useEditorStore = defineStore('editor', {
         coAuthors: state.coAuthors,
         viewCount: state.viewCount,
         createdAt: new Date().toISOString(),
-        relatedPosts: []
+        relatedPosts: [],
       } as PostResponse;
     },
   },
@@ -133,31 +133,32 @@ export const useEditorStore = defineStore('editor', {
           seoTitle: undefined,
           seoDescription: undefined,
           seoKeywords: undefined,
-          coAuthorIds: this.coAuthors.map(author => author.id).filter(id => id),
+          coAuthorIds: this.coAuthors.map((author) => author.id).filter((id) => id),
           // Use existing IDs for existing tags/categories, names for new ones
-          tagIds: this.tags.filter(tag => tag.id && !tag.id.includes('-')).map(tag => tag.id),
-          categoryIds: this.categories.filter(cat => cat.id && !cat.id.includes('-')).map(cat => cat.id),
+          tagIds: this.tags.filter((tag) => tag.id && !tag.id.includes('-')).map((tag) => tag.id),
+          categoryIds: this.categories.filter((cat) => cat.id && !cat.id.includes('-')).map((cat) => cat.id),
           // Send new tag/category names to be created
-          newTagNames: this.tags.filter(tag => !tag.id || tag.id.includes('-')).map(tag => tag.name),
-          newCategoryNames: this.categories.filter(cat => !cat.id || cat.id.includes('-')).map(cat => cat.name),
-          scheduledAt: status === 'SCHEDULED' ? this.publishedAt : undefined
+          newTagNames: this.tags.filter((tag) => !tag.id || tag.id.includes('-')).map((tag) => tag.name),
+          newCategoryNames: this.categories.filter((cat) => !cat.id || cat.id.includes('-')).map((cat) => cat.name),
+          scheduledAt: status === 'SCHEDULED' ? this.publishedAt : undefined,
         };
 
-        let response;
+        let response: any;
         let msg = '';
 
+        console.log(postData);
         if (this.id) {
           // Update existing post
           response = await $fetch(`/api/posts/${this.id}`, {
             method: 'PUT',
-            body: postData
+            body: postData,
           });
           msg = `Post updated as ${status.toLowerCase()}`;
         } else {
           // Create new post
           response = await $fetch('/api/posts', {
             method: 'POST',
-            body: postData
+            body: postData,
           });
           msg = `Post created as ${status.toLowerCase()}`;
 
@@ -175,7 +176,7 @@ export const useEditorStore = defineStore('editor', {
           success: true,
           msg,
           timestamp: this.lastSaved,
-          data: response.data
+          data: response.data,
         };
       } catch (e: any) {
         console.error('Save error:', e);
@@ -238,7 +239,7 @@ export const useEditorStore = defineStore('editor', {
     },
     resetEditor() {
       this.title = '';
-      this.content = '';
+      this.content = {};
       this.excerpt = '';
       this.slug = '';
       this.featuredImage = '';

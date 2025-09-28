@@ -12,8 +12,9 @@ useSeoMeta({
 // Stores
 const auth = useAuth();
 
-// Fetch featured posts
-const { data: featuredPostsData, pending } = await useFetch('/api/posts', {
+// Fetch featured posts (non-blocking)
+const { data: featuredPostsData, pending } = useLazyFetch('/api/posts', {
+  key: 'home-featured-posts',
   query: {
     status: 'PUBLISHED',
     limit: 6,
@@ -24,8 +25,9 @@ const { data: featuredPostsData, pending } = await useFetch('/api/posts', {
 
 const featuredPosts = computed(() => featuredPostsData.value?.data?.items || []);
 
-// Fetch popular categories
-const { data: categoriesData, pending: categoriesLoading } = await useFetch('/api/categories', {
+// Fetch popular categories (non-blocking)
+const { data: categoriesData, pending: categoriesLoading } = useLazyFetch('/api/categories', {
+  key: 'home-categories',
   query: {
     limit: 8,
     sortBy: 'posts',
@@ -35,8 +37,9 @@ const { data: categoriesData, pending: categoriesLoading } = await useFetch('/ap
 
 const categories = computed(() => categoriesData.value?.data?.items || []);
 
-// Fetch active authors
-const { data: authorsData, pending: authorsLoading } = await useFetch('/api/authors', {
+// Fetch active authors (non-blocking)
+const { data: authorsData, pending: authorsLoading } = useLazyFetch('/api/authors', {
+  key: 'home-authors',
   query: {
     limit: 8,
     sortBy: 'posts',
@@ -161,9 +164,7 @@ const authors = computed(() => authorsData.value?.data?.items || []);
           v-if="categoriesLoading"
           class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4"
         >
-          <div v-for="i in 8" :key="i" class="animate-pulse">
-            <div class="bg-white dark:bg-gray-700 rounded-lg p-6 h-32"></div>
-          </div>
+          <CategoryCardSkeleton v-for="i in 8" :key="i" />
         </div>
 
         <div
@@ -215,15 +216,7 @@ const authors = computed(() => authorsData.value?.data?.items || []);
           v-if="authorsLoading"
           class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8"
         >
-          <div v-for="i in 8" :key="i" class="animate-pulse text-center">
-            <div
-              class="w-20 h-20 bg-gray-300 dark:bg-gray-600 rounded-full mx-auto mb-4"
-            ></div>
-            <div class="h-4 bg-gray-300 dark:bg-gray-600 rounded mb-2"></div>
-            <div
-              class="h-3 bg-gray-300 dark:bg-gray-600 rounded w-2/3 mx-auto"
-            ></div>
-          </div>
+          <AuthorCardSkeleton v-for="i in 8" :key="i" />
         </div>
 
         <div

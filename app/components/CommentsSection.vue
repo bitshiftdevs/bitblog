@@ -60,9 +60,6 @@ const submitComment = async () => {
       commentForm.guestName = '';
       commentForm.guestEmail = '';
     }
-
-    // Refresh page to show new comment
-    await refreshCookie();
   } catch (error: any) {
     toast.add({
       title: 'Comment failed',
@@ -93,7 +90,7 @@ const handleReply = (parentComment: Comment) => {
         </h4>
 
         <form @submit.prevent="submitComment" class="space-y-4">
-          <div v-if="!user" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div v-if="!auth.user" class="grid grid-cols-1 md:grid-cols-2 gap-4">
             <UFormField label="Name" required>
               <UInput
                 v-model="commentForm.guestName"
@@ -125,7 +122,10 @@ const handleReply = (parentComment: Comment) => {
           </UFormField>
 
           <div class="flex justify-between items-center">
-            <p v-if="!user" class="text-sm text-gray-500 dark:text-gray-400">
+            <p
+              v-if="!auth.user"
+              class="text-sm text-gray-500 dark:text-gray-400"
+            >
               Your email will not be published.
             </p>
 

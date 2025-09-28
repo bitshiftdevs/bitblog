@@ -51,7 +51,6 @@ const navItems = computed<NavigationMenuItem[]>(() => [
     label: 'Authors',
     icon: 'i-lucide-user-star',
     to: '/authors',
-    target: '_blank',
   },
 ]);
 

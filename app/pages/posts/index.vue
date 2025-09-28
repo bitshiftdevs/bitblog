@@ -1,4 +1,63 @@
-<!-- apps/web/pages/posts/index.vue -->
+<script setup lang="ts">
+// Meta tags
+useSeoMeta({
+  title: 'All Posts',
+  description: 'Browse all our latest articles and insights',
+});
+
+// Reactive filters
+const currentPage = ref(1);
+const selectedCategory = ref(null);
+const selectedTag = ref(null);
+const searchQuery = ref('');
+
+// Fetch posts with filters (non-blocking)
+const { data: postsData, pending } = useLazyFetch('/api/posts', {
+  key: 'posts-list',
+  query: computed(() => ({
+    page: currentPage.value,
+    limit: 12,
+    categoryId: selectedCategory.value?.id,
+    tagId: selectedTag.value?.id,
+    search: searchQuery.value || undefined,
+    status: 'PUBLISHED',
+    visibility: 'PUBLIC',
+  })),
+});
+
+const posts = computed(() => postsData.value?.data?.items || []);
+const pagination = computed(
+  () =>
+    postsData.value?.data?.pagination || {
+      page: 1,
+      limit: 12,
+      total: 0,
+      totalPages: 0,
+      hasNext: false,
+      hasPrev: false,
+    },
+);
+
+// Fetch categories for filter (non-blocking)
+const { data: categoriesData } = useLazyFetch('/api/categories', {
+  key: 'posts-filter-categories',
+});
+const categoryOptions = computed(() => [
+  { id: null, name: 'All Categories' },
+  ...(categoriesData.value?.data?.items || []),
+]);
+
+// Fetch tags for filter (non-blocking)
+const { data: tagsData } = useLazyFetch('/api/tags', {
+  key: 'posts-filter-tags',
+});
+const tagOptions = computed(() => [{ id: null, name: 'All Tags' }, ...(tagsData.value?.data?.items || [])]);
+
+// Reset page when filters change
+watch([selectedCategory, selectedTag, searchQuery], () => {
+  currentPage.value = 1;
+});
+</script>
 <template>
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
     <!-- Header -->
@@ -79,59 +138,3 @@
     </div>
   </div>
 </template>
-
-<script setup lang="ts">
-// Meta tags
-useSeoMeta({
-  title: 'All Posts',
-  description: 'Browse all our latest articles and insights',
-});
-
-// Reactive filters
-const currentPage = ref(1);
-const selectedCategory = ref(null);
-const selectedTag = ref(null);
-const searchQuery = ref('');
-
-// Fetch posts with filters
-const { data: postsData, pending } = await useFetch('/api/posts', {
-  query: computed(() => ({
-    page: currentPage.value,
-    limit: 12,
-    categoryId: selectedCategory.value?.id,
-    tagId: selectedTag.value?.id,
-    search: searchQuery.value || undefined,
-    status: 'PUBLISHED',
-    visibility: 'PUBLIC',
-  })),
-});
-
-const posts = computed(() => postsData.value?.data?.items || []);
-const pagination = computed(
-  () =>
-    postsData.value?.data?.pagination || {
-      page: 1,
-      limit: 12,
-      total: 0,
-      totalPages: 0,
-      hasNext: false,
-      hasPrev: false,
-    },
-);
-
-// Fetch categories for filter
-const { data: categoriesData } = await useFetch('/api/categories');
-const categoryOptions = computed(() => [
-  { id: null, name: 'All Categories' },
-  ...(categoriesData.value?.data?.items || []),
-]);
-
-// Fetch tags for filter
-const { data: tagsData } = await useFetch('/api/tags');
-const tagOptions = computed(() => [{ id: null, name: 'All Tags' }, ...(tagsData.value?.data?.items || [])]);
-
-// Reset page when filters change
-watch([selectedCategory, selectedTag, searchQuery], () => {
-  currentPage.value = 1;
-});
-</script>

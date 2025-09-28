@@ -1,4 +1,4 @@
-import type { Editor, Range } from "@tiptap/vue-3";
+import type { Editor, JSONContent, Range } from "@tiptap/vue-3";
 
 export type PostStatus = "DRAFT" | "SCHEDULED" | "PUBLISHED" | "ARCHIVED";
 export type PostVisibility = "PUBLIC" | "PRIVATE" | "UNLISTED";
@@ -17,7 +17,7 @@ export type EditorState = Post & {
   view: EditorView;
   isFeatured: boolean;
   history: Array<{
-    content: string;
+    content: JSONContent;
     timestamp: string;
   }>;
   isDirty: boolean;
@@ -73,7 +73,7 @@ export type Post = {
   slug: string;
   title: string;
   excerpt?: string;
-  content: JSON; // TipTap JSON
+  content: JSONContent; // TipTap JSON
   status: PostStatus;
   visibility: PostVisibility;
   featuredImage?: string;
