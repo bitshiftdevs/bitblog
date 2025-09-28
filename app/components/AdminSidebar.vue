@@ -148,30 +148,5 @@ const userMenuItems = computed(() => [
       orientation="vertical"
       class="px-2 py-4"
     />
-
-    <template #footer>
-      <!-- User info -->
-      <div class="flex items-center">
-        <UAvatar :src="auth.user?.avatarUrl" :alt="auth.user?.name" size="sm" />
-        <div class="ml-3 flex-1 min-w-0">
-          <p class="text-sm font-medium text-white truncate">
-            {{ auth.user?.name }}
-          </p>
-          <p class="text-xs text-gray-400 truncate">{{ auth.user?.email }}</p>
-        </div>
-
-        <UDropdownMenu
-          :items="userMenuItems"
-          :popper="{ placement: 'top-end' }"
-        >
-          <UButton
-            variant="ghost"
-            size="sm"
-            icon="i-lucide-ellipsis-vertical"
-            class="text-gray-400 hover:text-white"
-          />
-        </UDropdownMenu>
-      </div>
-    </template>
   </UDashboardSidebar>
 </template>

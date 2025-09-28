@@ -132,20 +132,6 @@ const deleteTag = async (tag: Tag) => {
   }
 };
 
-// Predefined colors
-const tagColors = [
-  '#3B82F6',
-  '#EF4444',
-  '#10B981',
-  '#F59E0B',
-  '#8B5CF6',
-  '#EC4899',
-  '#06B6D4',
-  '#84CC16',
-  '#F97316',
-  '#6366F1',
-];
-
 // Set breadcrumbs
 const setBreadcrumbs = inject('setBreadcrumbs', () => {});
 setBreadcrumbs([{ label: 'Dashboard', to: '/admin' }, { label: 'Tags' }]);
