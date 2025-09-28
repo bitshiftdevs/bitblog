@@ -1,4 +1,4 @@
-import type { AnyExtension, Extensions } from '@tiptap/core';
+import type { Extensions } from '@tiptap/core';
 
 const lowlight = createLowlight(commonLanguages);
 export const tiptapExtenstions: Extensions = [

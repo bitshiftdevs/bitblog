@@ -46,38 +46,25 @@ export function useSeo() {
       const totalWords = plainText.split(/\s+/).length;
 
       keywordDensity = totalWords > 0 ? (keywordMatches / totalWords) * 100 : 0;
-      keywordInFirstParagraph = firstParagraph
-        .toLowerCase()
-        .includes(focusKeyword.toLowerCase());
-      keywordInHeadings = headings.some((heading) =>
-        heading.toLowerCase().includes(focusKeyword.toLowerCase()),
-      );
+      keywordInFirstParagraph = firstParagraph.toLowerCase().includes(focusKeyword.toLowerCase());
+      keywordInHeadings = headings.some((heading) => heading.toLowerCase().includes(focusKeyword.toLowerCase()));
     }
 
     // Check readability metrics
-    const {
-      readingEase,
-      passiveVoice,
-      sentenceLength,
-      paragraphLength,
-      transitionWords,
-    } = calculateReadability(plainText);
-    seoStore.updateMetaDescription(editorStore.excerpt);
+    const { readingEase, passiveVoice, sentenceLength, paragraphLength, transitionWords } =
+      calculateReadability(plainText);
+    seoStore.updateMetaDescription(editorStore.excerpt ?? '');
     seoStore.updateMetaTitle(editorStore.title);
 
     // Update SEO analysis
     seoStore.updateAnalysis({
       keywordDensity,
-      keywordInTitle: metaTitle
-        .toLowerCase()
-        .includes((focusKeyword || '').toLowerCase()),
+      keywordInTitle: metaTitle.toLowerCase().includes((focusKeyword || '').toLowerCase()),
       keywordInFirstParagraph,
       keywordInHeadings,
-      keywordInUrl: editorStore.slug
-        .toLowerCase()
-        .includes((focusKeyword || '').toLowerCase()),
+      keywordInUrl: editorStore.slug.toLowerCase().includes((focusKeyword || '').toLowerCase()),
       titleLength: metaTitle.length,
-      descriptionLength: editorStore.excerpt.length,
+      descriptionLength: editorStore.excerpt?.length,
       readingEase,
       passiveVoice,
       sentenceLength,
@@ -114,37 +101,27 @@ export function useSeo() {
     const totalSentenceWords = sentences.reduce((total, sentence) => {
       return total + sentence.split(/\s+/).filter((w) => w.length > 0).length;
     }, 0);
-    const avgSentenceLength =
-      sentences.length > 0 ? totalSentenceWords / sentences.length : 0;
+    const avgSentenceLength = sentences.length > 0 ? totalSentenceWords / sentences.length : 0;
 
     // Calculate average paragraph length (in sentences)
     // Approximation: we assume paragraphs are separated by double newlines
     const paragraphs = text.split(/\n\s*\n/).filter((p) => p.trim().length > 0);
     const totalParagraphSentences = paragraphs.reduce((total, paragraph) => {
-      return (
-        total +
-        paragraph.split(/[.!?]+/).filter((s) => s.trim().length > 0).length
-      );
+      return total + paragraph.split(/[.!?]+/).filter((s) => s.trim().length > 0).length;
     }, 0);
-    const avgParagraphLength =
-      paragraphs.length > 0 ? totalParagraphSentences / paragraphs.length : 0;
+    const avgParagraphLength = paragraphs.length > 0 ? totalParagraphSentences / paragraphs.length : 0;
 
     // Estimate reading ease (Simplified Flesch Reading Ease)
     const words = text.split(/\s+/).filter((w) => w.length > 0);
     const syllables = countSyllables(text);
     const readingEase =
-      words.length > 0
-        ? 206.835 -
-          1.015 * (words.length / sentences.length) -
-          84.6 * (syllables / words.length)
-        : 0;
+      words.length > 0 ? 206.835 - 1.015 * (words.length / sentences.length) - 84.6 * (syllables / words.length) : 0;
 
     // Estimate passive voice (simple approximation)
     const passivePattern =
       /\b(am|is|are|was|were|be|been|being)\s+(\w+ed|built|bought|caught|done|felt|found|given|gone|had|heard|kept|known|left|lost|made|met|paid|put|read|said|seen|sent|set|shown|sung|sat|spoken|spent|stood|taken|told|thought|understood|worn|won)\b/gi;
     const passiveMatches = (text.match(passivePattern) || []).length;
-    const passiveVoicePercentage =
-      sentences.length > 0 ? (passiveMatches / sentences.length) * 100 : 0;
+    const passiveVoicePercentage = sentences.length > 0 ? (passiveMatches / sentences.length) * 100 : 0;
 
     // Estimate transition words usage
     const transitionWords = [
@@ -176,13 +153,9 @@ export function useSeo() {
       'in summary',
     ];
 
-    const transitionWordsRegex = new RegExp(
-      '\\b(' + transitionWords.join('|') + ')\\b',
-      'gi',
-    );
+    const transitionWordsRegex = new RegExp('\\b(' + transitionWords.join('|') + ')\\b', 'gi');
     const transitionMatches = (text.match(transitionWordsRegex) || []).length;
-    const transitionPercentage =
-      sentences.length > 0 ? (transitionMatches / sentences.length) * 100 : 0;
+    const transitionPercentage = sentences.length > 0 ? (transitionMatches / sentences.length) * 100 : 0;
 
     return {
       readingEase: Math.max(0, Math.min(100, readingEase)),
@@ -205,9 +178,7 @@ export function useSeo() {
       if (!word) return total;
 
       // Count vowel groups
-      const vowelGroups = word
-        .split(/[^aeiouy]+/)
-        .filter((group) => group.length > 0);
+      const vowelGroups = word.split(/[^aeiouy]+/).filter((group) => group.length > 0);
       let count = vowelGroups.length;
 
       // Adjust for common patterns
@@ -215,10 +186,7 @@ export function useSeo() {
         count--;
       }
 
-      if (
-        word.endsWith('es') ||
-        (word.endsWith('ed') && !word.match(/[td]ed$/))
-      ) {
+      if (word.endsWith('es') || (word.endsWith('ed') && !word.match(/[td]ed$/))) {
         count--;
       }
 

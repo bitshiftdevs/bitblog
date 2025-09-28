@@ -22,15 +22,6 @@ const updateFocusKeyword = () => {
   seoStore.updateFocusKeyword(focusKeyword.value);
 };
 
-// Watch for changes from the store
-watch(
-  () => editorStore.title,
-  (newValue) => {
-    seoStore.updateMetaTitle(newValue);
-    editorStore.setTitle();
-  },
-);
-
 watch(
   () => seoStore.focusKeyword,
   (newValue) => {

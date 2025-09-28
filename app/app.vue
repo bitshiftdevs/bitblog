@@ -1,15 +1,15 @@
 <template>
   <UApp>
-    <NuxtLoadingIndicator
-      :height="4"
-      :duration="300"
-      :throttle="0"
-      color="#3b82f6"
-    />
+    <NuxtLoadingIndicator :height="4" :duration="300" :throttle="0" />
     <Transition name="page" mode="out-in">
-      <div v-if="pending" class="fixed inset-0 bg-white/80 dark:bg-gray-900/80 backdrop-blur-sm z-50 flex items-center justify-center">
+      <div
+        v-if="pending"
+        class="fixed inset-0 bg-white/80 dark:bg-gray-900/80 backdrop-blur-sm z-50 flex items-center justify-center"
+      >
         <div class="flex flex-col items-center space-y-4">
-          <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+          <div
+            class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"
+          ></div>
           <p class="text-sm text-gray-600 dark:text-gray-400">Loading...</p>
         </div>
       </div>

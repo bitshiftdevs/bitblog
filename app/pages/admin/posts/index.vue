@@ -9,7 +9,8 @@ const selectedAuthor = ref(null);
 const searchQuery = ref('');
 
 const { data, pending: postsLoading } = useLazyFetch('/api/posts', {
-  key: 'admin-posts-list'
+  query: { limit: 12 },
+  key: 'admin-posts-list',
 });
 
 const posts = computed(() => data.value?.data?.items || []);
@@ -45,27 +46,18 @@ const filteredPosts = computed(() => {
   });
 });
 
-// Helper functions
-const formatDate = (dateString: string): string => {
-  return new Intl.DateTimeFormat('en-US', {
-    year: 'numeric',
-    month: 'short',
-    day: 'numeric',
-  }).format(new Date(dateString));
-};
-
 const getStatusColor = (status: string) => {
   switch (status) {
     case 'PUBLISHED':
       return 'success';
     case 'DRAFT':
-      return 'yellow';
+      return 'warning';
     case 'SCHEDULED':
-      return 'blue';
+      return 'info';
     case 'ARCHIVED':
-      return 'gray';
+      return 'error';
     default:
-      return 'gray';
+      return 'neutral';
   }
 };
 

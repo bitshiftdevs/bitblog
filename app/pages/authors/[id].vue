@@ -5,7 +5,7 @@ const currentPage = ref(1);
 
 // Fetch author (non-blocking)
 const { data: authorData, pending: authorLoading } = useLazyFetch(`/api/authors/${id}`, {
-  key: `author-${id}`
+  key: `author-${id}`,
 });
 const author = computed(() => authorData.value?.data);
 
@@ -27,21 +27,15 @@ const pagination = computed(() => postsData.value?.data?.pagination || {});
 // SEO
 useSeoMeta({
   title: computed(() => author.value?.name),
-  description: computed(
-    () => author.value?.bio || `Posts by ${author.value?.name}`,
-  ),
+  description: computed(() => author.value?.bio || `Posts by ${author.value?.name}`),
 });
-
-if (!author.value) {
-  throw createError({ statusCode: 404, statusMessage: 'Author not found' });
-}
 </script>
 <template>
   <div v-if="author" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
     <!-- Author Header -->
     <div class="bg-white dark:bg-gray-800 rounded-lg p-8 mb-8 text-center">
       <UAvatar
-        :src="author.avatarUrl"
+        :src="author?.avatarUrl"
         :alt="author.name"
         size="2xl"
         class="mx-auto mb-4"

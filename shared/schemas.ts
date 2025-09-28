@@ -69,8 +69,8 @@ export const CreatePostSchema = z.object({
   seoDescription: z.string().max(160).optional(),
   seoKeywords: z.string().max(200).optional(),
   coAuthorIds: z.array(z.string().uuid()).optional(),
-  tagIds: z.array(z.string().uuid()).optional(),
-  categoryIds: z.array(z.string().uuid()).optional(),
+  tagIds: z.array(z.string()).optional(),
+  categoryIds: z.array(z.string()).optional(),
   scheduledAt: z.string().datetime().optional(),
 });
 

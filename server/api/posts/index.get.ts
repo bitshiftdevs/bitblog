@@ -1,4 +1,3 @@
-// apps/api/server/api/posts/index.get.ts
 import { z } from "zod";
 import {
   createPaginationOptions,
@@ -35,7 +34,7 @@ export default defineEventHandler(async (event) => {
 
     // Build where clause
     const where: PostWhereInput = {
-      status: status ?? "PUBLISHED",
+      ...(status && { status }),
       visibility: visibility ?? "PUBLIC",
       ...(authorId && { authorId }),
       ...(tagId && { tags: { some: { id: tagId } } }),

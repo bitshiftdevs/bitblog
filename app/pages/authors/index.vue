@@ -1,3 +1,15 @@
+<script setup lang="ts">
+useSeoMeta({
+  title: 'Authors',
+  description: 'Meet our talented writers and contributors',
+});
+
+const { data: authorsData, pending } = useLazyFetch('/api/authors', {
+  key: 'authors-list',
+});
+const authors = computed(() => authorsData.value?.data?.items || []);
+</script>
+
 <template>
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
     <div class="mb-8">
@@ -35,15 +47,3 @@
     </div>
   </div>
 </template>
-
-<script setup lang="ts">
-useSeoMeta({
-  title: 'Authors',
-  description: 'Meet our talented writers and contributors',
-});
-
-const { data: authorsData, pending } = useLazyFetch('/api/authors', {
-  key: 'authors-list',
-});
-const authors = computed(() => authorsData.value?.data?.items || []);
-</script>
