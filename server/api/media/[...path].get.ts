@@ -1,13 +1,38 @@
-// Simple file serving endpoint - in production use CDN/R2 direct URLs
+import prisma from '~~/server/db';
+
+// File serving endpoint - redirects to R2 URLs or serves from local storage
 export default defineEventHandler(async (event) => {
   const path = getRouterParam(event, 'path');
 
-  // This is a placeholder endpoint
-  // In production, files would be served directly from Cloudflare R2 or similar
-  // This endpoint would redirect to the actual file URL or serve from local storage
+  if (!path) {
+    throw createError({
+      statusCode: 400,
+      statusMessage: 'File path is required'
+    });
+  }
 
-  throw createError({
-    statusCode: 404,
-    statusMessage: 'File not found - Please configure proper media storage'
-  });
+  try {
+    // Look up the media record by key
+    const media = await prisma.media.findUnique({
+      where: { key: path }
+    });
+
+    if (!media) {
+      throw createError({
+        statusCode: 404,
+        statusMessage: 'File not found'
+      });
+    }
+
+    // Redirect to the actual R2 URL
+    // This allows us to serve files through our API while keeping the actual storage URLs private
+    return sendRedirect(event, media.url, 302);
+  } catch (error: any) {
+    console.error('Media serving error:', error);
+
+    throw createError({
+      statusCode: error.statusCode || 500,
+      statusMessage: error.statusMessage || 'Failed to serve media file'
+    });
+  }
 });

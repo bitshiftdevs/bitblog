@@ -1,5 +1,12 @@
-import { requireAuth } from '~~/server/utils/auth';
-import prisma from '~~/server/db';
+import { requireAuth } from "~~/server/utils/auth";
+import {
+  uploadToR2,
+  generateMediaKey,
+  validateFileType,
+  validateFileSize,
+  getFileTypeFromMime,
+} from "~~/server/utils/r2";
+import prisma from "~~/server/db";
 
 export default defineEventHandler(async (event) => {
   // Require authentication
@@ -11,86 +18,100 @@ export default defineEventHandler(async (event) => {
     if (!form || form.length === 0) {
       throw createError({
         statusCode: 400,
-        statusMessage: 'No files uploaded'
+        statusMessage: "No files uploaded",
       });
     }
 
     const results = [];
 
     for (const formItem of form) {
-      if (formItem.name === 'file' && formItem.filename && formItem.data) {
-        // Validate file type and size
-        const allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
-        const maxSize = 10 * 1024 * 1024; // 10MB
+      if (formItem.name === "file" && formItem.filename && formItem.data) {
+        const mimeType = formItem.type || "application/octet-stream";
+        const fileSize = formItem.data.length;
+        const fileType = getFileTypeFromMime(mimeType);
 
-        if (!allowedTypes.includes(formItem.type || '')) {
+        // Validate file type
+        if (!validateFileType(mimeType)) {
           throw createError({
             statusCode: 400,
-            statusMessage: 'Invalid file type. Only JPEG, PNG, GIF, and WebP are allowed.'
+            statusMessage: `Invalid file type: ${mimeType}. Only images, videos, audio, and documents are allowed.`,
           });
         }
 
-        if (formItem.data.length > maxSize) {
+        // Validate file size
+        if (!validateFileSize(fileSize, fileType)) {
           throw createError({
             statusCode: 400,
-            statusMessage: 'File too large. Maximum size is 10MB.'
+            statusMessage: `File too large for type ${fileType}. Please check the size limits.`,
           });
         }
 
-        // For now, we'll create a simple file storage solution
-        // In production, this would use Cloudflare R2 or similar
-        const fileExtension = formItem.filename.split('.').pop();
-        const fileName = `${Date.now()}-${Math.random().toString(36).substring(7)}.${fileExtension}`;
-        const key = `uploads/${fileName}`;
+        // Generate unique key for R2
+        const key = generateMediaKey(formItem.filename, session.id);
 
-        // Create a mock URL (in production, this would be the actual R2 URL)
-        const url = `/api/media/${key}`;
-
-        // Save media record to database
-        const mediaRecord = await prisma.media.create({
-          data: {
+        try {
+          // Upload to Cloudflare R2
+          const url = await uploadToR2(
             key,
-            url,
-            filename: formItem.filename,
-            mimeType: formItem.type || 'application/octet-stream',
-            size: formItem.data.length,
-            // For images, we could extract dimensions here
-            // width: undefined,
-            // height: undefined,
-            altText: formItem.filename,
-            uploadedById: session.id
+            Buffer.from(formItem.data),
+            mimeType,
+          );
+
+          // Extract image dimensions if it's an image
+          let width: number | undefined;
+          let height: number | undefined;
+
+          if (fileType === "image") {
+            // TODO: Extract image dimensions using sharp or similar library
+            // For now, we'll leave them undefined
           }
-        });
 
-        // In a real implementation, you would save the file to R2 or local storage here
-        // For now, we'll just return the media record
+          // Save media record to database
+          const mediaRecord = await prisma.media.create({
+            data: {
+              key,
+              url,
+              filename: formItem.filename,
+              mimeType,
+              size: fileSize,
+              altText: formItem.filename.replace(/\.[^/.]+$/, ""), // Remove file extension for alt text
+            },
+          });
 
-        results.push({
-          ...mediaRecord,
-          createdAt: mediaRecord.createdAt.toISOString(),
-          updatedAt: mediaRecord.updatedAt.toISOString()
-        });
+          results.push({
+            ...mediaRecord,
+            createdAt: mediaRecord.createdAt.toISOString(),
+            updatedAt: mediaRecord.updatedAt.toISOString(),
+          });
+        } catch (uploadError: any) {
+          console.error("R2 upload error:", uploadError);
+          throw createError({
+            statusCode: 500,
+            statusMessage: "Failed to upload file to storage",
+          });
+        }
       }
     }
 
     if (results.length === 0) {
       throw createError({
         statusCode: 400,
-        statusMessage: 'No valid files found'
+        statusMessage: "No valid files found",
       });
     }
 
     return {
       success: true,
       data: results.length === 1 ? results[0] : results,
-      message: `${results.length} file(s) uploaded successfully`
+      message: `${results.length} file(s) uploaded successfully`,
     };
   } catch (error: any) {
-    console.error('Media upload error:', error);
+    console.error("Media upload error:", error);
 
     throw createError({
       statusCode: error.statusCode || 500,
-      statusMessage: error.statusMessage || 'Failed to upload media'
+      statusMessage: error.statusMessage || "Failed to upload media",
     });
   }
 });
+

@@ -32,9 +32,6 @@ const blog = useBlogEditor();
         class="prose prose-slate prose-lg dark:prose-invert dark:prose-slate max-w-none"
       />
     </div>
-    <TipTapLinkModal :editor="blog.editor.value" />
-    <TipTapImageModal :editor="blog.editor.value" />
-    <TipTapYoutubeModal :editor="blog.editor.value" />
   </div>
 </template>
 

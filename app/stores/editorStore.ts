@@ -1,4 +1,7 @@
 import { defineStore } from 'pinia';
+import ImageModal from '~/components/TipTap/ImageModal.vue';
+import LinkModal from '~/components/TipTap/LinkModal.vue';
+import YoutubeModal from '~/components/TipTap/YoutubeModal.vue';
 import type { EditorView, EditorState, PostResponse, PostStatus, Post } from '~~/shared/types';
 import { Modal } from '~~/shared/types';
 
@@ -211,24 +214,30 @@ export const useEditorStore = defineStore('editor', {
       }
       return false;
     },
-    openModal(modal: Modal) {
-      switch (modal) {
+    async openModal(mode: Modal) {
+      const overlay = useOverlay();
+      let modal: ReturnType<typeof overlay.create>;
+
+      switch (mode) {
         case Modal.link:
-          this.showLinkModal = true;
+          modal = overlay.create(LinkModal);
           break;
         case Modal.image:
-          this.showImageModal = true;
+          modal = overlay.create(ImageModal);
           break;
         case Modal.imageFeatured:
-          this.showImageModal = true;
+          modal = overlay.create(ImageModal);
           this.isFeatured = true;
           break;
         case Modal.youtube:
-          this.showYoutubeModal = true;
+          modal = overlay.create(YoutubeModal);
           break;
       }
+      const instance = modal.open();
+      await instance.result;
     },
     resetModal() {
+      // TODO: Will remove
       this.showYoutubeModal = false;
       this.showLinkModal = false;
       this.showImageModal = false;
