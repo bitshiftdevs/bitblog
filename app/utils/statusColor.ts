@@ -1,5 +1,3 @@
-import type { BadgeProps } from '@nuxt/ui';
-
 type Color =
   | 'primary'
   | 'secondary'
@@ -12,10 +10,20 @@ type Color =
   | 'error'
   | undefined;
 
-export const getStatusColor = (value: number): Color => {
-  return value >= 80
-    ? 'success'
-    : value >= 50 && value < 80
-      ? 'warning'
-      : 'error';
+export const getStatusColor = (value: number | string): Color => {
+  if (typeof value === 'string') {
+    switch (value) {
+      case 'PUBLISHED':
+        return 'success';
+      case 'DRAFT':
+        return 'warning';
+      case 'SCHEDULED':
+        return 'info';
+      case 'ARCHIVED':
+        return 'error';
+      default:
+        return 'neutral';
+    }
+  }
+  return value >= 80 ? 'success' : value >= 50 && value < 80 ? 'warning' : 'error';
 };

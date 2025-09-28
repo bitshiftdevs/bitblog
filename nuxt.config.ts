@@ -145,6 +145,10 @@ export default defineNuxtConfig({
       headers: { 'cache-control': 'no-cache' },
       cors: true,
     },
+    '/api/authors/**': {
+      headers: { 'cache-control': 's-maxage=3600' },
+      cors: true,
+    },
 
     // Static assets cached for 1 year
     '/assets/**': {

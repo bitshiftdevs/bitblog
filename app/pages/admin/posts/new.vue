@@ -7,16 +7,15 @@ const blog = useBlogEditor();
 const { analyzeSeo } = useSeo();
 
 onMounted(() => {
-  // Auto-save every 30 seconds
-  const autoSaveInterval = setInterval(() => {
-    editorStore.saveContent('DRAFT');
-  }, 30000);
-
+  // // Auto-save every 30 seconds
+  // const autoSaveInterval = setInterval(() => {
+  //   editorStore.saveContent('DRAFT');
+  // }, 30000);
   // Clean up on unmount
-  onBeforeUnmount(() => {
-    clearInterval(autoSaveInterval);
-    blog.destroyEditor();
-  });
+  // onBeforeUnmount(() => {
+  //   clearInterval(autoSaveInterval);
+  //   blog.destroyEditor();
+  // });
 });
 
 // Watch editor content and analyze SEO when content changes

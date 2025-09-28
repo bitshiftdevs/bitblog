@@ -137,7 +137,6 @@ export const useEditorStore = defineStore('editor', {
           // Use existing IDs for existing tags/categories, names for new ones
           tagIds: this.tags.filter((tag) => tag.id && !tag.id.includes('-')).map((tag) => tag.id),
           categoryIds: this.categories.filter((cat) => cat.id && !cat.id.includes('-')).map((cat) => cat.id),
-          // Send new tag/category names to be created
           newTagNames: this.tags.filter((tag) => !tag.id || tag.id.includes('-')).map((tag) => tag.name),
           newCategoryNames: this.categories.filter((cat) => !cat.id || cat.id.includes('-')).map((cat) => cat.name),
           scheduledAt: status === 'SCHEDULED' ? this.publishedAt : undefined,
@@ -146,7 +145,6 @@ export const useEditorStore = defineStore('editor', {
         let response: any;
         let msg = '';
 
-        console.log(postData);
         if (this.id) {
           // Update existing post
           response = await $fetch(`/api/posts/${this.id}`, {
@@ -190,6 +188,7 @@ export const useEditorStore = defineStore('editor', {
       }
     },
     async loadPost(post: Post) {
+      this.id = post.id;
       this.slug = post.slug;
       this.title = post.title;
       this.content = post.content;

@@ -6,9 +6,6 @@ const seoStore = useSeoStore();
 const auth = useAuth();
 const toast = useToast();
 
-// Define emits
-const emit = defineEmits(['status-change', 'change-view', 'open-modal']);
-
 // Save handlers with notifications
 const handleSave = async (status: 'DRAFT' | 'PUBLISHED' | 'ARCHIVED') => {
   const result = await editorStore.saveContent(status);

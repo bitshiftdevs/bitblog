@@ -46,21 +46,6 @@ const filteredPosts = computed(() => {
   });
 });
 
-const getStatusColor = (status: string) => {
-  switch (status) {
-    case 'PUBLISHED':
-      return 'success';
-    case 'DRAFT':
-      return 'warning';
-    case 'SCHEDULED':
-      return 'info';
-    case 'ARCHIVED':
-      return 'error';
-    default:
-      return 'neutral';
-  }
-};
-
 const clearFilters = () => {
   selectedStatus.value = null;
   selectedAuthor.value = null;
