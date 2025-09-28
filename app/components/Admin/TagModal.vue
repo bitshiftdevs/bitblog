@@ -4,8 +4,22 @@ import type { Tag } from '~~/shared/types';
 const { title, tag } = defineProps<{
   title: string;
   tag?: Tag;
-  tags: Tags[];
+  tags: Tag[];
 }>();
+
+// Predefined colors
+const tagColors = [
+  '#3B82F6',
+  '#EF4444',
+  '#10B981',
+  '#F59E0B',
+  '#8B5CF6',
+  '#EC4899',
+  '#06B6D4',
+  '#84CC16',
+  '#F97316',
+  '#6366F1',
+];
 
 // Form data
 const formData = ref({
@@ -15,13 +29,14 @@ const formData = ref({
 });
 const emit = defineEmits<{
   submit: [typeof formData.value];
+  close: [boolean];
 }>();
 </script>
 
 <template>
   <UModal :title>
     <template #body>
-      <form @submit.prevent="emit('submit', formData.value)" class="space-y-4">
+      <form @submit.prevent="emit('submit', formData)" class="space-y-4">
         <UFormField label="Name" requierror>
           <UInput v-model="formData.name" placeholder="Tag name" requierror />
         </UFormField>
@@ -69,13 +84,12 @@ const emit = defineEmits<{
         <div class="flex justify-end space-x-3 pt-4">
           <UButton
             type="button"
-            @click="isCreateModalOpen = false"
-            color="gray"
+            color="neutral"
             variant="outline"
-          >
-            Cancel
-          </UButton>
-          <UButton type="submit"> Create Tag </UButton>
+            label="Cancel"
+            @click="emit('close', true)"
+          />
+          <UButton type="submit" :label="title" />
         </div>
       </form>
     </template>

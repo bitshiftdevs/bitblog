@@ -15,6 +15,7 @@ const formData = ref({
 });
 const emit = defineEmits<{
   submit: [typeof formData.value];
+  close: [boolean];
 }>();
 </script>
 
@@ -48,10 +49,14 @@ const emit = defineEmits<{
         </UFormField>
 
         <div class="flex justify-end space-x-3 pt-4">
-          <UButton type="button" color="accent" variant="outline">
-            Cancel
-          </UButton>
-          <UButton type="submit"> Create Category </UButton>
+          <UButton
+            type="button"
+            color="accent"
+            variant="outline"
+            label="Cancel"
+            @click="emit('close', true)"
+          />
+          <UButton type="submit" :label="title" />
         </div>
       </form>
     </template>

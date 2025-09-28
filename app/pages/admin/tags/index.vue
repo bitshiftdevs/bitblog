@@ -12,7 +12,11 @@ const overlay = useOverlay();
 const modal = overlay.create(TagModal);
 
 // Fetch tags (non-blocking)
-const { data: tagsData, refresh, pending: tagsLoading } = useLazyFetch('/api/tags', {
+const {
+  data: tagsData,
+  refresh,
+  pending: tagsLoading,
+} = useLazyFetch('/api/tags', {
   key: 'admin-tags-list',
   default: () => ({ success: false, data: { items: [] } }),
 });
@@ -70,6 +74,7 @@ const createTag = async () => {
 const editTag = async (tag: Tag) => {
   const instance = modal.open({
     title: 'Edit Tag',
+    tag,
     tags: (tags.value as unknown as Tag[]) ?? [],
     onSubmit: async (formData) => {
       try {
@@ -174,7 +179,10 @@ setBreadcrumbs([{ label: 'Dashboard', to: '/admin' }, { label: 'Tags' }]);
     </div>
 
     <!-- Tags Grid -->
-    <div v-if="tagsLoading" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+    <div
+      v-if="tagsLoading"
+      class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"
+    >
       <div v-for="i in 6" :key="i" class="animate-pulse">
         <div class="bg-gray-300 dark:bg-gray-600 rounded-lg h-24"></div>
       </div>
