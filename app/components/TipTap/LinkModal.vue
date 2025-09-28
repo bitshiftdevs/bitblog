@@ -2,21 +2,22 @@
 import { Editor } from '@tiptap/vue-3';
 
 const { editor } = defineProps<{ editor: Editor }>();
-const editorStore = useEditorStore();
+
+const linkUrl = ref<string>('');
+const linkText = ref<string>('');
 
 function insertLink() {
-  if (editorStore.linkUrl) {
+  if (linkUrl) {
     // If text is selected, update the link on that text
     if (editor.state.selection.content().size > 0) {
-      editor.chain().focus().extendMarkRange('link').setLink({ href: editorStore.linkUrl }).run();
+      editor.chain().focus().extendMarkRange('link').setLink({ href: linkUrl.value }).run();
     }
     // If no text is selected but linkText is provided, insert new text with link
-    else if (editorStore.linkText) {
-      editor.chain().focus().insertContent(`<a href="${editorStore.linkUrl}">${editorStore.linkText}</a>`).run();
+    else if (linkText) {
+      editor.chain().focus().insertContent(`<a href="${linkUrl.value}">${linkText.value}</a>`).run();
     }
   }
 
-  editorStore.resetModal();
   emit('close', true);
 }
 
@@ -31,14 +32,14 @@ const emit = defineEmits<{
       <div class="space-y-4">
         <UFormField label="URL" required>
           <UInput
-            v-model="editorStore.linkUrl"
+            v-model="linkUrl"
             placeholder="https://example.com"
             type="url"
           />
         </UFormField>
 
         <UFormField label="Text" hint="Leave empty to use the URL as text">
-          <UInput v-model="editorStore.linkText" placeholder="Link text" />
+          <UInput v-model="linkText" placeholder="Link text" />
         </UFormField>
       </div>
     </template>
@@ -46,7 +47,7 @@ const emit = defineEmits<{
     <template #footer>
       <div class="flex justify-end gap-3">
         <UButton variant="ghost" @click="emit('close', true)"> Cancel </UButton>
-        <UButton @click="insertLink" :disabled="!editorStore.linkUrl">
+        <UButton @click="insertLink" :disabled="!linkUrl">
           Insert Link
         </UButton>
       </div>

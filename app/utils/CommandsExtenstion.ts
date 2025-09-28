@@ -34,155 +34,94 @@ export const SlashCommands = Extension.create({
             {
               label: 'Heading 1',
               command: ({ editor, range }: TiptapCommandType) => {
-                editor
-                  .chain()
-                  .focus()
-                  .deleteRange(range)
-                  .setHeading({ level: 1 })
-                  .run();
+                editor.chain().focus().deleteRange(range).setHeading({ level: 1 }).run();
               },
             },
             {
               label: 'Heading 2',
               command: ({ editor, range }) => {
-                editor
-                  .chain()
-                  .focus()
-                  .deleteRange(range)
-                  .setHeading({ level: 2 })
-                  .run();
+                editor.chain().focus().deleteRange(range).setHeading({ level: 2 }).run();
               },
             },
             {
               label: 'Heading 3',
               command: ({ editor, range }) => {
-                editor
-                  .chain()
-                  .focus()
-                  .deleteRange(range)
-                  .setHeading({ level: 3 })
-                  .run();
+                editor.chain().focus().deleteRange(range).setHeading({ level: 3 }).run();
               },
             },
             {
               label: 'Heading 4',
               command: ({ editor, range }: TiptapCommandType) => {
-                editor
-                  .chain()
-                  .focus()
-                  .deleteRange(range)
-                  .setHeading({ level: 4 })
-                  .run();
+                editor.chain().focus().deleteRange(range).setHeading({ level: 4 }).run();
               },
             },
             {
               label: 'Heading 5',
               command: ({ editor, range }) => {
-                editor
-                  .chain()
-                  .focus()
-                  .deleteRange(range)
-                  .setHeading({ level: 5 })
-                  .run();
+                editor.chain().focus().deleteRange(range).setHeading({ level: 5 }).run();
               },
             },
             {
               label: 'Heading 6',
               command: ({ editor, range }) => {
-                editor
-                  .chain()
-                  .focus()
-                  .deleteRange(range)
-                  .setHeading({ level: 6 })
-                  .run();
+                editor.chain().focus().deleteRange(range).setHeading({ level: 6 }).run();
               },
             },
             {
               label: 'Link',
               command({ editor }) {
                 const { from, to } = editor.state.selection;
-                editorStore.linkText = editor.state.doc.textBetween(
-                  from,
-                  to,
-                  ' ',
-                );
-                editorStore.openModal(Modal.link);
+                editorStore.linkText = editor.state.doc.textBetween(from, to, ' ');
+                editorStore.openModal(Modal.link, editor);
               },
             },
             {
               label: 'Youtube',
-              command() {
-                editorStore.openModal(Modal.youtube);
+              command({ editor }) {
+                editorStore.openModal(Modal.youtube, editor);
               },
             },
             {
               label: 'Image',
-              command() {
-                editorStore.openModal(Modal.image);
+              command({ editor }) {
+                editorStore.openModal(Modal.image, editor);
               },
             },
 
             {
               label: 'Bullet List',
               command: ({ editor, range }) => {
-                editor
-                  .chain()
-                  .focus()
-                  .deleteRange(range)
-                  .toggleBulletList()
-                  .run();
+                editor.chain().focus().deleteRange(range).toggleBulletList().run();
               },
             },
             {
               label: 'Numbered List',
               command: ({ editor, range }) => {
-                editor
-                  .chain()
-                  .focus()
-                  .deleteRange(range)
-                  .toggleOrderedList()
-                  .run();
+                editor.chain().focus().deleteRange(range).toggleOrderedList().run();
               },
             },
             {
               label: 'Task List',
               command: ({ editor, range }) => {
-                editor
-                  .chain()
-                  .focus()
-                  .deleteRange(range)
-                  .toggleTaskList()
-                  .run();
+                editor.chain().focus().deleteRange(range).toggleTaskList().run();
               },
             },
             {
               label: 'Code Block',
               command: ({ editor, range }) => {
-                editor
-                  .chain()
-                  .focus()
-                  .deleteRange(range)
-                  .toggleCodeBlock()
-                  .run();
+                editor.chain().focus().deleteRange(range).toggleCodeBlock().run();
               },
             },
             {
               label: 'Blockquote',
               command: ({ editor, range }) => {
-                (editor.chain().focus().deleteRange(range) as any)
-                  .toggleBlockquote()
-                  .run();
+                editor.chain().focus().deleteRange(range).toggleBlockquote().run();
               },
             },
             {
               label: 'Horizontal Rule',
               command: ({ editor, range }) => {
-                editor
-                  .chain()
-                  .focus()
-                  .deleteRange(range)
-                  .setHorizontalRule()
-                  .run();
+                editor.chain().focus().deleteRange(range).setHorizontalRule().run();
               },
             },
             // {
@@ -216,9 +155,7 @@ export const SlashCommands = Extension.create({
             },
           ];
 
-          return commands.filter((item) =>
-            item.label.toLowerCase().includes(query.toLowerCase()),
-          );
+          return commands.filter((item) => item.label.toLowerCase().includes(query.toLowerCase()));
         },
         render: () => {
           let component: VueRenderer;

@@ -56,11 +56,12 @@ export const tiptapExtenstions: Extensions = [
   Shortcode,
   Widget,
 ];
+
 export function useBlogEditor() {
   const editorStore = useEditorStore();
   const editor = useEditor({
     extensions: tiptapExtenstions,
-    content: editorStore.content || '',
+    content: editorStore.content,
     autofocus: 'end',
     editable: true,
     injectCSS: true,

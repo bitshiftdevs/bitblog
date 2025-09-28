@@ -1,11 +1,14 @@
 <script setup lang="ts">
+import type { Editor } from '#imports';
 import type { SetImageOptions } from '@tiptap/extension-image';
 import type { Media } from '~~/shared/types';
 
 const editorStore = useEditorStore();
 
-const blog = useBlogEditor();
-
+const { editor, isFeatured } = defineProps<{
+  editor: Editor;
+  isFeatured: boolean;
+}>();
 // Reactive state
 const imageUrl = ref('');
 const imageAlt = ref('');
@@ -62,7 +65,7 @@ function insertImage() {
     if (!imageAlt.value) imageAlt.value = selectedLibraryImage.value.altText || selectedLibraryImage.value.filename;
   }
 
-  if (src && !editorStore.isFeatured) {
+  if (src && !isFeatured) {
     const attrs: SetImageOptions = {
       src,
       alt: imageAlt.value,
@@ -71,8 +74,8 @@ function insertImage() {
     if (imageWidth.value) attrs.width = imageWidth.value;
     if (imageHeight.value) attrs.height = imageHeight.value;
 
-    blog.editor.value?.chain().focus().setImage(attrs).run();
-  } else if (src && editorStore.isFeatured) {
+    editor.chain().focus().setImage(attrs).run();
+  } else if (src && isFeatured) {
     editorStore.setFeaturedImage(src);
   }
 
@@ -89,7 +92,6 @@ function resetForm() {
   uploadProgress.value = 0;
   isUploading.value = false;
   errorMessage.value = '';
-  editorStore.resetModal();
   emit('close', true);
 }
 
@@ -201,9 +203,7 @@ const emit = defineEmits<{
 </script>
 
 <template>
-  <UModal
-    :title="editorStore.isFeatured ? 'Set Featured Image' : 'Insert Image'"
-  >
+  <UModal :title="isFeatured ? 'Set Featured Image' : 'Insert Image'">
     <!-- Error Messages -->
     <UAlert v-if="errorMessage" color="error" variant="soft" class="mb-4">
       <template #title>Error</template>
@@ -223,26 +223,26 @@ const emit = defineEmits<{
       >
         <template #url>
           <div class="space-y-4">
-            <UFormGroup label="Image URL" required>
+            <UFormField label="Image URL" required>
               <UInput
                 v-model="imageUrl"
                 placeholder="https://example.com/image.jpg"
                 type="url"
               />
-            </UFormGroup>
+            </UFormField>
           </div>
         </template>
 
         <template #upload>
           <div class="space-y-4">
-            <UFormGroup label="Upload Image">
+            <UFormField label="Upload Image">
               <UInput
                 type="file"
                 accept="image/*"
                 @change="handleFileSelect"
                 ref="fileInput"
               />
-            </UFormGroup>
+            </UFormField>
 
             <div v-if="isUploading" class="space-y-2">
               <UProgress :value="uploadProgress" />
@@ -322,20 +322,20 @@ const emit = defineEmits<{
 
       <!-- Common Fields for All Tabs -->
       <div class="space-y-4 mt-6">
-        <UFormGroup
+        <UFormField
           label="Alt Text"
           hint="Describe the image for accessibility"
         >
           <UInput v-model="imageAlt" placeholder="Image description" />
-        </UFormGroup>
+        </UFormField>
 
-        <div v-if="!editorStore.isFeatured" class="grid grid-cols-2 gap-4">
-          <UFormGroup label="Width" hint="Optional, e.g., 300px or 50%">
+        <div v-if="!isFeatured" class="grid grid-cols-2 gap-4">
+          <UFormField label="Width" hint="Optional, e.g., 300px or 50%">
             <UInput v-model="imageWidth" placeholder="e.g., 300px or 50%" />
-          </UFormGroup>
-          <UFormGroup label="Height" hint="Optional, e.g., 200px">
+          </UFormField>
+          <UFormField label="Height" hint="Optional, e.g., 200px">
             <UInput v-model="imageHeight" placeholder="e.g., 200px" />
-          </UFormGroup>
+          </UFormField>
         </div>
       </div>
     </template>

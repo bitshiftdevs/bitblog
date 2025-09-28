@@ -8,12 +8,7 @@ export type InvitationStatus = "PENDING" | "ACCEPTED" | "EXPIRED" | "REVOKED";
 export type EditorState = Post & {
   wordCount: number;
   lastSaved: string | null;
-  linkUrl: string;
-  linkText: string;
-  showImageModal: boolean;
-  showLinkModal: boolean;
   contentText: string;
-  showYoutubeModal: boolean;
   view: EditorView;
   isFeatured: boolean;
   history: Array<{

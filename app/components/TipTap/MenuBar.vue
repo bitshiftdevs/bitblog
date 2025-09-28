@@ -137,11 +137,7 @@ const insertSpacer = () => {
 
 const insertButton = () => {
   // Custom button insertion logic
-  editor
-    .chain()
-    .focus()
-    .insertContent('<a class="btn btn-primary">Button Text</a>')
-    .run();
+  editor.chain().focus().insertContent('<a class="btn btn-primary">Button Text</a>').run();
 };
 const insertCard = () => {
   editor

@@ -1,16 +1,16 @@
 <script setup lang="ts">
-const youtubeUrl = ref<string>('');
+import { Editor } from '@tiptap/vue-3';
 
-const editorStore = useEditorStore();
-const blog = useBlogEditor();
+const { editor } = defineProps<{ editor: Editor }>();
+
+const youtubeUrl = ref<string>('');
 
 function insertYoutube() {
   if (youtubeUrl.value) {
-    blog.editor.value?.chain().focus().setYoutubeVideo({ src: youtubeUrl.value }).run();
+    editor.chain().focus().setYoutubeVideo({ src: youtubeUrl.value }).run();
 
     // Reset form
     youtubeUrl.value = '';
-    editorStore.resetModal();
     emit('close', true);
   }
 }

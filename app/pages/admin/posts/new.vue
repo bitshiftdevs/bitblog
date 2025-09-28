@@ -3,7 +3,6 @@ import { MutationType } from 'pinia';
 
 definePageMeta({ layout: 'editor', middleware: ['admin'] });
 const editorStore = useEditorStore();
-const blog = useBlogEditor();
 const { analyzeSeo } = useSeo();
 
 onMounted(() => {

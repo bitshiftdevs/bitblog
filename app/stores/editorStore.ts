@@ -1,3 +1,4 @@
+import type { Editor } from '@tiptap/vue-3';
 import { defineStore } from 'pinia';
 import ImageModal from '~/components/TipTap/ImageModal.vue';
 import LinkModal from '~/components/TipTap/LinkModal.vue';
@@ -29,12 +30,7 @@ export const useEditorStore = defineStore('editor', {
       viewCount: 10,
       isDirty: false,
       history: [],
-      linkUrl: '',
-      linkText: '',
       view: 'editor',
-      showImageModal: false,
-      showLinkModal: false,
-      showYoutubeModal: false,
       isFeatured: false,
     };
   },
@@ -214,7 +210,7 @@ export const useEditorStore = defineStore('editor', {
       }
       return false;
     },
-    async openModal(mode: Modal) {
+    async openModal(mode: Modal, editor: Editor) {
       const overlay = useOverlay();
       let modal: ReturnType<typeof overlay.create>;
 
@@ -233,17 +229,11 @@ export const useEditorStore = defineStore('editor', {
           modal = overlay.create(YoutubeModal);
           break;
       }
-      const instance = modal.open();
+      const instance = modal.open({
+        editor,
+        isFeatured: this.isFeatured,
+      });
       await instance.result;
-    },
-    resetModal() {
-      // TODO: Will remove
-      this.showYoutubeModal = false;
-      this.showLinkModal = false;
-      this.showImageModal = false;
-      this.linkUrl = '';
-      this.linkText = '';
-      this.isFeatured = false;
     },
     resetEditor() {
       this.title = '';
@@ -258,7 +248,6 @@ export const useEditorStore = defineStore('editor', {
       this.lastSaved = null;
       this.history = [];
       this.isDirty = false;
-      this.resetModal();
     },
   },
 });
