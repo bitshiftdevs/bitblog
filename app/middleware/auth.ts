@@ -4,11 +4,11 @@ export default defineNuxtRouteMiddleware(async (to, from) => {
 
   if (!auth.isAuthenticated) {
     // Store the intended destination
-    const redirectPath = to.fullPath !== '/auth/login' ? to.fullPath : '/';
+    const redirectPath = to.fullPath !== '/auth' ? to.fullPath : '/';
 
     // Redirect to login with return URL
     return navigateTo({
-      path: '/auth/login',
+      path: '/auth',
       query: {
         redirect: redirectPath,
       },

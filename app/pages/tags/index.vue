@@ -1,4 +1,19 @@
-<!-- apps/web/pages/tags/index.vue -->
+<script setup lang="ts">
+useSeoMeta({
+  title: 'Tags',
+  description: 'Explore posts by topic and tag',
+});
+
+const { data: tagsData, pending } = useLazyFetch('/api/tags', {
+  key: 'tags-list',
+});
+const tags = computed(() => tagsData.value?.data?.items || []);
+
+const popularTags = computed(() => tags.value.filter((tag) => (tag._count?.posts || 0) >= 2).slice(0, 10));
+
+const allTags = computed(() => tags.value);
+</script>
+
 <template>
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
     <div class="mb-8">
@@ -52,7 +67,7 @@
           <NuxtLink
             v-for="tag in allTags"
             :key="tag.id"
-            :to="`/tags/${tag.slug}`"
+            :to="`/tags/${tag.id}`"
             class="inline-flex items-center px-3 py-1 rounded-full text-sm transition-colors hover:scale-105"
             :style="{
               backgroundColor: tag.color + '15',
@@ -76,21 +91,3 @@
     </div>
   </div>
 </template>
-
-<script setup lang="ts">
-useSeoMeta({
-  title: 'Tags',
-  description: 'Explore posts by topic and tag',
-});
-
-const { data: tagsData, pending } = useLazyFetch('/api/tags', {
-  key: 'tags-list'
-});
-const tags = computed(() => tagsData.value?.data?.items || []);
-
-const popularTags = computed(() =>
-  tags.value.filter((tag) => (tag._count?.posts || 0) >= 2).slice(0, 10),
-);
-
-const allTags = computed(() => tags.value);
-</script>

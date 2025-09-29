@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import type { Editor } from '#imports';
 import type { TabsItem } from '@nuxt/ui';
 import type { SetImageOptions } from '@tiptap/extension-image';
+import type { Editor } from '#imports';
 import type { Media } from '~~/shared/types';
 
 const editorStore = useEditorStore();
@@ -199,9 +199,14 @@ async function deleteLibraryImage(image: Media, event: Event) {
 }
 
 const items: TabsItem[] = [
-  { key: 'url', label: 'URL', icon: 'i-lucide-link' },
-  { key: 'upload', label: 'Upload', icon: 'i-lucide-image' },
-  { key: 'library', label: 'Library', icon: 'i-lucide-images' },
+  { key: 'url', label: 'URL', icon: 'i-lucide-link', slot: 'url' },
+  { key: 'upload', label: 'Upload', icon: 'i-lucide-image', slot: 'upload' },
+  {
+    key: 'library',
+    label: 'Library',
+    icon: 'i-lucide-images',
+    slot: 'library',
+  },
 ];
 
 const emit = defineEmits<{
@@ -212,7 +217,7 @@ const emit = defineEmits<{
 <template>
   <UModal :title="isFeatured ? 'Set Featured Image' : 'Insert Image'">
     <template #body>
-      <UTabs v-model="activeTab" :ui="{ trigger: 'grow' }" :items class="mb-4">
+      <UTabs :ui="{ trigger: 'grow' }" :items class="mb-4">
         <template #url>
           <div class="space-y-4">
             <UFormField label="Image URL" required>
