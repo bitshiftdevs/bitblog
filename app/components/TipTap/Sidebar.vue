@@ -14,37 +14,34 @@ const availableTags = computed(() => tagsData.value?.data?.items || []);
 
 // Transform categories and tags for display
 const selectedCategoryNames = computed({
-  get: () => editorStore.categories.map(cat => cat.name),
+  get: () => editorStore.categories.map((cat) => cat.name),
   set: (value) => {
     // Convert string names back to category objects
-    editorStore.categories = value.map(name => {
-      const existing = availableCategories.value.find(cat => cat.name === name);
+    editorStore.categories = value.map((name) => {
+      const existing = availableCategories.value.find((cat) => cat.name === name);
       return existing || { id: name.toLowerCase().replace(/\s+/g, '-'), name };
     });
-  }
+  },
 });
 
 const selectedTagNames = computed({
-  get: () => editorStore.tags.map(tag => tag.name),
+  get: () => editorStore.tags.map((tag) => tag.name),
   set: (value) => {
     // Convert string names back to tag objects
-    editorStore.tags = value.map(name => {
-      const existing = availableTags.value.find(tag => tag.name === name);
+    editorStore.tags = value.map((name) => {
+      const existing = availableTags.value.find((tag) => tag.name === name);
       return existing || { id: name.toLowerCase().replace(/\s+/g, '-'), name };
     });
-  }
+  },
 });
 
-const postStatusList: SelectMenuItem[] = [
-  { label: 'DRAFT' },
-  { label: 'PUBLISHED' },
-  { label: 'SCHEDULED' },
-];
+const postStatusList: SelectMenuItem[] = [{ label: 'DRAFT' }, { label: 'PUBLISHED' }, { label: 'SCHEDULED' }];
 
 const fileInputRef = ref<HTMLInputElement>();
 
 const selectFeaturedImage = () => {
-  fileInputRef.value?.click();
+  editorStore.openModal(Modal.imageFeatured);
+  // fileInputRef.value?.click();
 };
 
 const handleFileUpload = async (event: Event) => {
@@ -57,9 +54,9 @@ const handleFileUpload = async (event: Event) => {
   formData.append('file', file);
 
   try {
-    const response = await $fetch<{success: boolean, data: any}>('/api/media/upload', {
+    const response = await $fetch<{ success: boolean; data: any }>('/api/media/upload', {
       method: 'POST',
-      body: formData
+      body: formData,
     });
 
     if (response.success) {
@@ -69,7 +66,7 @@ const handleFileUpload = async (event: Event) => {
       toast.add({
         title: 'Success',
         description: 'Image uploaded successfully',
-        color: 'success'
+        color: 'success',
       });
     }
   } catch (error: any) {
@@ -78,7 +75,7 @@ const handleFileUpload = async (event: Event) => {
     toast.add({
       title: 'Upload failed',
       description: error.data?.message || 'Failed to upload image',
-      color: 'error'
+      color: 'error',
     });
   }
 
@@ -164,11 +161,20 @@ const viewRevisions = () => {
         <UInputTags
           v-model="selectedCategoryNames"
           placeholder="Add or select category"
-          :suggestions="availableCategories.map(cat => cat.name)"
+          :suggestions="availableCategories.map((cat) => cat.name)"
         />
         <template #description>
-          <div v-if="availableCategories.length" class="text-xs text-gray-500 mt-1">
-            Available: {{ availableCategories.slice(0, 3).map(c => c.name).join(', ') }}{{ availableCategories.length > 3 ? '...' : '' }}
+          <div
+            v-if="availableCategories.length"
+            class="text-xs text-gray-500 mt-1"
+          >
+            Available:
+            {{
+              availableCategories
+                .slice(0, 3)
+                .map((c) => c.name)
+                .join(", ")
+            }}{{ availableCategories.length > 3 ? "..." : "" }}
           </div>
         </template>
       </UFormField>
@@ -178,11 +184,17 @@ const viewRevisions = () => {
         <UInputTags
           v-model="selectedTagNames"
           placeholder="Add or select tag"
-          :suggestions="availableTags.map(tag => tag.name)"
+          :suggestions="availableTags.map((tag) => tag.name)"
         />
         <template #description>
           <div v-if="availableTags.length" class="text-xs text-gray-500 mt-1">
-            Available: {{ availableTags.slice(0, 3).map(t => t.name).join(', ') }}{{ availableTags.length > 3 ? '...' : '' }}
+            Available:
+            {{
+              availableTags
+                .slice(0, 3)
+                .map((t) => t.name)
+                .join(", ")
+            }}{{ availableTags.length > 3 ? "..." : "" }}
           </div>
         </template>
       </UFormField>

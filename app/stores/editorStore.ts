@@ -210,7 +210,7 @@ export const useEditorStore = defineStore('editor', {
       }
       return false;
     },
-    async openModal(mode: Modal, editor: Editor) {
+    async openModal(mode: Modal, editor?: Editor) {
       const overlay = useOverlay();
       let modal: ReturnType<typeof overlay.create>;
 

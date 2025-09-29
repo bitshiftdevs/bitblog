@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { Editor } from '#imports';
+import type { TabsItem } from '@nuxt/ui';
 import type { SetImageOptions } from '@tiptap/extension-image';
 import type { Media } from '~~/shared/types';
 
@@ -27,7 +28,7 @@ const fileInput = ref<HTMLInputElement | null>(null);
 
 // Initialize media library
 onMounted(async () => {
-  await loadImageLibrary();
+  // await loadImageLibrary();
 });
 
 async function loadImageLibrary() {
@@ -197,6 +198,12 @@ async function deleteLibraryImage(image: Media, event: Event) {
   }
 }
 
+const items: TabsItem[] = [
+  { key: 'url', label: 'URL', icon: 'i-lucide-link' },
+  { key: 'upload', label: 'Upload', icon: 'i-lucide-image' },
+  { key: 'library', label: 'Library', icon: 'i-lucide-images' },
+];
+
 const emit = defineEmits<{
   close: [boolean];
 }>();
@@ -204,23 +211,8 @@ const emit = defineEmits<{
 
 <template>
   <UModal :title="isFeatured ? 'Set Featured Image' : 'Insert Image'">
-    <!-- Error Messages -->
-    <UAlert v-if="errorMessage" color="error" variant="soft" class="mb-4">
-      <template #title>Error</template>
-      {{ errorMessage }}
-    </UAlert>
-
     <template #body>
-      <!-- Tabs -->
-      <UTabs
-        v-model="activeTab"
-        :items="[
-          { key: 'url', label: 'URL' },
-          { key: 'upload', label: 'Upload' },
-          { key: 'library', label: 'Library' },
-        ]"
-        class="mb-4"
-      >
+      <UTabs v-model="activeTab" :ui="{ trigger: 'grow' }" :items class="mb-4">
         <template #url>
           <div class="space-y-4">
             <UFormField label="Image URL" required>
@@ -306,7 +298,7 @@ const emit = defineEmits<{
                 <!-- Delete button -->
                 <UButton
                   icon="i-heroicons-x-mark"
-                  size="2xs"
+                  size="sm"
                   color="error"
                   variant="solid"
                   class="absolute top-1 right-1 opacity-0 group-hover:opacity-100 transition-opacity"
@@ -322,18 +314,15 @@ const emit = defineEmits<{
 
       <!-- Common Fields for All Tabs -->
       <div class="space-y-4 mt-6">
-        <UFormField
-          label="Alt Text"
-          hint="Describe the image for accessibility"
-        >
+        <UFormField label="Alt Text">
           <UInput v-model="imageAlt" placeholder="Image description" />
         </UFormField>
 
         <div v-if="!isFeatured" class="grid grid-cols-2 gap-4">
-          <UFormField label="Width" hint="Optional, e.g., 300px or 50%">
+          <UFormField label="Width">
             <UInput v-model="imageWidth" placeholder="e.g., 300px or 50%" />
           </UFormField>
-          <UFormField label="Height" hint="Optional, e.g., 200px">
+          <UFormField label="Height">
             <UInput v-model="imageHeight" placeholder="e.g., 200px" />
           </UFormField>
         </div>
