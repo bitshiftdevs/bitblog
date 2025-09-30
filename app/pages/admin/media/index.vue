@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import ImagePreviewModal from '~/components/Admin/ImagePreviewModal.vue';
 import type { Media } from '~~/shared/types';
 
 definePageMeta({
@@ -103,6 +104,14 @@ const toggleSelection = (media: Media) => {
   } else {
     selectedMedia.value.splice(index, 1);
   }
+};
+
+const viewMedia = (media: Media) => {
+  const overlay = useOverlay();
+  const modal = overlay.create(ImagePreviewModal);
+  modal.open({
+    media,
+  });
 };
 
 const isSelected = (media: Media) => {
@@ -329,7 +338,7 @@ setBreadcrumbs([{ label: 'Dashboard', to: '/admin' }, { label: 'Media Library' }
               color="neutral"
               variant="solid"
               icon="i-lucide-eye"
-              @click.stop="() => {}"
+              @click.stop="viewMedia(media)"
             />
             <UButton
               size="xs"
