@@ -10,9 +10,9 @@ export default defineNuxtRouteMiddleware(async (to, from) => {
       color: 'error',
       duration: 5000,
     });
-    const redirectPath = to.fullPath !== '/auth/login' ? to.fullPath : '/';
+    const redirectPath = to.fullPath !== '/auth' ? to.fullPath : '/';
     return navigateTo({
-      path: '/auth/login',
+      path: '/auth',
       query: {
         redirect: redirectPath,
       },

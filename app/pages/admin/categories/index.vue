@@ -10,12 +10,14 @@ definePageMeta({
 const toast = useToast();
 const overlay = useOverlay();
 const modal = overlay.create(CategoryModal);
-const isCreateModalOpen = ref(false);
-const isEditModalOpen = ref(false);
 
 // Fetch categories (non-blocking)
-const { data: categoriesData, refresh, pending: categoriesLoading } = useLazyFetch('/api/categories', {
-  key: 'admin-categories-list'
+const {
+  data: categoriesData,
+  refresh,
+  pending: categoriesLoading,
+} = useLazyFetch('/api/categories', {
+  key: 'admin-categories-list',
 });
 
 const categories = computed(() => categoriesData.value?.data?.items || []);
@@ -54,7 +56,6 @@ const createCategory = async () => {
           color: 'success',
         });
 
-        isCreateModalOpen.value = false;
         refresh();
       } catch (error: any) {
         toast.add({
@@ -91,7 +92,6 @@ const editCategory = async (category: Category) => {
           color: 'success',
         });
 
-        isEditModalOpen.value = false;
         refresh();
       } catch (error: any) {
         toast.add({

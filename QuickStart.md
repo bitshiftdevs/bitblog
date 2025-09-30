@@ -87,8 +87,8 @@ This will start:
 
 After running `pnpm db:seed`, you can login with:
 
-| Role   | Email                   | Password  | Permissions        |
-| ------ | ----------------------- | --------- | ------------------ |
+| Role   | Email                     | Password  | Permissions        |
+| ------ | ------------------------- | --------- | ------------------ |
 | Admin  | <admin@blogplatform.com>  | admin123  | Full access        |
 | Editor | <editor@blogplatform.com> | editor123 | Content management |
 | Author | <john@blogplatform.com>   | author123 | Write posts        |
@@ -99,7 +99,7 @@ After running `pnpm db:seed`, you can login with:
 
 - **Homepage**: <http://localhost:3000>
 - **Admin Dashboard**: <http://localhost:3000/admin>
-- **Login**: <http://localhost:3000/auth/login>
+- **Login**: <http://localhost:3000/auth>
 - **API Docs**: <http://localhost:8787/api> (development)
 
 ## 🛠️ Development Commands

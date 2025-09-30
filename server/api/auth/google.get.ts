@@ -1,7 +1,7 @@
 import prisma from "~~/server/db";
 
 export default defineOAuthGoogleEventHandler({
-  async onSuccess(event, { user, tokens }) {
+  async onSuccess(event, { user }) {
     try {
       // Check if user already exists by email
       let dbUser = await prisma.user.upsert({
@@ -22,19 +22,23 @@ export default defineOAuthGoogleEventHandler({
       });
 
       // Set full user session
-      await setUserSession(event, {
-        user: {
-          id: dbUser.id,
-          name: dbUser.name,
-          email: dbUser.email,
-          avatarUrl: dbUser.avatarUrl,
-          bio: dbUser.bio,
-          isActive: dbUser.isActive,
-          twoFactorEnabled: dbUser.twoFactorEnabled,
-          emailVerified: dbUser.emailVerified,
-          isAdmin: dbUser.isAdmin,
+      await setUserSession(
+        event,
+        {
+          user: {
+            id: dbUser.id,
+            name: dbUser.name,
+            email: dbUser.email,
+            avatarUrl: dbUser.avatarUrl,
+            bio: dbUser.bio,
+            isActive: dbUser.isActive,
+            twoFactorEnabled: dbUser.twoFactorEnabled,
+            emailVerified: dbUser.emailVerified,
+            isAdmin: dbUser.isAdmin,
+          },
         },
-      });
+        { maxAge: 604800 }, // 1 week
+      );
 
       return sendRedirect(event, "/");
     } catch (error) {

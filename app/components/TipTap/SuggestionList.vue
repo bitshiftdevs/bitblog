@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import type { DropdownMenuItem } from '@nuxt/ui';
 import type { TiptapCommandType } from '~~/shared/types';
 
 const { items, command } = defineProps<{
@@ -9,14 +8,13 @@ const { items, command } = defineProps<{
 const selectedIndex = ref(0);
 
 const selectItem = (props?: TiptapCommandType) => {
-  console.log(selectedIndex.value);
   const item = items[selectedIndex.value];
 
   if (!props) {
     command({ id: item });
     return true;
   }
-  item.command(props);
+  item.command({ editor: props.editor, range: props.range });
   return true;
 };
 

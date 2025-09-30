@@ -1,6 +1,6 @@
-import { requireAuth } from '~~/server/utils/auth';
-import { ListParamsSchema } from '~~/shared/schemas';
-import prisma from '~~/server/db';
+import { requireAuth } from "~~/server/utils/auth";
+import { ListParamsSchema } from "~~/shared/schemas";
+import prisma from "~~/server/db";
 
 export default defineEventHandler(async (event) => {
   // Require authentication
@@ -8,14 +8,15 @@ export default defineEventHandler(async (event) => {
 
   try {
     const query = getQuery(event);
-    const { page, limit, search, sortBy, sortOrder } = ListParamsSchema.parse(query);
+    const { page, limit, search, sortBy, sortOrder } =
+      ListParamsSchema.parse(query);
 
     // Build where clause
     const where: any = {};
     if (search) {
       where.OR = [
-        { filename: { contains: search, mode: 'insensitive' } },
-        { altText: { contains: search, mode: 'insensitive' } }
+        { filename: { contains: search, mode: "insensitive" } },
+        { altText: { contains: search, mode: "insensitive" } },
       ];
     }
 
@@ -24,7 +25,7 @@ export default defineEventHandler(async (event) => {
     if (sortBy) {
       orderBy[sortBy] = sortOrder;
     } else {
-      orderBy.createdAt = 'desc';
+      orderBy.createdAt = "desc";
     }
 
     // Get total count
@@ -36,15 +37,6 @@ export default defineEventHandler(async (event) => {
       orderBy,
       skip: (page - 1) * limit,
       take: limit,
-      include: {
-        uploadedBy: {
-          select: {
-            id: true,
-            name: true,
-            avatarUrl: true
-          }
-        }
-      }
     });
 
     const totalPages = Math.ceil(total / limit);
@@ -52,38 +44,34 @@ export default defineEventHandler(async (event) => {
     return {
       success: true,
       data: {
-        items: items.map(item => ({
-          ...item,
-          createdAt: item.createdAt.toISOString(),
-          updatedAt: item.updatedAt.toISOString()
-        })),
+        items,
         pagination: {
           page,
           limit,
           total,
           totalPages,
           hasNext: page < totalPages,
-          hasPrev: page > 1
-        }
-      }
+          hasPrev: page > 1,
+        },
+      },
     };
   } catch (error: any) {
-    console.error('Media list error:', error);
+    console.error("Media list error:", error);
 
-    if (error.name === 'ZodError') {
+    if (error.name === "ZodError") {
       throw createError({
         statusCode: 400,
-        statusMessage: 'Invalid query parameters',
+        statusMessage: "Invalid query parameters",
         data: {
-          message: 'Validation failed',
-          errors: error.errors
-        }
+          message: "Validation failed",
+          errors: error.errors,
+        },
       });
     }
 
     throw createError({
       statusCode: 500,
-      statusMessage: 'Failed to fetch media'
+      statusMessage: "Failed to fetch media",
     });
   }
 });

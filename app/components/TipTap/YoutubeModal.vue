@@ -1,41 +1,46 @@
 <script setup lang="ts">
-import { useEditorStore } from '@/stores/editorStore'
-import type { Editor } from '@tiptap/core'
-import { ref } from 'vue'
+import { Editor } from '@tiptap/vue-3';
 
-let { editor } = defineProps<{ editor: Editor }>()
-let youtubeUrl = ref<string | undefined>(undefined)
+const { editor } = defineProps<{ editor: Editor }>();
 
-const editorStore = useEditorStore()
+const youtubeUrl = ref<string>('');
 
 function insertYoutube() {
   if (youtubeUrl.value) {
-    editor.chain().focus().setYoutubeVideo({ src: youtubeUrl.value }).run()
+    editor.chain().focus().setYoutubeVideo({ src: youtubeUrl.value }).run();
 
     // Reset form
-    youtubeUrl.value = ''
-    editorStore.resetModal()
+    youtubeUrl.value = '';
+    emit('close', true);
   }
 }
+
+const emit = defineEmits<{
+  close: [boolean];
+}>();
 </script>
 
 <template>
-  <Teleport to="body">
-    <div v-if="editorStore.showYoutubeModal" class="modal modal-open">
-      <div class="modal-box">
-        <h3 class="font-bold text-lg">Insert YouTube Video</h3>
-        <div class="form-control w-full mt-4">
-          <label for="" class="label">
-            <span class="label-text">YouTube URL</span>
-          </label>
-          <input type="text" :value="{ youtubeUrl }" placeholder="https://www.youtube.com/watch?v=dQw4w9WgXcQ"
-            class="input input-bordered w-full" />
-        </div>
-        <div class="modal-action">
-          <button class="btn" @click="editorStore.resetModal">Cancel</button>
-          <button class="btn btn-primary" @click="insertYoutube">Insert</button>
-        </div>
+  <UModal title="Insert YouTube Video">
+    <template #body>
+      <div class="space-y-4">
+        <UFormGroup label="YouTube URL" required>
+          <UInput
+            v-model="youtubeUrl"
+            placeholder="https://www.youtube.com/watch?v=dQw4w9WgXcQ"
+            type="url"
+          />
+        </UFormGroup>
       </div>
-    </div>
-  </Teleport>
+    </template>
+
+    <template #footer>
+      <div class="flex justify-end gap-3">
+        <UButton variant="ghost" @click="emit('close', true)"> Cancel </UButton>
+        <UButton @click="insertYoutube" :disabled="!youtubeUrl">
+          Insert Video
+        </UButton>
+      </div>
+    </template>
+  </UModal>
 </template>

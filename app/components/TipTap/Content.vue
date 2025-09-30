@@ -32,9 +32,6 @@ const blog = useBlogEditor();
         class="prose prose-slate prose-lg dark:prose-invert dark:prose-slate max-w-none"
       />
     </div>
-    <!-- <LinkModal :editor /> -->
-    <!-- <ImageModal :editor /> -->
-    <!-- <YoutubeModal :editor /> -->
   </div>
 </template>
 

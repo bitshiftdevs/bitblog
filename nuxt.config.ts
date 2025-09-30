@@ -60,8 +60,6 @@ export default defineNuxtConfig({
     r2AccessKeyId: '',
     r2SecretAccessKey: '',
     r2Endpoint: '',
-    cloudflareAccountId: '',
-    cloudflareImagesToken: '',
     nodeEnv: '',
 
     // SMTP settings
@@ -143,6 +141,10 @@ export default defineNuxtConfig({
     // API routes
     '/api/**': {
       headers: { 'cache-control': 'no-cache' },
+      cors: true,
+    },
+    '/api/authors/**': {
+      headers: { 'cache-control': 's-maxage=3600' },
       cors: true,
     },
 

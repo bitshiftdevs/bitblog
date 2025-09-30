@@ -5,7 +5,7 @@ const slug = route.params.slug as string;
 
 // Fetch post (non-blocking)
 const { data: postData, pending: postLoading } = useLazyFetch(`/api/posts/${slug}`, {
-  key: `post-${slug}`
+  key: `post-${slug}`,
 });
 const post = computed(() => postData.value?.data);
 
@@ -22,7 +22,6 @@ useSeoMeta({
   articlePublishedTime: computed(() => post.value?.publishedAt),
   articleModifiedTime: computed(() => post.value?.updatedAt),
 });
-
 </script>
 <template>
   <div v-if="postLoading" class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">

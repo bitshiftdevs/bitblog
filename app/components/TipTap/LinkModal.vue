@@ -1,55 +1,56 @@
 <script setup lang="ts">
-import { useEditorStore } from '@/stores/editorStore'
-import { Editor } from '@tiptap/vue-3'
+import { Editor } from '@tiptap/vue-3';
 
-const { editor } = defineProps<{ editor: Editor }>()
-const editorStore = useEditorStore()
+const { editor } = defineProps<{ editor: Editor }>();
+
+const linkUrl = ref<string>('');
+const linkText = ref<string>('');
 
 function insertLink() {
-  if (editorStore.linkUrl) {
+  if (linkUrl) {
     // If text is selected, update the link on that text
     if (editor.state.selection.content().size > 0) {
-      editor.chain().focus().extendMarkRange('link').setLink({ href: editorStore.linkUrl }).run()
+      editor.chain().focus().extendMarkRange('link').setLink({ href: linkUrl.value }).run();
     }
     // If no text is selected but linkText is provided, insert new text with link
-    else if (editorStore.linkText) {
-      editor
-        .chain()
-        .focus()
-        .insertContent(`<a href="${editorStore.linkUrl}">${editorStore.linkText}</a>`)
-        .run()
+    else if (linkText) {
+      editor.chain().focus().insertContent(`<a href="${linkUrl.value}">${linkText.value}</a>`).run();
     }
   }
 
-  editorStore.resetModal()
+  emit('close', true);
 }
+
+const emit = defineEmits<{
+  close: [boolean];
+}>();
 </script>
 
-<!-- <!-- Link Modal -->
 <template>
-  <Teleport to="body">
-    <div v-if="editorStore.showLinkModal" class="modal modal-open">
-      <div class="modal-box">
-        <h3 class="font-bold text-lg">Insert Link</h3>
-        <div class="form-control w-full mt-4">
-          <label for="" class="label">
-            <span class="label-text">URL</span>
-          </label>
-          <input type="text" v-model="editorStore.linkUrl" placeholder="https://example.com"
-            class="input input-bordered w-full" />
-        </div>
-        <div class="form-control w-full mt-2">
-          <label for="" class="label">
-            <span class="label-text">Text</span>
-          </label>
-          <input type="text" v-model="editorStore.linkText" placeholder="Link text"
-            class="input input-bordered w-full" />
-        </div>
-        <div class="modal-action">
-          <button class="btn" @click="editorStore.resetModal">Cancel</button>
-          <button class="btn btn-primary" @click="insertLink">Insert</button>
-        </div>
+  <UModal title="Insert Link">
+    <template #body>
+      <div class="space-y-4">
+        <UFormField label="URL" required>
+          <UInput
+            v-model="linkUrl"
+            placeholder="https://example.com"
+            type="url"
+          />
+        </UFormField>
+
+        <UFormField label="Text" hint="Leave empty to use the URL as text">
+          <UInput v-model="linkText" placeholder="Link text" />
+        </UFormField>
       </div>
-    </div>
-  </Teleport>
+    </template>
+
+    <template #footer>
+      <div class="flex justify-end gap-3">
+        <UButton variant="ghost" @click="emit('close', true)"> Cancel </UButton>
+        <UButton @click="insertLink" :disabled="!linkUrl">
+          Insert Link
+        </UButton>
+      </div>
+    </template>
+  </UModal>
 </template>

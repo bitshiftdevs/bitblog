@@ -1,5 +1,9 @@
+import type { Editor, JSONContent } from '@tiptap/vue-3';
 import { defineStore } from 'pinia';
-import type { EditorView, EditorState, PostResponse, PostStatus, Post } from '~~/shared/types';
+import ImageModal from '~/components/TipTap/ImageModal.vue';
+import LinkModal from '~/components/TipTap/LinkModal.vue';
+import YoutubeModal from '~/components/TipTap/YoutubeModal.vue';
+import type { EditorState, EditorView, Post, PostResponse, PostStatus } from '~~/shared/types';
 import { Modal } from '~~/shared/types';
 
 export const useEditorStore = defineStore('editor', {
@@ -26,12 +30,7 @@ export const useEditorStore = defineStore('editor', {
       viewCount: 10,
       isDirty: false,
       history: [],
-      linkUrl: '',
-      linkText: '',
       view: 'editor',
-      showImageModal: false,
-      showLinkModal: false,
-      showYoutubeModal: false,
       isFeatured: false,
     };
   },
@@ -94,7 +93,7 @@ export const useEditorStore = defineStore('editor', {
         .replace(/^-+|-+$/g, '');
     },
 
-    setContent(content: any, text: string) {
+    setContent(content: JSONContent, text: string) {
       this.content = content;
       this.contentText = text;
       this.isDirty = true;
@@ -137,7 +136,6 @@ export const useEditorStore = defineStore('editor', {
           // Use existing IDs for existing tags/categories, names for new ones
           tagIds: this.tags.filter((tag) => tag.id && !tag.id.includes('-')).map((tag) => tag.id),
           categoryIds: this.categories.filter((cat) => cat.id && !cat.id.includes('-')).map((cat) => cat.id),
-          // Send new tag/category names to be created
           newTagNames: this.tags.filter((tag) => !tag.id || tag.id.includes('-')).map((tag) => tag.name),
           newCategoryNames: this.categories.filter((cat) => !cat.id || cat.id.includes('-')).map((cat) => cat.name),
           scheduledAt: status === 'SCHEDULED' ? this.publishedAt : undefined,
@@ -146,7 +144,6 @@ export const useEditorStore = defineStore('editor', {
         let response: any;
         let msg = '';
 
-        console.log(postData);
         if (this.id) {
           // Update existing post
           response = await $fetch(`/api/posts/${this.id}`, {
@@ -190,6 +187,7 @@ export const useEditorStore = defineStore('editor', {
       }
     },
     async loadPost(post: Post) {
+      this.id = post.id;
       this.slug = post.slug;
       this.title = post.title;
       this.content = post.content;
@@ -212,30 +210,28 @@ export const useEditorStore = defineStore('editor', {
       }
       return false;
     },
-    openModal(modal: Modal) {
-      switch (modal) {
+    async openModal(mode: Modal, editor?: Editor) {
+      const overlay = useOverlay();
+      let modal: ReturnType<typeof overlay.create>;
+      let isFeatured = false;
+
+      switch (mode) {
         case Modal.link:
-          this.showLinkModal = true;
+          modal = overlay.create(LinkModal);
           break;
         case Modal.image:
-          this.showImageModal = true;
+          modal = overlay.create(ImageModal);
           break;
         case Modal.imageFeatured:
-          this.showImageModal = true;
-          this.isFeatured = true;
+          modal = overlay.create(ImageModal);
+          isFeatured = true;
           break;
         case Modal.youtube:
-          this.showYoutubeModal = true;
+          modal = overlay.create(YoutubeModal);
           break;
       }
-    },
-    resetModal() {
-      this.showYoutubeModal = false;
-      this.showLinkModal = false;
-      this.showImageModal = false;
-      this.linkUrl = '';
-      this.linkText = '';
-      this.isFeatured = false;
+      const instance = modal.open({ editor, isFeatured });
+      await instance.result;
     },
     resetEditor() {
       this.title = '';
@@ -250,7 +246,6 @@ export const useEditorStore = defineStore('editor', {
       this.lastSaved = null;
       this.history = [];
       this.isDirty = false;
-      this.resetModal();
     },
   },
 });

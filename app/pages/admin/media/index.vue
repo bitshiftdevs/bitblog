@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import ImagePreviewModal from '~/components/Admin/ImagePreviewModal.vue';
 import type { Media } from '~~/shared/types';
 
 definePageMeta({
@@ -12,9 +13,13 @@ const selectedMedia = ref<Media[]>([]);
 const isUploading = ref(false);
 
 // Fetch media (non-blocking)
-const { data: mediaData, refresh, pending: mediaLoading } = useLazyFetch('/api/media', {
+const {
+  data: mediaData,
+  refresh,
+  pending: mediaLoading,
+} = useLazyFetch('/api/media', {
   key: 'admin-media-list',
-  default: () => ({ success: false, data: { items: [] } })
+  default: () => ({ success: false, data: { items: [] } }),
 });
 
 const mediaItems = computed(() => mediaData.value?.data?.items || []);
@@ -27,16 +32,15 @@ const filteredMedia = computed(() => {
   let filtered = mediaItems.value;
 
   if (searchQuery.value) {
-    filtered = filtered.filter((item: Media) =>
-      item.filename.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
-      item.altText?.toLowerCase().includes(searchQuery.value.toLowerCase())
+    filtered = filtered.filter(
+      (item: Media) =>
+        item.filename.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
+        item.altText?.toLowerCase().includes(searchQuery.value.toLowerCase()),
     );
   }
 
   if (selectedType.value !== 'all') {
-    filtered = filtered.filter((item: Media) =>
-      item.mimeType.startsWith(selectedType.value)
-    );
+    filtered = filtered.filter((item: Media) => item.mimeType.startsWith(selectedType.value));
   }
 
   return filtered;
@@ -46,7 +50,7 @@ const typeOptions = [
   { label: 'All Files', value: 'all' },
   { label: 'Images', value: 'image' },
   { label: 'Videos', value: 'video' },
-  { label: 'Documents', value: 'application' }
+  { label: 'Documents', value: 'application' },
 ];
 
 // Upload functionality
@@ -69,14 +73,14 @@ const handleFileUpload = async (event: Event) => {
 
       await $fetch('/api/media/upload', {
         method: 'POST',
-        body: formData
+        body: formData,
       });
     }
 
     toast.add({
       title: 'Success',
       description: `${files.length} file(s) uploaded successfully`,
-      color: 'success'
+      color: 'success',
     });
 
     refresh();
@@ -84,7 +88,7 @@ const handleFileUpload = async (event: Event) => {
     toast.add({
       title: 'Upload failed',
       description: error.data?.message || 'Failed to upload files',
-      color: 'error'
+      color: 'error',
     });
   } finally {
     isUploading.value = false;
@@ -94,7 +98,7 @@ const handleFileUpload = async (event: Event) => {
 
 // Selection management
 const toggleSelection = (media: Media) => {
-  const index = selectedMedia.value.findIndex(item => item.id === media.id);
+  const index = selectedMedia.value.findIndex((item) => item.id === media.id);
   if (index === -1) {
     selectedMedia.value.push(media);
   } else {
@@ -102,8 +106,16 @@ const toggleSelection = (media: Media) => {
   }
 };
 
+const viewMedia = (media: Media) => {
+  const overlay = useOverlay();
+  const modal = overlay.create(ImagePreviewModal);
+  modal.open({
+    media,
+  });
+};
+
 const isSelected = (media: Media) => {
-  return selectedMedia.value.some(item => item.id === media.id);
+  return selectedMedia.value.some((item) => item.id === media.id);
 };
 
 const selectAll = () => {
@@ -124,14 +136,14 @@ const deleteSelected = async () => {
   try {
     for (const media of selectedMedia.value) {
       await $fetch(`/api/media/${media.id}`, {
-        method: 'DELETE'
+        method: 'DELETE',
       });
     }
 
     toast.add({
       title: 'Success',
       description: `${selectedMedia.value.length} file(s) deleted successfully`,
-      color: 'success'
+      color: 'success',
     });
 
     selectedMedia.value = [];
@@ -140,7 +152,7 @@ const deleteSelected = async () => {
     toast.add({
       title: 'Error',
       description: error.data?.message || 'Failed to delete files',
-      color: 'error'
+      color: 'error',
     });
   }
 };
@@ -150,7 +162,7 @@ const formatFileSize = (bytes: number) => {
   const sizes = ['Bytes', 'KB', 'MB', 'GB'];
   if (bytes === 0) return '0 Bytes';
   const i = Math.floor(Math.log(bytes) / Math.log(1024));
-  return Math.round(bytes / Math.pow(1024, i) * 100) / 100 + ' ' + sizes[i];
+  return Math.round((bytes / Math.pow(1024, i)) * 100) / 100 + ' ' + sizes[i];
 };
 
 const getFileIcon = (mimeType: string) => {
@@ -163,10 +175,7 @@ const getFileIcon = (mimeType: string) => {
 
 // Set breadcrumbs
 const setBreadcrumbs = inject('setBreadcrumbs', () => {});
-setBreadcrumbs([
-  { label: 'Dashboard', to: '/admin' },
-  { label: 'Media Library' }
-]);
+setBreadcrumbs([{ label: 'Dashboard', to: '/admin' }, { label: 'Media Library' }]);
 </script>
 
 <template>
@@ -229,8 +238,14 @@ setBreadcrumbs([
 
       <div class="flex items-center space-x-3">
         <UCheckbox
-          :checked="selectedMedia.length === filteredMedia.length && filteredMedia.length > 0"
-          :indeterminate="selectedMedia.length > 0 && selectedMedia.length < filteredMedia.length"
+          :checked="
+            selectedMedia.length === filteredMedia.length &&
+            filteredMedia.length > 0
+          "
+          :indeterminate="
+            selectedMedia.length > 0 &&
+            selectedMedia.length < filteredMedia.length
+          "
           @change="selectAll"
           label="Select all"
         />
@@ -241,17 +256,29 @@ setBreadcrumbs([
     </div>
 
     <!-- Media Grid -->
-    <div v-if="mediaLoading" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-4">
+    <div
+      v-if="mediaLoading"
+      class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-4"
+    >
       <div v-for="i in 12" :key="i" class="animate-pulse">
-        <div class="bg-gray-300 dark:bg-gray-600 rounded-lg aspect-square"></div>
+        <div
+          class="bg-gray-300 dark:bg-gray-600 rounded-lg aspect-square"
+        ></div>
       </div>
     </div>
-    <div v-else class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-4">
+    <div
+      v-else
+      class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-4"
+    >
       <div
         v-for="media in filteredMedia"
         :key="media.id"
         class="group relative bg-white dark:bg-gray-900 border-2 rounded-lg overflow-hidden hover:shadow-md transition-all cursor-pointer"
-        :class="isSelected(media) ? 'border-primary-500 ring-2 ring-primary-200 dark:ring-primary-800' : 'border-gray-200 dark:border-gray-700'"
+        :class="
+          isSelected(media)
+            ? 'border-primary-500 ring-2 ring-primary-200 dark:ring-primary-800'
+            : 'border-gray-200 dark:border-gray-700'
+        "
         @click="toggleSelection(media)"
       >
         <!-- Selection checkbox -->
@@ -263,7 +290,9 @@ setBreadcrumbs([
         </div>
 
         <!-- Media preview -->
-        <div class="aspect-square bg-gray-100 dark:bg-gray-800 flex items-center justify-center">
+        <div
+          class="aspect-square bg-gray-100 dark:bg-gray-800 flex items-center justify-center"
+        >
           <NuxtImg
             v-if="media.mimeType.startsWith('image/')"
             :src="media.url"
@@ -280,31 +309,40 @@ setBreadcrumbs([
 
         <!-- Media info -->
         <div class="p-3">
-          <h3 class="text-sm font-medium text-gray-900 dark:text-white truncate">
+          <h3
+            class="text-sm font-medium text-gray-900 dark:text-white truncate"
+          >
             {{ media.filename }}
           </h3>
-          <div class="mt-1 flex items-center justify-between text-xs text-gray-500 dark:text-gray-400">
+          <div
+            class="mt-1 flex items-center justify-between text-xs text-gray-500 dark:text-gray-400"
+          >
             <span>{{ formatFileSize(media.size) }}</span>
             <span>{{ formatDate(media.createdAt) }}</span>
           </div>
-          <div v-if="media.width && media.height" class="mt-1 text-xs text-gray-500 dark:text-gray-400">
+          <div
+            v-if="media.width && media.height"
+            class="mt-1 text-xs text-gray-500 dark:text-gray-400"
+          >
             {{ media.width }} × {{ media.height }}
           </div>
         </div>
 
         <!-- Hover overlay -->
-        <div class="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-20 transition-opacity flex items-center justify-center opacity-0 group-hover:opacity-100">
+        <div
+          class="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-20 transition-opacity flex items-center justify-center opacity-0 group-hover:opacity-100"
+        >
           <div class="flex space-x-2">
             <UButton
               size="xs"
-              color="white"
+              color="neutral"
               variant="solid"
               icon="i-lucide-eye"
-              @click.stop="() => {}"
+              @click.stop="viewMedia(media)"
             />
             <UButton
               size="xs"
-              color="white"
+              color="primary"
               variant="solid"
               icon="i-lucide-download"
               @click.stop="() => {}"
@@ -315,13 +353,20 @@ setBreadcrumbs([
     </div>
 
     <!-- Empty state -->
-    <div v-if="!filteredMedia.length && !mediaLoading" class="text-center py-12">
+    <div
+      v-if="!filteredMedia.length && !mediaLoading"
+      class="text-center py-12"
+    >
       <UIcon name="i-lucide-image" class="mx-auto h-12 w-12 text-gray-400" />
       <h3 class="mt-2 text-sm font-medium text-gray-900 dark:text-white">
-        {{ searchQuery ? 'No files found' : 'No media files' }}
+        {{ searchQuery ? "No files found" : "No media files" }}
       </h3>
       <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
-        {{ searchQuery ? 'Try adjusting your search.' : 'Get started by uploading some files.' }}
+        {{
+          searchQuery
+            ? "Try adjusting your search."
+            : "Get started by uploading some files."
+        }}
       </p>
       <div v-if="!searchQuery" class="mt-6">
         <UButton @click="handleUploadClick" icon="i-lucide-upload">
@@ -331,7 +376,10 @@ setBreadcrumbs([
     </div>
 
     <!-- Upload progress indicator -->
-    <div v-if="isUploading" class="fixed bottom-4 right-4 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-4 shadow-lg">
+    <div
+      v-if="isUploading"
+      class="fixed bottom-4 right-4 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-4 shadow-lg"
+    >
       <div class="flex items-center space-x-3">
         <UIcon name="i-lucide-upload" class="w-5 h-5 animate-pulse" />
         <span class="text-sm font-medium">Uploading files...</span>
@@ -339,3 +387,4 @@ setBreadcrumbs([
     </div>
   </div>
 </template>
+
