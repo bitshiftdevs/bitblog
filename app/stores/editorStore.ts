@@ -1,9 +1,9 @@
-import type { Editor } from '@tiptap/vue-3';
+import type { Editor, JSONContent } from '@tiptap/vue-3';
 import { defineStore } from 'pinia';
 import ImageModal from '~/components/TipTap/ImageModal.vue';
 import LinkModal from '~/components/TipTap/LinkModal.vue';
 import YoutubeModal from '~/components/TipTap/YoutubeModal.vue';
-import type { EditorView, EditorState, PostResponse, PostStatus, Post } from '~~/shared/types';
+import type { EditorState, EditorView, Post, PostResponse, PostStatus } from '~~/shared/types';
 import { Modal } from '~~/shared/types';
 
 export const useEditorStore = defineStore('editor', {
@@ -93,7 +93,7 @@ export const useEditorStore = defineStore('editor', {
         .replace(/^-+|-+$/g, '');
     },
 
-    setContent(content: any, text: string) {
+    setContent(content: JSONContent, text: string) {
       this.content = content;
       this.contentText = text;
       this.isDirty = true;
@@ -213,6 +213,7 @@ export const useEditorStore = defineStore('editor', {
     async openModal(mode: Modal, editor?: Editor) {
       const overlay = useOverlay();
       let modal: ReturnType<typeof overlay.create>;
+      let isFeatured = false;
 
       switch (mode) {
         case Modal.link:
@@ -223,16 +224,13 @@ export const useEditorStore = defineStore('editor', {
           break;
         case Modal.imageFeatured:
           modal = overlay.create(ImageModal);
-          this.isFeatured = true;
+          isFeatured = true;
           break;
         case Modal.youtube:
           modal = overlay.create(YoutubeModal);
           break;
       }
-      const instance = modal.open({
-        editor,
-        isFeatured: this.isFeatured,
-      });
+      const instance = modal.open({ editor, isFeatured });
       await instance.result;
     },
     resetEditor() {

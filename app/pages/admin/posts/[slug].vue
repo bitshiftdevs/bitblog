@@ -14,11 +14,15 @@ const { data, pending: postLoading } = useLazyFetch<ApiResponse<Post>>(`/api/pos
 const post = computed(() => data.value?.data);
 
 // Load post into editor when data is available
-watch(() => data.value?.data, (newPost) => {
-  if (newPost) {
-    editorStore.loadPost(newPost);
-  }
-}, { immediate: true });
+watch(
+  () => data.value?.data,
+  (newPost) => {
+    if (newPost) {
+      editorStore.loadPost(newPost);
+    }
+  },
+  { immediate: true },
+);
 
 const { analyzeSeo } = useSeo();
 
@@ -32,6 +36,7 @@ onMounted(() => {
   onBeforeUnmount(() => {
     clearInterval(autoSaveInterval);
     blog.destroyEditor();
+    editorStore.$reset();
   });
 });
 
@@ -46,7 +51,9 @@ editorStore.$subscribe((mutation, state) => {
 <template>
   <div v-if="postLoading" class="flex items-center justify-center h-screen">
     <div class="animate-pulse text-center">
-      <div class="w-16 h-16 bg-gray-300 dark:bg-gray-600 rounded-lg mx-auto mb-4"></div>
+      <div
+        class="w-16 h-16 bg-gray-300 dark:bg-gray-600 rounded-lg mx-auto mb-4"
+      ></div>
       <p class="text-gray-600 dark:text-gray-400">Loading post...</p>
     </div>
   </div>

@@ -170,14 +170,8 @@ export interface Media {
   height?: number;
   altText?: string;
   caption?: string;
-  uploadedById?: string;
   createdAt: string;
   updatedAt: string;
-  uploadedBy?: {
-    id: string;
-    name: string;
-    avatarUrl?: string;
-  };
 }
 
 export interface Comment {

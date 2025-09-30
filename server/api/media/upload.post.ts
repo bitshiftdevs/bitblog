@@ -1,4 +1,3 @@
-import { requireAuth } from "~~/server/utils/auth";
 import {
   uploadToR2,
   generateMediaKey,
@@ -10,7 +9,7 @@ import prisma from "~~/server/db";
 
 export default defineEventHandler(async (event) => {
   // Require authentication
-  const session = await requireAuth(event);
+  const user = await requireAdmin(event);
 
   try {
     const form = await readMultipartFormData(event);
@@ -47,10 +46,9 @@ export default defineEventHandler(async (event) => {
         }
 
         // Generate unique key for R2
-        const key = generateMediaKey(formItem.filename, session.id);
+        const key = generateMediaKey(formItem.filename, user.id);
 
         try {
-          // Upload to Cloudflare R2
           const url = await uploadToR2(
             key,
             Buffer.from(formItem.data),
@@ -114,4 +112,3 @@ export default defineEventHandler(async (event) => {
     });
   }
 });
-

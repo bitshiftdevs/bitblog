@@ -28,7 +28,7 @@ const fileInput = ref<HTMLInputElement | null>(null);
 
 // Initialize media library
 onMounted(async () => {
-  // await loadImageLibrary();
+  await loadImageLibrary();
 });
 
 async function loadImageLibrary() {

@@ -60,8 +60,6 @@ export default defineNuxtConfig({
     r2AccessKeyId: '',
     r2SecretAccessKey: '',
     r2Endpoint: '',
-    cloudflareAccountId: '',
-    cloudflareImagesToken: '',
     nodeEnv: '',
 
     // SMTP settings
