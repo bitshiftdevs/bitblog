@@ -5,6 +5,8 @@ import type { Editor } from '#imports';
 import type { Media } from '~~/shared/types';
 
 const editorStore = useEditorStore();
+const route = useRoute();
+const router = useRouter();
 
 const { editor, isFeatured } = defineProps<{
   editor: Editor;
@@ -15,7 +17,20 @@ const imageUrl = ref('');
 const imageAlt = ref('');
 const imageWidth = ref<number>();
 const imageHeight = ref<number>();
-const activeTab = ref<'url' | 'upload' | 'library'>('url');
+// const activeTab = ref<'url' | 'upload' | 'library'>('url');
+const activeTab = computed({
+  get() {
+    return (route.query?.tab as string) || 'url';
+  },
+  set(tab) {
+    // Hash is specified here to prevent the page from scrolling to the top
+    router.push({
+      path: route.path,
+      query: { tab },
+      hash: '#control-active-item',
+    });
+  },
+});
 const imageLibrary = ref<Media[]>([]);
 const selectedLibraryImage = ref<Media | null>(null);
 const uploadProgress = ref(0);
@@ -199,10 +214,23 @@ async function deleteLibraryImage(image: Media, event: Event) {
 }
 
 const items: TabsItem[] = [
-  { key: 'url', label: 'URL', icon: 'i-lucide-link', slot: 'url' },
-  { key: 'upload', label: 'Upload', icon: 'i-lucide-image', slot: 'upload' },
+  {
+    key: 'url',
+    value: 'url',
+    label: 'URL',
+    icon: 'i-lucide-link',
+    slot: 'url',
+  },
+  {
+    key: 'upload',
+    value: 'upload',
+    label: 'Upload',
+    icon: 'i-lucide-image',
+    slot: 'upload',
+  },
   {
     key: 'library',
+    value: 'library',
     label: 'Library',
     icon: 'i-lucide-images',
     slot: 'library',
@@ -217,7 +245,7 @@ const emit = defineEmits<{
 <template>
   <UModal :title="isFeatured ? 'Set Featured Image' : 'Insert Image'">
     <template #body>
-      <UTabs :ui="{ trigger: 'grow' }" :items class="mb-4">
+      <UTabs v-model="activeTab" :ui="{ trigger: 'grow' }" :items class="mb-4">
         <template #url>
           <div class="space-y-4">
             <UFormField label="Image URL" required>
