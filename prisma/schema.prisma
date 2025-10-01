@@ -40,8 +40,8 @@ model Post {
   title          String
   excerpt        String?
   content        Json           @db.JsonB // TipTap JSON content
-  status         PostStatus     @default(DRAFT)
-  visibility     PostVisibility @default(PUBLIC)
+  status         PostStatus     @default(draft)
+  visibility     PostVisibility @default(public)
   featuredImage  String?
   canonicalUrl   String?
   readingTime    Int? // in minutes
@@ -140,7 +140,7 @@ model Comment {
   id         String        @id @default(uuid())
   postId     String
   content    String // Sanitized HTML
-  status     CommentStatus @default(PENDING)
+  status     CommentStatus @default(pending)
   authorId   String? // If registered user
   guestName  String? // For guest comments
   guestEmail String? // For guest comments
@@ -161,21 +161,21 @@ model Comment {
 
 // Enums
 enum PostStatus {
-  DRAFT
-  SCHEDULED
-  PUBLISHED
-  ARCHIVED
+  draft
+  scheduled
+  published
+  archived
 }
 
 enum PostVisibility {
-  PUBLIC
-  PRIVATE
-  UNLISTED
+  public
+  private
+  unlisted
 }
 
 enum CommentStatus {
-  PENDING
-  APPROVED
-  REJECTED
-  SPAM
+  pending
+  approved
+  rejected
+  spam
 }

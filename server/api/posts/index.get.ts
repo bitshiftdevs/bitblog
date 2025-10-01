@@ -35,7 +35,7 @@ export default defineEventHandler(async (event) => {
     // Build where clause
     const where: PostWhereInput = {
       ...(status && { status }),
-      visibility: visibility ?? "PUBLIC",
+      visibility: visibility ?? "public",
       ...(authorId && { authorId }),
       ...(tagId && { tags: { some: { id: tagId } } }),
       ...(categoryId && { categories: { some: { id: categoryId } } }),
@@ -91,7 +91,7 @@ export default defineEventHandler(async (event) => {
         tags: { select: { id: true, name: true, color: true } },
         categories: { select: { id: true, name: true } },
         _count: {
-          select: { comments: { where: { status: "APPROVED" } } },
+          select: { comments: { where: { status: "approved" } } },
         },
       },
       orderBy,

@@ -16,8 +16,8 @@ export default defineEventHandler(async (event) => {
       prisma.post.count(),
       prisma.post.count({
         where: {
-          status: "PUBLISHED",
-          visibility: "PUBLIC",
+          status: "published",
+          visibility: "public",
         },
       }),
       prisma.user.count({
@@ -25,7 +25,7 @@ export default defineEventHandler(async (event) => {
           isActive: true,
           authoredPosts: {
             some: {
-              status: "PUBLISHED",
+              status: "published",
             },
           },
         },
@@ -37,13 +37,13 @@ export default defineEventHandler(async (event) => {
           viewCount: true,
         },
         where: {
-          status: "PUBLISHED",
-          visibility: "PUBLIC",
+          status: "published",
+          visibility: "public",
         },
       }),
       prisma.comment.count({
         where: {
-          status: "APPROVED",
+          status: "approved",
         },
       }),
     ]);

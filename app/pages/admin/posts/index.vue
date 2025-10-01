@@ -18,10 +18,10 @@ const posts = computed(() => data.value?.data?.items || []);
 // Filter options
 const statusOptions = [
   { label: 'All Statuses', value: null },
-  { label: 'Published', value: 'PUBLISHED' },
-  { label: 'Draft', value: 'DRAFT' },
-  { label: 'Scheduled', value: 'SCHEDULED' },
-  { label: 'Archived', value: 'ARCHIVED' },
+  { label: 'Published', value: 'published' },
+  { label: 'Draft', value: 'draft' },
+  { label: 'Scheduled', value: 'scheduled' },
+  { label: 'Archived', value: 'archived' },
 ];
 
 const authorOptions = computed(() => [

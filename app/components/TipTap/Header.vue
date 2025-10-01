@@ -7,7 +7,7 @@ const auth = useAuth();
 const toast = useToast();
 
 // Save handlers with notifications
-const handleSave = async (status: 'DRAFT' | 'PUBLISHED' | 'ARCHIVED') => {
+const handleSave = async (status: 'draft' | 'published' | 'archived') => {
   const result = await editorStore.saveContent(status);
 
   if (result.success) {
@@ -44,6 +44,11 @@ const userMenuItems = computed<DropdownMenuItem[][]>(() => [
       label: 'Profile Settings',
       icon: 'i-lucide-user',
       to: '/profile',
+    },
+    {
+      label: 'admin dashboard',
+      icon: 'i-lucide-settings',
+      to: '/admin',
     },
   ],
   [
@@ -119,17 +124,17 @@ const items = computed<NavigationMenuItem[][]>(() => [
         {
           label: 'Save Draft',
           icon: 'i-lucide-save',
-          onSelect: () => handleSave('DRAFT'),
+          onSelect: () => handleSave('draft'),
         },
         {
           label: 'Save Version',
           icon: 'i-lucide-save',
-          onSelect: () => handleSave('ARCHIVED'),
+          onSelect: () => handleSave('archived'),
         },
         {
           label: 'Save & Publish',
           icon: 'i-lucide-save',
-          onSelect: () => handleSave('PUBLISHED'),
+          onSelect: () => handleSave('published'),
         },
       ],
       class: 'cursor-pointer',

@@ -12,7 +12,7 @@ export default defineEventHandler(async (event) => {
         children: { select: { id: true, name: true } },
         _count: {
           select: {
-            posts: { where: { status: "PUBLISHED", visibility: "PUBLIC" } },
+            posts: { where: { status: "published", visibility: "public" } },
           },
         },
       },

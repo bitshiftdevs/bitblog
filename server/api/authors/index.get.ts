@@ -29,8 +29,8 @@ export default defineEventHandler(async (event) => {
       isActive: true,
       authoredPosts: {
         some: {
-          status: "PUBLISHED",
-          visibility: "PUBLIC",
+          status: "published",
+          visibility: "public",
         },
       },
     };
@@ -54,8 +54,8 @@ export default defineEventHandler(async (event) => {
             select: {
               authoredPosts: {
                 where: {
-                  status: "PUBLISHED",
-                  visibility: "PUBLIC",
+                  status: "published",
+                  visibility: "public",
                 },
               },
             },

@@ -4,64 +4,23 @@ definePageMeta({
   middleware: ['admin'],
 });
 
-// Mock data for now - replace with actual API call
-const dashboardData = ref({
-  data: {
-    stats: {
-      posts: {
-        total: 25,
-        published: 18,
-        draft: 5,
-        scheduled: 2,
-      },
-      comments: {
-        total: 147,
-        pending: 3,
-        approved: 144,
-      },
-    },
-    recentPosts: [
-      {
-        id: '1',
-        title: 'Getting Started with TypeScript',
-        status: 'PUBLISHED',
-        updatedAt: new Date().toISOString(),
-      },
-      {
-        id: '2',
-        title: 'Modern CSS Layout Techniques',
-        status: 'DRAFT',
-        updatedAt: new Date(Date.now() - 86400000).toISOString(),
-      },
-    ],
-    pendingComments: [
-      {
-        id: '1',
-        content: 'Great article! Thanks for sharing this.',
-        guestName: 'John Doe',
-        createdAt: new Date().toISOString(),
-      },
-    ],
-  },
+const { data, pending: dashboardLoading } = await useLazyFetch('/api/admin/dashboard', {
+  key: 'dashboard-stats',
 });
 
-const stats = computed(() => dashboardData.value?.data?.stats || {});
-const recentPosts = computed(
-  () => dashboardData.value?.data?.recentPosts || [],
-);
-const pendingComments = computed(
-  () => dashboardData.value?.data?.pendingComments || [],
-);
+const stats = computed(() => data.value?.data);
+const recentPosts = computed(() => data.value?.data?.recentPosts || []);
+const pendingComments = computed(() => data.value?.data?.pendingComments || []);
 
 const getStatusColor = (status: string) => {
   switch (status) {
-    case 'PUBLISHED':
+    case 'published':
       return 'success';
-    case 'DRAFT':
+    case 'draft':
       return 'yellow';
-    case 'SCHEDULED':
+    case 'scheduled':
       return 'blue';
-    case 'ARCHIVED':
+    case 'archived':
       return 'gray';
     default:
       return 'gray';

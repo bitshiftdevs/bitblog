@@ -13,13 +13,13 @@ type Color =
 export const getStatusColor = (value: number | string): Color => {
   if (typeof value === 'string') {
     switch (value) {
-      case 'PUBLISHED':
+      case 'published':
         return 'success';
-      case 'DRAFT':
+      case 'draft':
         return 'warning';
-      case 'SCHEDULED':
+      case 'scheduled':
         return 'info';
-      case 'ARCHIVED':
+      case 'archived':
         return 'error';
       default:
         return 'neutral';

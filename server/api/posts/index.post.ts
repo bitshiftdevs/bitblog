@@ -42,7 +42,7 @@ export default defineEventHandler(async (event) => {
         scheduledAt: validatedData.scheduledAt
           ? new Date(validatedData.scheduledAt)
           : null,
-        publishedAt: validatedData.status === "PUBLISHED" ? new Date() : null,
+        publishedAt: validatedData.status === "published" ? new Date() : null,
         // Connect co-authors if provided
         ...(validatedData.coAuthorIds &&
           validatedData.coAuthorIds.length > 0 && {

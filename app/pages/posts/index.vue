@@ -20,7 +20,7 @@ const { data: postsData, pending } = useLazyFetch('/api/posts', {
     categoryId: selectedCategory.value?.id,
     tagId: selectedTag.value?.id,
     search: searchQuery.value || undefined,
-    status: 'PUBLISHED',
+    status: 'published',
     visibility: 'PUBLIC',
   })),
 });

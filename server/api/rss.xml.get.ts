@@ -44,8 +44,8 @@ export default defineEventHandler(async (event) => {
     // Get published posts
     const posts = await prisma.post.findMany({
       where: {
-        status: "PUBLISHED",
-        visibility: "PUBLIC",
+        status: "published",
+        visibility: "public",
       },
       include: {
         author: {

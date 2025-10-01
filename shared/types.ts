@@ -1,9 +1,8 @@
 import type { Editor, JSONContent, Range } from "@tiptap/vue-3";
 
-export type PostStatus = "DRAFT" | "SCHEDULED" | "PUBLISHED" | "ARCHIVED";
-export type PostVisibility = "PUBLIC" | "PRIVATE" | "UNLISTED";
-export type CommentStatus = "PENDING" | "APPROVED" | "REJECTED" | "SPAM";
-export type InvitationStatus = "PENDING" | "ACCEPTED" | "EXPIRED" | "REVOKED";
+export type PostStatus = "draft" | "scheduled" | "published" | "archived";
+export type PostVisibility = "public" | "private" | "unlisted";
+export type CommentStatus = "pending" | "approved" | "rejected" | "spam";
 
 export type EditorState = Post & {
   wordCount: number;
@@ -276,6 +275,7 @@ export interface DashboardStats {
     published: number;
     draft: number;
     scheduled: number;
+    archived?: number;
   };
   users: {
     total: number;
@@ -285,12 +285,39 @@ export interface DashboardStats {
     total: number;
     pending: number;
     approved: number;
+    rejected?: number;
+    spam?: number;
   };
   media: {
     total: number;
     totalSize: number;
   };
 }
+
+export type DashboardResponse = DashboardStats & {
+  recentPosts: {
+    id: string;
+    updatedAt: Date;
+    status: PostStatus;
+    title: string;
+    author: {
+      name: string;
+    };
+  }[];
+  pendingComments: {
+    post: {
+      slug: string;
+      title: string;
+    };
+    id: string;
+    createdAt: Date;
+    content: string;
+    guestName: string | null;
+    author: {
+      name: string;
+    } | null;
+  }[];
+};
 
 // SEO and metadata
 export interface SeoMetadata {

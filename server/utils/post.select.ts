@@ -30,13 +30,13 @@ export const postInclude: PostInclude = {
   ...postEditInclude,
   comments: {
     where: {
-      status: "APPROVED",
+      status: "approved",
       parentId: null, // Only top-level comments
     },
     include: {
       author: { select: user },
       replies: {
-        where: { status: "APPROVED" },
+        where: { status: "approved" },
         include: { author: { select: user } },
         orderBy: { createdAt: "asc" },
       },
@@ -47,7 +47,7 @@ export const postInclude: PostInclude = {
     select: {
       comments: {
         where: {
-          status: "APPROVED",
+          status: "approved",
         },
       },
     },

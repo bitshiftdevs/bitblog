@@ -41,21 +41,21 @@ export const PERMISSIONS = {
 } as const;
 
 export const POST_STATUS = {
-  DRAFT: 'DRAFT',
-  SCHEDULED: 'SCHEDULED',
-  PUBLISHED: 'PUBLISHED',
-  ARCHIVED: 'ARCHIVED',
+  draft: 'draft',
+  scheduled: 'scheduled',
+  published: 'published',
+  archived: 'archived',
 } as const;
 
 export const POST_VISIBILITY = {
-  PUBLIC: 'PUBLIC',
+  public: 'public',
   PRIVATE: 'PRIVATE',
   UNLISTED: 'UNLISTED',
 } as const;
 
 export const COMMENT_STATUS = {
   PENDING: 'PENDING',
-  APPROVED: 'APPROVED',
-  REJECTED: 'REJECTED',
+  approved: 'approved',
+  rejected: 'rejected',
   SPAM: 'SPAM',
 } as const;

@@ -16,7 +16,7 @@ const auth = useAuth();
 const { data: featuredPostsData, pending } = useLazyFetch('/api/posts', {
   key: 'home-featured-posts',
   query: {
-    status: 'PUBLISHED',
+    status: 'published',
     limit: 6,
     sortBy: 'viewCount',
     sortOrder: 'desc',

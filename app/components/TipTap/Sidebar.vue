@@ -35,7 +35,7 @@ const selectedTagNames = computed({
   },
 });
 
-const postStatusList: SelectMenuItem[] = [{ label: 'DRAFT' }, { label: 'PUBLISHED' }, { label: 'SCHEDULED' }];
+const postStatusList: SelectMenuItem[] = [{ label: 'draft' }, { label: 'published' }, { label: 'scheduled' }];
 
 const fileInputRef = ref<HTMLInputElement>();
 
@@ -105,7 +105,7 @@ const viewRevisions = () => {
       <!-- Publish Date (show if scheduled) -->
       <UFormField
         label="Schedule Date"
-        v-if="editorStore.status === 'SCHEDULED'"
+        v-if="editorStore.status === 'scheduled'"
       >
         <UInput
           type="text"

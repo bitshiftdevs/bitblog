@@ -1,11 +1,11 @@
 -- CreateEnum
-CREATE TYPE "PostStatus" AS ENUM ('DRAFT', 'SCHEDULED', 'PUBLISHED', 'ARCHIVED');
+CREATE TYPE "PostStatus" AS ENUM ('draft', 'scheduled', 'published', 'archived');
 
 -- CreateEnum
-CREATE TYPE "PostVisibility" AS ENUM ('PUBLIC', 'PRIVATE', 'UNLISTED');
+CREATE TYPE "PostVisibility" AS ENUM ('public', 'private', 'unlisted');
 
 -- CreateEnum
-CREATE TYPE "CommentStatus" AS ENUM ('PENDING', 'APPROVED', 'REJECTED', 'SPAM');
+CREATE TYPE "CommentStatus" AS ENUM ('pending', 'approved', 'rejected', 'spam');
 
 -- CreateTable
 CREATE TABLE "users" (
@@ -33,8 +33,8 @@ CREATE TABLE "posts" (
     "title" TEXT NOT NULL,
     "excerpt" TEXT,
     "content" JSONB NOT NULL,
-    "status" "PostStatus" NOT NULL DEFAULT 'DRAFT',
-    "visibility" "PostVisibility" NOT NULL DEFAULT 'PUBLIC',
+    "status" "PostStatus" NOT NULL DEFAULT 'draft',
+    "visibility" "PostVisibility" NOT NULL DEFAULT 'public',
     "featuredImage" TEXT,
     "canonicalUrl" TEXT,
     "readingTime" INTEGER,
@@ -112,7 +112,7 @@ CREATE TABLE "comments" (
     "id" TEXT NOT NULL,
     "postId" TEXT NOT NULL,
     "content" TEXT NOT NULL,
-    "status" "CommentStatus" NOT NULL DEFAULT 'PENDING',
+    "status" "CommentStatus" NOT NULL DEFAULT 'pending',
     "authorId" TEXT,
     "guestName" TEXT,
     "guestEmail" TEXT,
