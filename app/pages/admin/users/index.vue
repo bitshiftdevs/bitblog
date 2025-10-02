@@ -421,7 +421,7 @@ setBreadcrumbs([
           <h3 class="text-lg font-medium">Invite User</h3>
         </template>
 
-        <form @submit.prevent="sendInvite" class="space-y-4">
+        <UForm @submit.prevent="sendInvite" class="space-y-4">
           <UFormField label="Email Address" required>
             <UInput
               v-model="inviteForm.email"
@@ -462,7 +462,7 @@ setBreadcrumbs([
               Send Invitation
             </UButton>
           </div>
-        </form>
+        </UForm>
       </UCard>
     </UModal>
   </div>

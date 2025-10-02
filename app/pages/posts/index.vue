@@ -21,7 +21,7 @@ const { data: postsData, pending } = useLazyFetch('/api/posts', {
     tagId: selectedTag.value?.id,
     search: searchQuery.value || undefined,
     status: 'published',
-    visibility: 'PUBLIC',
+    visibility: 'public',
   })),
 });
 

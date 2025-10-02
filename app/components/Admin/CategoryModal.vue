@@ -22,7 +22,7 @@ const emit = defineEmits<{
 <template>
   <UModal :title>
     <template #body>
-      <form @submit.prevent="emit('submit', formData)" class="space-y-4">
+      <UForm @submit.prevent="emit('submit', formData)" class="space-y-4">
         <UFormField label="Name" required>
           <UInput
             v-model="formData.name"
@@ -58,7 +58,7 @@ const emit = defineEmits<{
           />
           <UButton type="submit" :label="title" />
         </div>
-      </form>
+      </UForm>
     </template>
   </UModal>
 </template>

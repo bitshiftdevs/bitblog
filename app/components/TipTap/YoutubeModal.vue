@@ -24,13 +24,13 @@ const emit = defineEmits<{
   <UModal title="Insert YouTube Video">
     <template #body>
       <div class="space-y-4">
-        <UFormGroup label="YouTube URL" required>
+        <UFormField label="YouTube URL" required>
           <UInput
             v-model="youtubeUrl"
             placeholder="https://www.youtube.com/watch?v=dQw4w9WgXcQ"
             type="url"
           />
-        </UFormGroup>
+        </UFormField>
       </div>
     </template>
 

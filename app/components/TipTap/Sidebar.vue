@@ -37,52 +37,6 @@ const selectedTagNames = computed({
 
 const postStatusList: SelectMenuItem[] = [{ label: 'draft' }, { label: 'published' }, { label: 'scheduled' }];
 
-const fileInputRef = ref<HTMLInputElement>();
-
-const selectFeaturedImage = () => {
-  editorStore.openModal(Modal.imageFeatured);
-  // fileInputRef.value?.click();
-};
-
-const handleFileUpload = async (event: Event) => {
-  const target = event.target as HTMLInputElement;
-  const file = target.files?.[0];
-
-  if (!file) return;
-
-  const formData = new FormData();
-  formData.append('file', file);
-
-  try {
-    const response = await $fetch<{ success: boolean; data: any }>('/api/media/upload', {
-      method: 'POST',
-      body: formData,
-    });
-
-    if (response.success) {
-      editorStore.setFeaturedImage(response.data.url);
-      // Show success message
-      const toast = useToast();
-      toast.add({
-        title: 'Success',
-        description: 'Image uploaded successfully',
-        color: 'success',
-      });
-    }
-  } catch (error: any) {
-    console.error('Upload error:', error);
-    const toast = useToast();
-    toast.add({
-      title: 'Upload failed',
-      description: error.data?.message || 'Failed to upload image',
-      color: 'error',
-    });
-  }
-
-  // Reset input
-  target.value = '';
-};
-
 const removeFeaturedImage = () => {
   editorStore.setFeaturedImage('');
 };
@@ -99,7 +53,11 @@ const viewRevisions = () => {
       <h3 class="text-lg font-semibold mb-3">Post Settings</h3>
 
       <UFormField label="Post Status">
-        <USelectMenu :items="postStatusList" v-model="editorStore.status" />
+        <USelectMenu
+          class="w-full"
+          :items="postStatusList"
+          v-model="editorStore.status"
+        />
       </UFormField>
 
       <!-- Publish Date (show if scheduled) -->
@@ -109,13 +67,19 @@ const viewRevisions = () => {
       >
         <UInput
           type="text"
+          v-if="editorStore.status === 'scheduled'"
           v-model="editorStore.publishedAt"
           placeholder="Select publish date"
         />
       </UFormField>
 
       <UFormField label="slug">
-        <UInput type="text" :placeholder="editorStore.slug" disabled />
+        <UInput
+          type="text"
+          class="w-full"
+          :placeholder="editorStore.slug"
+          disabled
+        />
       </UFormField>
 
       <UFormField label="Featured Image">
@@ -133,15 +97,8 @@ const viewRevisions = () => {
             Remove
           </button>
         </div>
-        <input
-          ref="fileInputRef"
-          type="file"
-          accept="image/*"
-          @change="handleFileUpload"
-          class="hidden"
-        />
         <UButton
-          @click="selectFeaturedImage"
+          @click="editorStore.openModal(Modal.imageFeatured)"
           class="w-1/2"
           icon="i-lucide-image-plus"
           :label="editorStore.featuredImage ? 'Change Image' : 'Add Image'"
@@ -149,8 +106,9 @@ const viewRevisions = () => {
       </UFormField>
 
       <UFormField label="Excerpt">
-        <UInput
+        <UTextarea
           type="text"
+          class="w-full"
           placeholder="Brief summary of post"
           v-model="editorStore.excerpt"
         />

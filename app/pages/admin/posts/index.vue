@@ -54,11 +54,13 @@ const clearFilters = () => {
 
 const deletePost = async (post: any) => {
   // Show confirmation dialog and delete post
-  const confirmed = confirm(`Are you sure you want to delete "${post.title}"?`);
-  if (confirmed) {
-    // TODO: Implement delete API call
-    posts.value = posts.value.filter((p) => p.id !== post.id);
-  }
+  confirmAction({
+    title: 'Confirm Deletion',
+    question: `Are you sure you want to delete "${post.title}"?`,
+    onConfirm: () => {
+      posts.value = posts.value.filter((p) => p.id !== post.id);
+    },
+  });
 };
 
 // Set breadcrumbs

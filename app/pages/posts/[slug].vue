@@ -17,8 +17,8 @@ useSeoMeta({
   ogDescription: computed(() => post.value?.excerpt),
   ogImage: computed(() => post.value?.featuredImage),
   ogType: 'article',
-  articleAuthor: computed(() => post.value?.coAuthors.concat(post.value.author).map((au) => au.name)),
-  author: computed(() => post.value?.author.name),
+  articleAuthor: computed(() => post.value?.coAuthors.concat(post.value.author || []).map((au) => au.name)),
+  author: computed(() => post.value?.author?.name),
   articlePublishedTime: computed(() => post.value?.publishedAt),
   articleModifiedTime: computed(() => post.value?.updatedAt),
 });

@@ -154,7 +154,7 @@ setBreadcrumbs([
       </div>
     </div>
 
-    <form @submit.prevent="saveSettings" class="space-y-6">
+    <UForm @submit.prevent="saveSettings" class="space-y-6">
       <!-- General Settings -->
       <UCard>
         <template #header>
@@ -415,6 +415,6 @@ setBreadcrumbs([
           </div>
         </div>
       </UCard>
-    </form>
+    </UForm>
   </div>
 </template>

@@ -280,12 +280,12 @@ function downloadMedia() {
               />
             </div>
 
-            <form
+            <UForm
               v-if="isEditing"
               @submit.prevent="saveChanges"
               class="space-y-4"
             >
-              <UFormGroup
+              <UFormField
                 label="Alt Text"
                 hint="Describe the image for accessibility"
               >
@@ -293,15 +293,15 @@ function downloadMedia() {
                   v-model="formData.altText"
                   placeholder="Image description"
                 />
-              </UFormGroup>
+              </UFormField>
 
-              <UFormGroup label="Caption" hint="Optional caption for the image">
+              <UFormField label="Caption" hint="Optional caption for the image">
                 <UTextarea
                   v-model="formData.caption"
                   placeholder="Image caption"
                   :rows="3"
                 />
-              </UFormGroup>
+              </UFormField>
 
               <div class="flex gap-2">
                 <UButton type="submit" size="sm" :loading="isLoading">
@@ -317,7 +317,7 @@ function downloadMedia() {
                   Cancel
                 </UButton>
               </div>
-            </form>
+            </UForm>
 
             <div v-else class="space-y-3">
               <div>

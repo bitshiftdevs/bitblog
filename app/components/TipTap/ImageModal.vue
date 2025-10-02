@@ -24,7 +24,7 @@ const activeTab = computed({
   },
   set(tab) {
     // Hash is specified here to prevent the page from scrolling to the top
-    router.push({
+    router.replace({
       path: route.path,
       query: { tab },
       hash: '#control-active-item',

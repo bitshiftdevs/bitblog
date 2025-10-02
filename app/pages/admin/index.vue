@@ -12,21 +12,6 @@ const stats = computed(() => data.value?.data);
 const recentPosts = computed(() => data.value?.data?.recentPosts || []);
 const pendingComments = computed(() => data.value?.data?.pendingComments || []);
 
-const getStatusColor = (status: string) => {
-  switch (status) {
-    case 'published':
-      return 'success';
-    case 'draft':
-      return 'yellow';
-    case 'scheduled':
-      return 'blue';
-    case 'archived':
-      return 'gray';
-    default:
-      return 'gray';
-  }
-};
-
 const stripHtml = (html: string): string => {
   return html.replace(/<[^>]*>/g, '');
 };
@@ -53,29 +38,29 @@ setBreadcrumbs([{ label: 'Dashboard' }]);
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
       <StatCard
         title="Total Posts"
-        :value="stats.posts?.total || 0"
+        :value="stats?.posts?.total || 0"
         icon="i-lucide-file-text"
         color="blue"
       />
       <StatCard
         title="Published"
-        :value="stats.posts?.published || 0"
+        :value="stats?.posts?.published || 0"
         icon="i-lucide-eye"
-        color="green"
+        color="success"
       />
       <StatCard
         title="Drafts"
-        :value="stats.posts?.draft || 0"
+        :value="stats?.posts?.draft || 0"
         icon="i-lucide-square-pen"
         color="yellow"
       />
       <StatCard
         title="Comments"
-        :value="stats.comments?.total || 0"
+        :value="stats?.comments?.total || 0"
         icon="i-lucide-message-circle"
         color="purple"
         :badge="
-          stats.comments?.pending > 0 ? stats.comments.pending : undefined
+          stats?.comments?.pending! > 0 ? stats?.comments.pending : undefined
         "
       />
     </div>
