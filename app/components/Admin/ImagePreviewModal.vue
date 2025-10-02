@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { Media } from '~~/shared/types';
+import { confirmAction } from '~/composables/useConfirmModal';
 
 const props = defineProps<{
   media: Media;
@@ -102,25 +103,27 @@ function cancelEdit() {
 }
 
 // Delete media
-async function deleteMedia() {
-  if (!confirm(`Are you sure you want to delete "${props.media.filename}"? This action cannot be undone.`)) {
-    return;
-  }
+function deleteMedia() {
+  confirmAction({
+    title: 'Delete Media File',
+    question: `Are you sure you want to delete "${props.media.filename}"? This action cannot be undone.`,
+    onConfirm: async () => {
+      isDeleting.value = true;
+      try {
+        await $fetch(`/api/media/${props.media.id}`, {
+          method: 'DELETE',
+        });
 
-  isDeleting.value = true;
-  try {
-    await $fetch(`/api/media/${props.media.id}`, {
-      method: 'DELETE',
-    });
-
-    emit('delete', props.media.id);
-    emit('close');
-  } catch (error) {
-    console.error('Failed to delete media:', error);
-    // You might want to show a toast notification here
-  } finally {
-    isDeleting.value = false;
-  }
+        emit('delete', props.media.id);
+        emit('close');
+      } catch (error) {
+        console.error('Failed to delete media:', error);
+        // You might want to show a toast notification here
+      } finally {
+        isDeleting.value = false;
+      }
+    }
+  });
 }
 
 // Copy URL to clipboard

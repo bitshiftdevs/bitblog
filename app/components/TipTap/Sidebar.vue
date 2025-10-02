@@ -116,10 +116,12 @@ const viewRevisions = () => {
 
       <!-- Categories -->
       <UFormField label="Categories">
-        <UInputTags
+        <UInputMenu
           v-model="selectedCategoryNames"
           placeholder="Add or select category"
-          :suggestions="availableCategories.map((cat) => cat.name)"
+          :items="availableCategories.map((cat) => cat.name)"
+          multiple
+          searchable
         />
         <template #description>
           <div
@@ -139,10 +141,12 @@ const viewRevisions = () => {
 
       <!-- Tags -->
       <UFormField label="Tags">
-        <UInputTags
+        <UInputMenu
           v-model="selectedTagNames"
           placeholder="Add or select tag"
-          :suggestions="availableTags.map((tag) => tag.name)"
+          :items="availableTags.map((tag) => tag.name)"
+          multiple
+          searchable
         />
         <template #description>
           <div v-if="availableTags.length" class="text-xs text-gray-500 mt-1">

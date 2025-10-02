@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import TagModal from '~/components/Admin/TagModal.vue';
 import type { Tag } from '~~/shared/types';
+import { confirmAction } from '~/composables/useConfirmModal';
 
 definePageMeta({
   layout: 'admin',
@@ -108,28 +109,31 @@ const editTag = async (tag: Tag) => {
 
 // Delete tag
 const deleteTag = async (tag: Tag) => {
-  const confirmed = confirm(`Are you sure you want to delete "${tag.name}"?`);
-  if (!confirmed) return;
+  confirmAction({
+    title: 'Delete Tag',
+    question: `Are you sure you want to delete "${tag.name}"? This action cannot be undone.`,
+    onConfirm: async () => {
+      try {
+        await $fetch(`/api/admin/tags/${tag.id}`, {
+          method: 'DELETE',
+        });
 
-  try {
-    await $fetch(`/api/admin/tags/${tag.id}`, {
-      method: 'DELETE',
-    });
+        toast.add({
+          title: 'Success',
+          description: 'Tag deleted successfully',
+          color: 'success',
+        });
 
-    toast.add({
-      title: 'Success',
-      description: 'Tag deleted successfully',
-      color: 'success',
-    });
-
-    refresh();
-  } catch (error: any) {
-    toast.add({
-      title: 'Error',
-      description: error.data?.message || 'Failed to delete tag',
-      color: 'error',
-    });
-  }
+        refresh();
+      } catch (error: any) {
+        toast.add({
+          title: 'Error',
+          description: error.data?.message || 'Failed to delete tag',
+          color: 'error',
+        });
+      }
+    }
+  });
 };
 
 // Set breadcrumbs

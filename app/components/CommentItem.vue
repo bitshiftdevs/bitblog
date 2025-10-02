@@ -2,6 +2,7 @@
 import type { Comment } from '~~/shared/types';
 import { formatDate, formatRelativeTime } from '~/utils/date';
 import { sanitizeHtml } from '~/utils/text';
+import { confirmAction } from '~/composables/useConfirmModal';
 
 interface Props {
   comment: Comment;
@@ -103,35 +104,37 @@ const saveEdit = async () => {
   }
 };
 
-const deleteComment = async () => {
-  if (!confirm('Are you sure you want to delete this comment?')) {
-    return;
-  }
+const deleteComment = () => {
+  confirmAction({
+    title: 'Delete Comment',
+    question: 'Are you sure you want to delete this comment? This action cannot be undone.',
+    onConfirm: async () => {
+      isLoading.value = true;
 
-  isLoading.value = true;
+      try {
+        const response = await $fetch(`/api/comments/${props.comment.id}`, {
+          method: 'DELETE'
+        });
 
-  try {
-    const response = await $fetch(`/api/comments/${props.comment.id}`, {
-      method: 'DELETE'
-    });
-
-    if (response.success) {
-      emit('delete', props.comment.id);
-      toast.add({
-        title: 'Success',
-        description: 'Comment deleted successfully',
-        color: 'success'
-      });
+        if (response.success) {
+          emit('delete', props.comment.id);
+          toast.add({
+            title: 'Success',
+            description: 'Comment deleted successfully',
+            color: 'success'
+          });
+        }
+      } catch (error: any) {
+        toast.add({
+          title: 'Error',
+          description: error.data?.message || 'Failed to delete comment',
+          color: 'error'
+        });
+      } finally {
+        isLoading.value = false;
+      }
     }
-  } catch (error: any) {
-    toast.add({
-      title: 'Error',
-      description: error.data?.message || 'Failed to delete comment',
-      color: 'error'
-    });
-  } finally {
-    isLoading.value = false;
-  }
+  });
 };
 </script>
 

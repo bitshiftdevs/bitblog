@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { confirmAction } from '~/composables/useConfirmModal';
+
 definePageMeta({
   layout: 'admin',
   middleware: ['admin'],
@@ -68,49 +70,52 @@ const saveSettings = async () => {
 };
 
 const resetSettings = () => {
-  const confirmed = confirm('Are you sure you want to reset all SEO settings to defaults?');
-  if (!confirmed) return;
+  confirmAction({
+    title: 'Reset SEO Settings',
+    question: 'Are you sure you want to reset all SEO settings to defaults? This action cannot be undone.',
+    onConfirm: () => {
+      // Reset to defaults
+      seoSettings.value = {
+        general: {
+          siteTitle: '',
+          siteDescription: '',
+          defaultImage: '',
+          siteUrl: '',
+          language: 'en-US'
+        },
+        metadata: {
+          titleTemplate: '%s | Site Name',
+          titleSeparator: '|',
+          maxTitleLength: 60,
+          maxDescriptionLength: 160
+        },
+        social: {
+          twitterCard: 'summary_large_image',
+          twitterSite: '',
+          facebookAppId: '',
+          ogType: 'website'
+        },
+        technical: {
+          enableSitemap: true,
+          enableRobotsTxt: true,
+          enableJsonLd: true,
+          enableBreadcrumbs: true,
+          enableCanonicalUrls: true
+        },
+        analytics: {
+          googleAnalyticsId: '',
+          googleTagManagerId: '',
+          facebookPixelId: '',
+          enableCookieConsent: true
+        }
+      };
 
-  // Reset to defaults
-  seoSettings.value = {
-    general: {
-      siteTitle: '',
-      siteDescription: '',
-      defaultImage: '',
-      siteUrl: '',
-      language: 'en-US'
-    },
-    metadata: {
-      titleTemplate: '%s | Site Name',
-      titleSeparator: '|',
-      maxTitleLength: 60,
-      maxDescriptionLength: 160
-    },
-    social: {
-      twitterCard: 'summary_large_image',
-      twitterSite: '',
-      facebookAppId: '',
-      ogType: 'website'
-    },
-    technical: {
-      enableSitemap: true,
-      enableRobotsTxt: true,
-      enableJsonLd: true,
-      enableBreadcrumbs: true,
-      enableCanonicalUrls: true
-    },
-    analytics: {
-      googleAnalyticsId: '',
-      googleTagManagerId: '',
-      facebookPixelId: '',
-      enableCookieConsent: true
+      toast.add({
+        title: 'Settings Reset',
+        description: 'SEO settings have been reset to defaults',
+        color: 'yellow'
+      });
     }
-  };
-
-  toast.add({
-    title: 'Settings Reset',
-    description: 'SEO settings have been reset to defaults',
-    color: 'yellow'
   });
 };
 
