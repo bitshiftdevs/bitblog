@@ -35,8 +35,8 @@ export default defineEventHandler(async (event) => {
             select: {
               posts: {
                 where: {
-                  status: "PUBLISHED",
-                  visibility: "PUBLIC",
+                  status: "published",
+                  visibility: "public",
                 },
               },
             },

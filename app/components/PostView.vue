@@ -142,11 +142,7 @@ const { post } = defineProps<{ post: PostResponse }>();
 
     <!-- Comments Section -->
     <div v-if="true" class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-      <CommentsSection
-        :post-id="post.id"
-        :commentsEnabled="true"
-        :comments="post.comments"
-      />
+      <CommentsSection :post-id="post.id" :commentsEnabled="true" />
     </div>
   </div>
 </template>

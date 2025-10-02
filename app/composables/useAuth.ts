@@ -10,6 +10,7 @@ export const useAuth = () => {
     openInPopup,
     logout: async () => {
       await clear();
+      await refreshSession();
       await navigateTo('/auth');
     },
   };

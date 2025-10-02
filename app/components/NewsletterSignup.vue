@@ -1,6 +1,6 @@
 <!-- apps/web/components/NewsletterSignup.vue -->
 <template>
-  <form @submit.prevent="handleSubmit" class="max-w-md mx-auto">
+  <UForm @submit.prevent="handleSubmit" class="max-w-md mx-auto">
     <div class="flex flex-col sm:flex-row gap-3">
       <UInput
         v-model="email"
@@ -26,7 +26,7 @@
     <p class="text-xs text-primary-100 mt-3 text-center">
       No spam, unsubscribe at any time.
     </p>
-  </form>
+  </UForm>
 </template>
 
 <script setup lang="ts">

@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { Media } from '~~/shared/types';
+import { confirmAction } from '~/composables/useConfirmModal';
 
 const props = defineProps<{
   media: Media;
@@ -102,25 +103,27 @@ function cancelEdit() {
 }
 
 // Delete media
-async function deleteMedia() {
-  if (!confirm(`Are you sure you want to delete "${props.media.filename}"? This action cannot be undone.`)) {
-    return;
-  }
+function deleteMedia() {
+  confirmAction({
+    title: 'Delete Media File',
+    question: `Are you sure you want to delete "${props.media.filename}"? This action cannot be undone.`,
+    onConfirm: async () => {
+      isDeleting.value = true;
+      try {
+        await $fetch(`/api/media/${props.media.id}`, {
+          method: 'DELETE',
+        });
 
-  isDeleting.value = true;
-  try {
-    await $fetch(`/api/media/${props.media.id}`, {
-      method: 'DELETE',
-    });
-
-    emit('delete', props.media.id);
-    emit('close');
-  } catch (error) {
-    console.error('Failed to delete media:', error);
-    // You might want to show a toast notification here
-  } finally {
-    isDeleting.value = false;
-  }
+        emit('delete', props.media.id);
+        emit('close');
+      } catch (error) {
+        console.error('Failed to delete media:', error);
+        // You might want to show a toast notification here
+      } finally {
+        isDeleting.value = false;
+      }
+    }
+  });
 }
 
 // Copy URL to clipboard
@@ -280,12 +283,12 @@ function downloadMedia() {
               />
             </div>
 
-            <form
+            <UForm
               v-if="isEditing"
               @submit.prevent="saveChanges"
               class="space-y-4"
             >
-              <UFormGroup
+              <UFormField
                 label="Alt Text"
                 hint="Describe the image for accessibility"
               >
@@ -293,15 +296,15 @@ function downloadMedia() {
                   v-model="formData.altText"
                   placeholder="Image description"
                 />
-              </UFormGroup>
+              </UFormField>
 
-              <UFormGroup label="Caption" hint="Optional caption for the image">
+              <UFormField label="Caption" hint="Optional caption for the image">
                 <UTextarea
                   v-model="formData.caption"
                   placeholder="Image caption"
                   :rows="3"
                 />
-              </UFormGroup>
+              </UFormField>
 
               <div class="flex gap-2">
                 <UButton type="submit" size="sm" :loading="isLoading">
@@ -317,7 +320,7 @@ function downloadMedia() {
                   Cancel
                 </UButton>
               </div>
-            </form>
+            </UForm>
 
             <div v-else class="space-y-3">
               <div>

@@ -35,29 +35,15 @@ useHead({
 });
 const pending = ref(false);
 
-// Global loading state
-// const { pending } = useLazyAsyncData('app-init', () => {
-//   // Initialize app data here if needed
-//   return Promise.resolve();
-// });
-
 // Global error handling
 onErrorCaptured((error) => {
   console.error('Global error:', error);
-  // You can send errors to tracking service here
   return false;
 });
-
-// Service Worker registration for PWA
-// if (import.meta.client && 'serviceWorker' in navigator) {
-//   navigator.serviceWorker.register('/sw.js');
-// }
-
-// Global CSS variables from site settings
 const colorMode = useColorMode();
 
 // Initialize theme from user preference or system
-onMounted(() => {
+onBeforeMount(() => {
   // Set initial color mode if not set
   if (!colorMode.preference) {
     colorMode.preference = 'system';

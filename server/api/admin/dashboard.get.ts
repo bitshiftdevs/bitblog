@@ -1,5 +1,6 @@
 // apps/api/server/api/admin/dashboard.get.ts
 import prisma from "~~/server/db";
+import { DashboardResponse } from "~~/shared/types";
 
 export default defineEventHandler(async (event) => {
   try {
@@ -13,124 +14,68 @@ export default defineEventHandler(async (event) => {
     }
 
     // Get dashboard statistics
-    const [
-      postsStats,
-      commentsStats,
+    const [users, posts, comments, recentPosts, pendingComments] =
+      await prisma.$transaction(async (txn) => {
+        const users = await txn.user.groupBy({ by: "isActive", _count: true });
+        const posts = await txn.post.groupBy({ by: "status", _count: true });
+
+        const comments = await txn.comment.groupBy({
+          by: "status",
+          _count: true,
+        });
+        const recentPosts = await txn.post.findMany({
+          select: {
+            id: true,
+            title: true,
+            status: true,
+            updatedAt: true,
+            author: { select: { name: true } },
+          },
+          orderBy: { updatedAt: "desc" },
+          take: 5,
+        });
+        const pendingComments = await txn.comment.findMany({
+          where: { status: "pending" },
+          select: {
+            id: true,
+            content: true,
+            createdAt: true,
+            author: { select: { name: true } },
+            guestName: true,
+            post: { select: { title: true, slug: true } },
+          },
+          orderBy: { createdAt: "desc" },
+          take: 5,
+        });
+        return [users, posts, comments, recentPosts, pendingComments];
+      });
+
+    const data: DashboardResponse = {
+      posts: { total: 0, published: 0, draft: 0, scheduled: 0 },
+      users: { total: 0, active: 0 },
+      comments: { total: 0, pending: 0, approved: 0 },
+      media: { total: 0, totalSize: 0 },
       recentPosts,
       pendingComments,
-      recentActivity,
-    ] = await Promise.all([
-      // Posts statistics
-      Promise.all([
-        prisma.post.count(),
-        prisma.post.count({ where: { status: "PUBLISHED" } }),
-        prisma.post.count({ where: { status: "DRAFT" } }),
-        prisma.post.count({ where: { status: "SCHEDULED" } }),
-      ]).then(([total, published, draft, scheduled]) => ({
-        total,
-        published,
-        draft,
-        scheduled,
-      })),
-
-      // Comments statistics
-      Promise.all([
-        prisma.comment.count(),
-        prisma.comment.count({ where: { status: "PENDING" } }),
-        prisma.comment.count({ where: { status: "APPROVED" } }),
-      ]).then(([total, pending, approved]) => ({
-        total,
-        pending,
-        approved,
-      })),
-
-      // Recent posts
-      prisma.post.findMany({
-        select: {
-          id: true,
-          title: true,
-          status: true,
-          updatedAt: true,
-          author: {
-            select: {
-              name: true,
-            },
-          },
-        },
-        orderBy: {
-          updatedAt: "desc",
-        },
-        take: 5,
-      }),
-
-      // Pending comments
-      prisma.comment.findMany({
-        where: {
-          status: "PENDING",
-        },
-        select: {
-          id: true,
-          content: true,
-          createdAt: true,
-          author: {
-            select: {
-              name: true,
-            },
-          },
-          guestName: true,
-          post: {
-            select: {
-              title: true,
-              slug: true,
-            },
-          },
-        },
-        orderBy: {
-          createdAt: "desc",
-        },
-        take: 5,
-      }),
-
-      // Recent audit logs
-      prisma.auditLog.findMany({
-        include: {
-          user: {
-            select: {
-              name: true,
-            },
-          },
-        },
-        orderBy: {
-          createdAt: "desc",
-        },
-        take: 10,
-      }),
-    ]);
+    };
+    posts.forEach((post) => {
+      data.posts[post.status] = post._count;
+      data.posts.total += post._count;
+    });
+    comments.forEach((comment) => {
+      data.comments[comment.status] = comment._count;
+    });
+    console.dir(users, { depth: null });
+    users.forEach((user) => {
+      if (user.isActive) {
+        data.users["active"] = user._count;
+      }
+      data.users.total += user._count;
+    });
 
     return {
       success: true,
-      data: {
-        stats: {
-          posts: postsStats,
-          comments: commentsStats,
-          users: {
-            total: await prisma.user.count(),
-            active: await prisma.user.count({ where: { isActive: true } }),
-          },
-        },
-        recentPosts: recentPosts.map((post) => ({
-          ...post,
-          updatedAt: post.updatedAt.toISOString(),
-        })),
-        pendingComments: pendingComments.map((comment) => ({
-          ...comment,
-          createdAt: comment.createdAt.toISOString(),
-        })),
-        recentActivity: recentActivity.map((log) => ({
-          ...log,
-          createdAt: log.createdAt.toISOString(),
-        })),
-      },
+      data,
     };
   } catch (error) {
     console.error("Dashboard data error:", error);

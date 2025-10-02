@@ -18,13 +18,13 @@ export const useEditorStore = defineStore('editor', {
       contentText: '',
       wordCount: 0,
       excerpt: '',
-      visibility: 'PUBLIC',
+      visibility: 'public',
       slug: '',
       coAuthors: [],
       featuredImage: '',
       categories: [],
       tags: [],
-      status: 'DRAFT',
+      status: 'draft',
       publishedAt: new Date().toISOString(),
       lastSaved: null,
       viewCount: 10,
@@ -138,7 +138,7 @@ export const useEditorStore = defineStore('editor', {
           categoryIds: this.categories.filter((cat) => cat.id && !cat.id.includes('-')).map((cat) => cat.id),
           newTagNames: this.tags.filter((tag) => !tag.id || tag.id.includes('-')).map((tag) => tag.name),
           newCategoryNames: this.categories.filter((cat) => !cat.id || cat.id.includes('-')).map((cat) => cat.name),
-          scheduledAt: status === 'SCHEDULED' ? this.publishedAt : undefined,
+          scheduledAt: status === 'scheduled' ? this.publishedAt : undefined,
         };
 
         let response: any;
@@ -241,7 +241,7 @@ export const useEditorStore = defineStore('editor', {
       this.featuredImage = '';
       this.categories = [];
       this.tags = [];
-      this.status = 'DRAFT';
+      this.status = 'draft';
       this.publishedAt = new Date().toISOString();
       this.lastSaved = null;
       this.history = [];

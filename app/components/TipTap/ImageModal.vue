@@ -3,6 +3,7 @@ import type { TabsItem } from '@nuxt/ui';
 import type { SetImageOptions } from '@tiptap/extension-image';
 import type { Editor } from '#imports';
 import type { Media } from '~~/shared/types';
+import { confirmAction } from '~/composables/useConfirmModal';
 
 const editorStore = useEditorStore();
 const route = useRoute();
@@ -24,7 +25,7 @@ const activeTab = computed({
   },
   set(tab) {
     // Hash is specified here to prevent the page from scrolling to the top
-    router.push({
+    router.replace({
       path: route.path,
       query: { tab },
       hash: '#control-active-item',
@@ -179,38 +180,40 @@ function selectLibraryImage(image: Media | null) {
   selectedLibraryImage.value = image;
 }
 
-async function deleteLibraryImage(image: Media, event: Event) {
+function deleteLibraryImage(image: Media, event: Event) {
   // Stop the click event from selecting the image
   event.stopPropagation();
 
-  if (!confirm(`Are you sure you want to delete "${image.filename}"?`)) {
-    return;
-  }
+  confirmAction({
+    title: 'Delete Image',
+    question: `Are you sure you want to delete "${image.filename}"? This action cannot be undone.`,
+    onConfirm: async () => {
+      isDeleting.value = true;
+      errorMessage.value = '';
 
-  isDeleting.value = true;
-  errorMessage.value = '';
+      try {
+        // Delete via our media API
+        const response = await $fetch(`/api/media/${image.id}`, {
+          method: 'DELETE',
+        });
 
-  try {
-    // Delete via our media API
-    const response = await $fetch(`/api/media/${image.id}`, {
-      method: 'DELETE',
-    });
+        if (response.success) {
+          // If the deleted image was selected, clear selection
+          if (selectedLibraryImage.value?.id === image.id) {
+            selectedLibraryImage.value = null;
+          }
 
-    if (response.success) {
-      // If the deleted image was selected, clear selection
-      if (selectedLibraryImage.value?.id === image.id) {
-        selectedLibraryImage.value = null;
+          // Refresh the library
+          await loadImageLibrary();
+        }
+      } catch (error: any) {
+        console.error('Error deleting image:', error);
+        errorMessage.value = error.data?.message || 'Failed to delete image. Please try again.';
+      } finally {
+        isDeleting.value = false;
       }
-
-      // Refresh the library
-      await loadImageLibrary();
     }
-  } catch (error: any) {
-    console.error('Error deleting image:', error);
-    errorMessage.value = error.data?.message || 'Failed to delete image. Please try again.';
-  } finally {
-    isDeleting.value = false;
-  }
+  });
 }
 
 const items: TabsItem[] = [

@@ -14,7 +14,7 @@ export default defineEventHandler(
       const post = await prisma.post.update({
         where: {
           slug,
-          ...(!isEditing && { status: "PUBLISHED" }),
+          ...(!isEditing && { status: "published" }),
         },
         data: { ...(!isEditing && { viewCount: { increment: 1 } }) },
         include: isEditing ? postEditInclude : postInclude,
@@ -33,8 +33,8 @@ export default defineEventHandler(
           where: {
             AND: [
               { id: { not: post.id } },
-              { status: "PUBLISHED" },
-              { visibility: "PUBLIC" },
+              { status: "published" },
+              { visibility: "public" },
               {
                 OR: [
                   {

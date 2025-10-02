@@ -77,7 +77,7 @@ export default defineEventHandler(async (event) => {
     if (validatedData.status !== undefined) {
       updateData.status = validatedData.status;
       // Set publishedAt when publishing for the first time
-      if (validatedData.status === "PUBLISHED" && !existingPost.publishedAt) {
+      if (validatedData.status === "published" && !existingPost.publishedAt) {
         updateData.publishedAt = new Date();
       }
     }

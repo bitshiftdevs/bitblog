@@ -8,7 +8,7 @@ const { analyzeSeo } = useSeo();
 onMounted(() => {
   // // Auto-save every 30 seconds
   // const autoSaveInterval = setInterval(() => {
-  //   editorStore.saveContent('DRAFT');
+  //   editorStore.saveContent('draft');
   // }, 30000);
   // Clean up on unmount
   // onBeforeUnmount(() => {

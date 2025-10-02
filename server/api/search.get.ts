@@ -19,8 +19,8 @@ export default defineEventHandler(async (event) => {
     if (type === "posts" || type === "all") {
       // Build where clause for posts
       const where: any = {
-        status: "PUBLISHED",
-        visibility: "PUBLIC",
+        status: "published",
+        visibility: "public",
       };
 
       // Apply filters

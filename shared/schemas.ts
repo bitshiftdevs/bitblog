@@ -2,16 +2,16 @@ import { z } from "zod";
 
 // Base schemas
 export const PostStatusSchema = z.enum([
-  "DRAFT",
-  "SCHEDULED",
-  "PUBLISHED",
-  "ARCHIVED",
+  "draft",
+  "scheduled",
+  "published",
+  "archived",
 ]);
-export const PostVisibilitySchema = z.enum(["PUBLIC", "PRIVATE", "UNLISTED"]);
+export const PostVisibilitySchema = z.enum(["public", "PRIVATE", "UNLISTED"]);
 export const CommentStatusSchema = z.enum([
   "PENDING",
-  "APPROVED",
-  "REJECTED",
+  "approved",
+  "rejected",
   "SPAM",
 ]);
 export const InvitationStatusSchema = z.enum([
@@ -61,8 +61,8 @@ export const CreatePostSchema = z.object({
     .regex(/^[a-z0-9-]+$/),
   excerpt: z.string().max(500).optional(),
   content: z.any(), // TipTap JSON content
-  status: PostStatusSchema.default("DRAFT"),
-  visibility: PostVisibilitySchema.default("PUBLIC"),
+  status: PostStatusSchema.default("draft"),
+  visibility: PostVisibilitySchema.default("public"),
   featuredImage: z.string().url().optional(),
   canonicalUrl: z.string().url().optional(),
   seoTitle: z.string().max(60).optional(),
@@ -152,13 +152,14 @@ export const UpdateMediaSchema = z.object({
 
 // Comment schemas
 export const CreateCommentSchema = z.object({
-  postId: z.string().uuid(),
-  content: z.string().min(1).max(2000),
-  parentId: z.string().uuid().optional(),
-  // For guest comments
-  guestName: z.string().min(1).max(100).optional(),
-  guestEmail: z.string().email().optional(),
+  postId: z.uuid(),
+  content: z.string().min(10).max(2000),
+  parentId: z.uuid().nullable().optional(),
+  guestName: z.string().min(4).max(50),
+  guestEmail: z.email(),
 });
+
+export type CommentSchema = z.output<typeof CreateCommentSchema>;
 
 export const UpdateCommentSchema = z.object({
   content: z.string().min(1).max(2000).optional(),

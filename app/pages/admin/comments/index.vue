@@ -1,171 +1,263 @@
 <script setup lang="ts">
-import type { Comment } from '~~/shared/types';
+import type { Comment } from "~~/shared/types";
+import { formatDate } from "~/utils/date";
+import { stripHtml } from "~/utils/text";
 
 definePageMeta({
-  layout: 'admin',
-  middleware: ['admin'],
+  layout: "admin",
+  middleware: ["admin"],
 });
 
 const toast = useToast();
 
-// Mock data for comments (replace with actual API)
-const comments = ref<Comment[]>([
-  {
-    id: '1',
-    content: 'This is a great article! Really helped me understand the concepts better.',
-    status: 'PENDING',
-    postId: 'post-1',
-    guestName: 'John Doe',
-    guestEmail: 'john@example.com',
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString(),
-    _count: { replies: 0 }
-  },
-  {
-    id: '2',
-    content: 'I have a question about the implementation details mentioned in section 3.',
-    status: 'APPROVED',
-    postId: 'post-1',
-    author: {
-      id: 'user-1',
-      name: 'Jane Smith',
-      avatarUrl: 'https://images.unsplash.com/photo-1494790108755-2616b172e341?w=150'
-    },
-    createdAt: new Date(Date.now() - 86400000).toISOString(),
-    updatedAt: new Date(Date.now() - 86400000).toISOString(),
-    _count: { replies: 2 }
-  },
-  {
-    id: '3',
-    content: 'Spam comment with suspicious links...',
-    status: 'REJECTED',
-    postId: 'post-2',
-    guestName: 'Spammer',
-    guestEmail: 'spam@spam.com',
-    createdAt: new Date(Date.now() - 172800000).toISOString(),
-    updatedAt: new Date(Date.now() - 172800000).toISOString(),
-    _count: { replies: 0 }
-  }
-]);
-
-// Mock posts data
-const posts = ref([
-  { id: 'post-1', title: 'Getting Started with TypeScript', slug: 'getting-started-typescript' },
-  { id: 'post-2', title: 'Modern CSS Layout Techniques', slug: 'modern-css-layout' }
-]);
+// Reactive state
+const comments = ref<Comment[]>([]);
+const posts = ref<any[]>([]);
+const isLoading = ref(true);
+const isUpdating = ref(false);
+const pagination = ref({
+  page: 1,
+  limit: 20,
+  total: 0,
+  totalPages: 0,
+  hasNext: false,
+  hasPrev: false,
+});
+const stats = ref({
+  pending: 0,
+  approved: 0,
+  rejected: 0,
+  spam: 0,
+});
 
 // Filters
-const selectedStatus = ref('all');
-const searchQuery = ref('');
-const selectedPostId = ref('all');
+const selectedStatus = ref("all");
+const searchQuery = ref("");
+const selectedPostId = ref("all");
 
 const statusOptions = [
-  { label: 'All Comments', value: 'all' },
-  { label: 'Pending', value: 'PENDING' },
-  { label: 'Approved', value: 'APPROVED' },
-  { label: 'Rejected', value: 'REJECTED' },
-  { label: 'Spam', value: 'SPAM' }
+  { label: "All Comments", value: "all" },
+  { label: "Pending", value: "pending" },
+  { label: "Approved", value: "approved" },
+  { label: "Rejected", value: "REJECTED" },
+  { label: "Spam", value: "SPAM" },
 ];
 
 const postOptions = computed(() => [
-  { label: 'All Posts', value: 'all' },
-  ...posts.value.map(post => ({ label: post.title, value: post.id }))
+  { label: "All Posts", value: "all" },
+  ...posts.value.map((post) => ({ label: post.title, value: post.id })),
 ]);
 
-// Filtered comments
-const filteredComments = computed(() => {
-  let filtered = comments.value;
-
-  if (selectedStatus.value !== 'all') {
-    filtered = filtered.filter(comment => comment.status === selectedStatus.value);
-  }
-
-  if (selectedPostId.value !== 'all') {
-    filtered = filtered.filter(comment => comment.postId === selectedPostId.value);
-  }
-
-  if (searchQuery.value) {
-    const query = searchQuery.value.toLowerCase();
-    filtered = filtered.filter(comment =>
-      comment.content.toLowerCase().includes(query) ||
-      comment.author?.name.toLowerCase().includes(query) ||
-      comment.guestName?.toLowerCase().includes(query)
-    );
-  }
-
-  return filtered;
+// Load data on mount
+onMounted(() => {
+  loadComments();
+  loadPosts();
 });
 
+// Watch filters for auto-reload
+watch([selectedStatus, searchQuery, selectedPostId], () => {
+  pagination.value.page = 1;
+  loadComments();
+});
+
+const loadComments = async () => {
+  try {
+    isLoading.value = true;
+
+    const query: any = {
+      page: pagination.value.page,
+      limit: pagination.value.limit,
+    };
+
+    if (selectedStatus.value !== "all") {
+      query.status = selectedStatus.value;
+    }
+
+    if (searchQuery.value) {
+      query.search = searchQuery.value;
+    }
+
+    if (selectedPostId.value !== "all") {
+      query.postId = selectedPostId.value;
+    }
+
+    const response = await $fetch("/api/admin/comments", { query });
+
+    if (response.success) {
+      comments.value = response.data.items;
+      pagination.value = response.data.pagination;
+      stats.value = response.data.stats || {};
+    }
+  } catch (error: any) {
+    console.error("Failed to load comments:", error);
+    toast.add({
+      title: "Error",
+      description: "Failed to load comments",
+      color: "error",
+    });
+  } finally {
+    isLoading.value = false;
+  }
+};
+
+const loadPosts = async () => {
+  try {
+    const response = await $fetch("/api/posts", {
+      query: { limit: 100 }, // Get all posts for the filter
+    });
+
+    if (response.success) {
+      posts.value = response.data.items;
+    }
+  } catch (error: any) {
+    console.error("Failed to load posts:", error);
+  }
+};
+
 // Comment actions
-const updateCommentStatus = async (commentId: string, newStatus: 'APPROVED' | 'REJECTED' | 'SPAM') => {
-  const comment = comments.value.find(c => c.id === commentId);
-  if (!comment) return;
+const updateCommentStatus = async (
+  commentId: string,
+  newStatus: "approved" | "REJECTED" | "SPAM",
+) => {
+  try {
+    isUpdating.value = true;
 
-  comment.status = newStatus;
-  comment.updatedAt = new Date().toISOString();
+    const response = await $fetch(`/api/comments/${commentId}`, {
+      method: "PUT",
+      body: { status: newStatus },
+    });
 
-  toast.add({
-    title: 'Success',
-    description: `Comment ${newStatus.toLowerCase()} successfully`,
-    color: 'success'
-  });
+    if (response.success) {
+      // Update the comment in the list
+      const commentIndex = comments.value.findIndex((c) => c.id === commentId);
+      if (commentIndex !== -1) {
+        comments.value[commentIndex] = response.data;
+      }
+
+      toast.add({
+        title: "Success",
+        description: `Comment ${newStatus.toLowerCase()} successfully`,
+        color: "success",
+      });
+
+      // Reload to update stats
+      await loadComments();
+    }
+  } catch (error: any) {
+    toast.add({
+      title: "Error",
+      description: error.data?.message || "Failed to update comment",
+      color: "error",
+    });
+  } finally {
+    isUpdating.value = false;
+  }
 };
 
 const deleteComment = async (commentId: string) => {
-  const confirmed = confirm('Are you sure you want to delete this comment?');
-  if (!confirmed) return;
+  console.log("deleting");
+  confirmAction({
+    title: "Confirm Deletion",
+    question:
+      "Are you sure you want to delete this comment? This action cannot be undone.",
+    onConfirm: async () => {
+      try {
+        isUpdating.value = true;
 
-  const index = comments.value.findIndex(c => c.id === commentId);
-  if (index !== -1) {
-    comments.value.splice(index, 1);
-    toast.add({
-      title: 'Success',
-      description: 'Comment deleted successfully',
-      color: 'success'
-    });
-  }
+        const response = await $fetch(`/api/comments/${commentId}`, {
+          method: "DELETE",
+        });
+
+        if (response.success) {
+          // Remove the comment from the list
+          comments.value = comments.value.filter((c) => c.id !== commentId);
+
+          toast.add({
+            title: "Success",
+            description: "Comment deleted successfully",
+            color: "success",
+          });
+
+          // Reload to update stats and pagination
+          await loadComments();
+        }
+      } catch (error: any) {
+        toast.add({
+          title: "Error",
+          description: error.data?.message || "Failed to delete comment",
+          color: "error",
+        });
+      } finally {
+        isUpdating.value = false;
+      }
+    },
+  });
 };
 
 const bulkApprove = async () => {
-  const pendingComments = filteredComments.value.filter(c => c.status === 'PENDING');
-  pendingComments.forEach(comment => {
-    comment.status = 'APPROVED';
-    comment.updatedAt = new Date().toISOString();
-  });
+  const pendingComments = comments.value.filter((c) => c.status === "pending");
 
-  toast.add({
-    title: 'Success',
-    description: `${pendingComments.length} comments approved`,
-    color: 'success'
-  });
-};
-
-// Status styling
-const getStatusColor = (status: string) => {
-  switch (status) {
-    case 'APPROVED': return 'success';
-    case 'PENDING': return 'yellow';
-    case 'REJECTED': return 'error';
-    case 'SPAM': return 'error';
-    default: return 'gray';
+  if (pendingComments.length === 0) {
+    toast.add({
+      title: "Info",
+      description: "No pending comments to approve",
+      color: "info",
+    });
+    return;
   }
+
+  confirmAction({
+    title: "Confirm Aproval",
+    question: `Are you sure you want to approve ${pendingComments.length} pending comments?`,
+    onConfirm: async () => {
+      try {
+        isUpdating.value = true;
+
+        const response = await $fetch("/api/admin/comments/bulk", {
+          method: "POST",
+          body: {
+            commentIds: pendingComments.map((c) => c.id),
+            action: "approve",
+          },
+        });
+
+        if (response.success) {
+          toast.add({
+            title: "Success",
+            description: response.message,
+            color: "success",
+          });
+
+          // Reload comments
+          await loadComments();
+        }
+      } catch (error: any) {
+        toast.add({
+          title: "Error",
+          description: error.data?.message || "Failed to approve comments",
+          color: "error",
+        });
+      } finally {
+        isUpdating.value = false;
+      }
+    },
+  });
 };
 
-const stripHtml = (html: string) => {
-  return html.replace(/<[^>]*>/g, '');
+// Pagination
+const goToPage = (page: number) => {
+  pagination.value.page = page;
+  loadComments();
 };
 
 const getPostTitle = (postId: string) => {
-  const post = posts.value.find(p => p.id === postId);
-  return post?.title || 'Unknown Post';
+  const post = posts.value.find((p) => p.id === postId);
+  return post?.title || "Unknown Post";
 };
 
 // Set breadcrumbs
-const setBreadcrumbs = inject('setBreadcrumbs', () => {});
-setBreadcrumbs([
-  { label: 'Dashboard', to: '/admin' },
-  { label: 'Comments' }
-]);
+const setBreadcrumbs = inject("setBreadcrumbs", () => {});
+setBreadcrumbs([{ label: "Dashboard", to: "/admin" }, { label: "Comments" }]);
 </script>
 
 <template>
@@ -183,11 +275,14 @@ setBreadcrumbs([
       <div class="flex items-center space-x-3">
         <UButton
           @click="bulkApprove"
-          :disabled="!filteredComments.some(c => c.status === 'PENDING')"
-          color="green"
+          :disabled="
+            !comments.some((c) => c.status === 'pending') || isUpdating
+          "
+          :loading="isUpdating"
+          color="success"
           variant="outline"
           size="sm"
-          icon="i-lucide-check"
+          icon="i-heroicons-check"
         >
           Approve All Pending
         </UButton>
@@ -213,10 +308,16 @@ setBreadcrumbs([
       />
     </div>
 
+    <!-- Loading State -->
+    <div v-if="isLoading" class="flex justify-center py-12">
+      <UIcon name="i-heroicons-arrow-path" class="h-8 w-8 animate-spin" />
+      <span class="ml-2">Loading comments...</span>
+    </div>
+
     <!-- Comments List -->
-    <div class="space-y-4">
+    <div v-else class="space-y-4">
       <div
-        v-for="comment in filteredComments"
+        v-for="comment in comments"
         :key="comment.id"
         class="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg p-6"
       >
@@ -252,35 +353,35 @@ setBreadcrumbs([
                 {
                   label: 'Approve',
                   icon: 'i-lucide-check',
-                  click: () => updateCommentStatus(comment.id, 'APPROVED'),
-                  disabled: comment.status === 'APPROVED'
+                  click: () => updateCommentStatus(comment.id, 'approved'),
+                  disabled: comment.status === 'approved',
                 },
                 {
                   label: 'Reject',
                   icon: 'i-lucide-x',
                   click: () => updateCommentStatus(comment.id, 'REJECTED'),
-                  disabled: comment.status === 'REJECTED'
+                  disabled: comment.status === 'rejected',
                 },
                 {
                   label: 'Mark as Spam',
                   icon: 'i-lucide-flag',
                   click: () => updateCommentStatus(comment.id, 'SPAM'),
-                  disabled: comment.status === 'SPAM'
-                }
+                  disabled: comment.status === 'spam',
+                },
               ],
               [
                 {
                   label: 'Delete',
                   icon: 'i-lucide-trash',
-                  click: () => deleteComment(comment.id)
-                }
-              ]
+                  click: () => deleteComment(comment.id),
+                },
+              ],
             ]"
           >
             <UButton
               icon="i-lucide-more-vertical"
               size="xs"
-              color="gray"
+              color="neutral"
               variant="ghost"
             />
           </UDropdownMenu>
@@ -294,39 +395,44 @@ setBreadcrumbs([
         </div>
 
         <!-- Comment Meta -->
-        <div class="flex items-center justify-between pt-4 border-t border-gray-200 dark:border-gray-700">
-          <div class="flex items-center space-x-4 text-sm text-gray-500 dark:text-gray-400">
+        <div
+          class="flex items-center justify-between pt-4 border-t border-gray-200 dark:border-gray-700"
+        >
+          <div
+            class="flex items-center space-x-4 text-sm text-gray-500 dark:text-gray-400"
+          >
             <span>On: {{ getPostTitle(comment.postId) }}</span>
             <span v-if="comment._count?.replies">
-              {{ comment._count.replies }} {{ comment._count.replies === 1 ? 'reply' : 'replies' }}
+              {{ comment._count.replies }}
+              {{ comment._count.replies === 1 ? "reply" : "replies" }}
             </span>
           </div>
 
           <div class="flex items-center space-x-2">
             <UButton
-              v-if="comment.status === 'PENDING'"
-              @click="updateCommentStatus(comment.id, 'APPROVED')"
+              v-if="comment.status === 'pending'"
+              @click="updateCommentStatus(comment.id, 'approved')"
               size="xs"
-              color="green"
+              color="success"
               icon="i-lucide-check"
             >
               Approve
             </UButton>
             <UButton
-              v-if="comment.status === 'PENDING'"
+              v-if="comment.status === 'pending'"
               @click="updateCommentStatus(comment.id, 'REJECTED')"
               size="xs"
-              color="red"
+              color="error"
               variant="outline"
               icon="i-lucide-x"
             >
               Reject
             </UButton>
             <UButton
-              v-if="comment.status !== 'SPAM'"
+              v-if="comment.status !== 'spam'"
               @click="updateCommentStatus(comment.id, 'SPAM')"
               size="xs"
-              color="orange"
+              color="warning"
               variant="outline"
               icon="i-lucide-flag"
             >
@@ -337,50 +443,73 @@ setBreadcrumbs([
       </div>
     </div>
 
+    <!-- Pagination -->
+    <div v-if="pagination.totalPages > 1" class="flex justify-center">
+      <UPagination
+        v-model="pagination.page"
+        :page-count="pagination.totalPages"
+        :total="pagination.total"
+        @update:model-value="goToPage"
+      />
+    </div>
+
     <!-- Empty State -->
-    <div v-if="!filteredComments.length" class="text-center py-12">
-      <UIcon name="i-lucide-message-circle" class="mx-auto h-12 w-12 text-gray-400" />
+    <div v-if="!isLoading && !comments.length" class="text-center py-12">
+      <UIcon
+        name="i-lucide-message-circle"
+        class="mx-auto h-12 w-12 text-gray-400"
+      />
       <h3 class="mt-2 text-sm font-medium text-gray-900 dark:text-white">
-        {{ searchQuery || selectedStatus !== 'all' ? 'No comments found' : 'No comments yet' }}
+        {{
+          searchQuery || selectedStatus !== "all"
+            ? "No comments found"
+            : "No comments yet"
+        }}
       </h3>
       <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
-        {{ searchQuery || selectedStatus !== 'all' ? 'Try adjusting your filters.' : 'Comments will appear here when users start engaging with your posts.' }}
+        {{
+          searchQuery || selectedStatus !== "all"
+            ? "Try adjusting your filters."
+            : "Comments will appear here when users start engaging with your posts."
+        }}
       </p>
     </div>
 
     <!-- Stats Summary -->
-    <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-      <div class="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg p-4">
-        <div class="text-2xl font-bold text-gray-900 dark:text-white">
-          {{ comments.filter(c => c.status === 'PENDING').length }}
+    <div v-if="!isLoading" class="grid grid-cols-2 md:grid-cols-4 gap-4">
+      <div
+        class="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg p-4"
+      >
+        <div class="text-2xl font-bold text-yellow-600 dark:text-yellow-400">
+          {{ stats.pending || 0 }}
         </div>
         <div class="text-sm text-gray-500 dark:text-gray-400">
           Pending Review
         </div>
       </div>
-      <div class="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg p-4">
+      <div
+        class="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg p-4"
+      >
         <div class="text-2xl font-bold text-green-600 dark:text-green-400">
-          {{ comments.filter(c => c.status === 'APPROVED').length }}
+          {{ stats.approved || 0 }}
         </div>
-        <div class="text-sm text-gray-500 dark:text-gray-400">
-          Approved
-        </div>
+        <div class="text-sm text-gray-500 dark:text-gray-400">Approved</div>
       </div>
-      <div class="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg p-4">
+      <div
+        class="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg p-4"
+      >
         <div class="text-2xl font-bold text-red-600 dark:text-red-400">
-          {{ comments.filter(c => c.status === 'REJECTED').length }}
+          {{ stats.rejected || 0 }}
         </div>
-        <div class="text-sm text-gray-500 dark:text-gray-400">
-          Rejected
-        </div>
+        <div class="text-sm text-gray-500 dark:text-gray-400">Rejected</div>
       </div>
-      <div class="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg p-4">
+      <div
+        class="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg p-4"
+      >
         <div class="text-2xl font-bold text-orange-600 dark:text-orange-400">
-          {{ comments.filter(c => c.status === 'SPAM').length }}
+          {{ stats.spam || 0 }}
         </div>
-        <div class="text-sm text-gray-500 dark:text-gray-400">
-          Spam
-        </div>
+        <div class="text-sm text-gray-500 dark:text-gray-400">Spam</div>
       </div>
     </div>
   </div>

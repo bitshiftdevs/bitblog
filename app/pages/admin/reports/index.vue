@@ -327,7 +327,7 @@ setBreadcrumbs([
           <h3 class="text-lg font-medium">Generate New Report</h3>
         </template>
 
-        <form @submit.prevent="generateReport" class="space-y-4">
+        <UForm @submit.prevent="generateReport" class="space-y-4">
           <UFormField label="Report Type" required>
             <USelectMenu
               v-model="generateForm.type"
@@ -390,7 +390,7 @@ setBreadcrumbs([
               Generate Report
             </UButton>
           </div>
-        </form>
+        </UForm>
       </UCard>
     </UModal>
   </div>

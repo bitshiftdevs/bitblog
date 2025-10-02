@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import CategoryModal from '~/components/Admin/CategoryModal.vue';
 import type { Category } from '~~/shared/types';
+import { confirmAction } from '~/composables/useConfirmModal';
 
 definePageMeta({
   layout: 'admin',
@@ -107,28 +108,31 @@ const editCategory = async (category: Category) => {
 
 // Delete category
 const deleteCategory = async (category: Category) => {
-  const confirmed = confirm(`Are you sure you want to delete "${category.name}"?`);
-  if (!confirmed) return;
+  confirmAction({
+    title: 'Delete Category',
+    question: `Are you sure you want to delete "${category.name}"? This action cannot be undone.`,
+    onConfirm: async () => {
+      try {
+        await $fetch(`/api/admin/categories/${category.id}`, {
+          method: 'DELETE',
+        });
 
-  try {
-    await $fetch(`/api/admin/categories/${category.id}`, {
-      method: 'DELETE',
-    });
+        toast.add({
+          title: 'Success',
+          description: 'Category deleted successfully',
+          color: 'success',
+        });
 
-    toast.add({
-      title: 'Success',
-      description: 'Category deleted successfully',
-      color: 'success',
-    });
-
-    refresh();
-  } catch (error: any) {
-    toast.add({
-      title: 'Error',
-      description: error.data?.message || 'Failed to delete category',
-      color: 'error',
-    });
-  }
+        refresh();
+      } catch (error: any) {
+        toast.add({
+          title: 'Error',
+          description: error.data?.message || 'Failed to delete category',
+          color: 'error',
+        });
+      }
+    }
+  });
 };
 
 // Set breadcrumbs

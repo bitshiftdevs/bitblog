@@ -516,7 +516,7 @@ setBreadcrumbs([
           <h3 class="text-lg font-medium">Create Campaign</h3>
         </template>
 
-        <form @submit.prevent="createCampaign" class="space-y-4">
+        <UForm @submit.prevent="createCampaign" class="space-y-4">
           <UFormField label="Subject Line" required>
             <UInput
               v-model="campaignForm.subject"
@@ -579,7 +579,7 @@ setBreadcrumbs([
               {{ campaignForm.scheduledAt ? 'Schedule Campaign' : 'Send Campaign' }}
             </UButton>
           </div>
-        </form>
+        </UForm>
       </UCard>
     </UModal>
   </div>

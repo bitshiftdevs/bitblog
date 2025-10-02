@@ -191,7 +191,7 @@ const memberSince = computed(() => {
             </div>
           </template>
 
-          <form @submit.prevent="saveProfile" class="space-y-6">
+          <UForm @submit.prevent="saveProfile" class="space-y-6">
             <!-- Name -->
             <UFormField label="Name" required>
               <UInput
@@ -257,7 +257,7 @@ const memberSince = computed(() => {
                 Save Changes
               </UButton>
             </div>
-          </form>
+          </UForm>
         </UCard>
 
         <!-- Account Info -->

@@ -76,7 +76,7 @@ const userMenuItems = computed<DropdownMenuItem[]>(() => [
   ...(auth.canAccessAdmin
     ? [
         {
-          label: 'Admin Dashboard',
+          label: 'admin dashboard',
           icon: 'i-lucide-settings',
           to: '/admin',
         },

@@ -16,8 +16,8 @@ const { data: postsData, pending } = useLazyFetch('/api/posts', {
     tagId: tag.value?.id,
     page: currentPage.value,
     limit: 12,
-    status: 'PUBLISHED',
-    visibility: 'PUBLIC',
+    status: 'published',
+    visibility: 'public',
   })),
 });
 

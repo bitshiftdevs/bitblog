@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import ImagePreviewModal from '~/components/Admin/ImagePreviewModal.vue';
 import type { Media } from '~~/shared/types';
+import { confirmAction } from '~/composables/useConfirmModal';
 
 definePageMeta({
   layout: 'admin',
@@ -130,31 +131,34 @@ const selectAll = () => {
 const deleteSelected = async () => {
   if (!selectedMedia.value.length) return;
 
-  const confirmed = confirm(`Are you sure you want to delete ${selectedMedia.value.length} file(s)?`);
-  if (!confirmed) return;
+  confirmAction({
+    title: 'Delete Media Files',
+    question: `Are you sure you want to delete ${selectedMedia.value.length} file(s)? This action cannot be undone.`,
+    onConfirm: async () => {
+      try {
+        for (const media of selectedMedia.value) {
+          await $fetch(`/api/media/${media.id}`, {
+            method: 'DELETE',
+          });
+        }
 
-  try {
-    for (const media of selectedMedia.value) {
-      await $fetch(`/api/media/${media.id}`, {
-        method: 'DELETE',
-      });
+        toast.add({
+          title: 'Success',
+          description: `${selectedMedia.value.length} file(s) deleted successfully`,
+          color: 'success',
+        });
+
+        selectedMedia.value = [];
+        refresh();
+      } catch (error: any) {
+        toast.add({
+          title: 'Error',
+          description: error.data?.message || 'Failed to delete files',
+          color: 'error',
+        });
+      }
     }
-
-    toast.add({
-      title: 'Success',
-      description: `${selectedMedia.value.length} file(s) deleted successfully`,
-      color: 'success',
-    });
-
-    selectedMedia.value = [];
-    refresh();
-  } catch (error: any) {
-    toast.add({
-      title: 'Error',
-      description: error.data?.message || 'Failed to delete files',
-      color: 'error',
-    });
-  }
+  });
 };
 
 // Helper functions

@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { User } from '~~/shared/types';
+import { confirmAction } from '~/composables/useConfirmModal';
 
 definePageMeta({
   layout: 'admin',
@@ -160,18 +161,21 @@ const toggleAdminRole = async (user: User) => {
 };
 
 const deleteUser = async (user: User) => {
-  const confirmed = confirm(`Are you sure you want to delete ${user.name}?`);
-  if (!confirmed) return;
-
-  const index = users.value.findIndex(u => u.id === user.id);
-  if (index !== -1) {
-    users.value.splice(index, 1);
-    toast.add({
-      title: 'Success',
-      description: 'User deleted successfully',
-      color: 'success'
-    });
-  }
+  confirmAction({
+    title: 'Delete User',
+    question: `Are you sure you want to delete ${user.name}? This action cannot be undone.`,
+    onConfirm: async () => {
+      const index = users.value.findIndex(u => u.id === user.id);
+      if (index !== -1) {
+        users.value.splice(index, 1);
+        toast.add({
+          title: 'Success',
+          description: 'User deleted successfully',
+          color: 'success'
+        });
+      }
+    }
+  });
 };
 
 // Helper functions
@@ -421,7 +425,7 @@ setBreadcrumbs([
           <h3 class="text-lg font-medium">Invite User</h3>
         </template>
 
-        <form @submit.prevent="sendInvite" class="space-y-4">
+        <UForm @submit.prevent="sendInvite" class="space-y-4">
           <UFormField label="Email Address" required>
             <UInput
               v-model="inviteForm.email"
@@ -462,7 +466,7 @@ setBreadcrumbs([
               Send Invitation
             </UButton>
           </div>
-        </form>
+        </UForm>
       </UCard>
     </UModal>
   </div>
