@@ -3,7 +3,6 @@ import { MutationType } from 'pinia';
 
 definePageMeta({ layout: 'editor', middleware: ['admin'] });
 const editorStore = useEditorStore();
-const { analyzeSeo } = useSeo();
 
 onMounted(() => {
   // // Auto-save every 30 seconds
@@ -15,13 +14,6 @@ onMounted(() => {
   //   clearInterval(autoSaveInterval);
   //   blog.destroyEditor();
   // });
-});
-
-// Watch editor content and analyze SEO when content changes
-editorStore.$subscribe((mutation, state) => {
-  if (mutation.type === MutationType.direct) {
-    analyzeSeo(state.contentText);
-  }
 });
 </script>
 

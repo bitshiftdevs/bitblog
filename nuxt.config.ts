@@ -3,14 +3,13 @@ import tailwindcss from '@tailwindcss/vite';
 export default defineNuxtConfig({
   compatibilityDate: '2025-07-15',
   devtools: { enabled: true },
-  debug: true,
+  // debug: true,
   modules: [
     '@nuxt/image',
     '@nuxt/scripts',
     '@nuxt/ui',
     '@pinia/nuxt',
     '@vueuse/nuxt',
-    'nuxt-tiptap-editor',
     'nuxt-auth-utils',
     '@nuxtjs/mdc',
   ],
@@ -26,12 +25,7 @@ export default defineNuxtConfig({
       },
     },
   },
-  tiptap: {
-    prefix: '',
-    lowlight: {
-      theme: 'tokyo-night-dark',
-    },
-  },
+
   pinia: { storesDirs: ['./app/stores/**'] },
   ui: {
     theme: {
@@ -41,6 +35,19 @@ export default defineNuxtConfig({
 
   vite: {
     plugins: [tailwindcss()],
+    optimizeDeps: {
+      include: [
+        '@tiptap/extension-emoji',
+        '@tiptap/core',
+        '@tiptap/vue-3',
+        'zod',
+        '@nuxt/ui > prosemirror-state',
+        '@nuxt/ui > prosemirror-transform',
+        '@nuxt/ui > prosemirror-model',
+        '@nuxt/ui > prosemirror-view',
+        '@nuxt/ui > prosemirror-gapcursor',
+      ],
+    },
     build: {
       rollupOptions: {
         output: { manualChunks: { vendor: ['vue', 'vue-router', 'pinia'] } },

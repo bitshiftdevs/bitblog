@@ -4,7 +4,6 @@ import type { ApiResponse, Post } from '~~/shared/types';
 
 definePageMeta({ layout: 'editor', middleware: ['admin'] });
 const editorStore = useEditorStore();
-const blog = useBlogEditor();
 const slug = useRoute().params.slug as string;
 
 const { data, pending: postLoading } = useLazyFetch<ApiResponse<Post>>(`/api/posts/${slug}`, {
@@ -35,7 +34,6 @@ onMounted(() => {
   // Clean up on unmount
   onBeforeUnmount(() => {
     clearInterval(autoSaveInterval);
-    blog.destroyEditor();
     editorStore.$reset();
   });
 });

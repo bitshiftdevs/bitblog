@@ -1,4 +1,4 @@
-import type { Editor, JSONContent } from '@tiptap/vue-3';
+import type { Editor } from '@tiptap/vue-3';
 import { defineStore } from 'pinia';
 import ImageModal from '~/components/TipTap/ImageModal.vue';
 import LinkModal from '~/components/TipTap/LinkModal.vue';
@@ -14,8 +14,7 @@ export const useEditorStore = defineStore('editor', {
       id: '',
       authorId: auth.user?.id,
       author: auth.user ?? undefined,
-      content: {},
-      contentText: '',
+      content: '',
       wordCount: 0,
       excerpt: '',
       visibility: 'public',
@@ -38,7 +37,7 @@ export const useEditorStore = defineStore('editor', {
     getWordCount: (state) => {
       if (!state.content) return 0;
       // Remove HTML tags and count words
-      const text = state.content.replace(/<\/?[^>]+(>|$)/g, ' ');
+      const text = typeof state.content === 'string' ? state.content.replace(/<\/?[^>]+(>|$)/g, ' ') : state.content;
       return text.split(/\s+/).filter((word: string) => word.length > 0).length;
     },
     readingTime: (state) => {
@@ -93,9 +92,8 @@ export const useEditorStore = defineStore('editor', {
         .replace(/^-+|-+$/g, '');
     },
 
-    setContent(content: JSONContent, text: string) {
+    setContent(content: string) {
       this.content = content;
-      this.contentText = text;
       this.isDirty = true;
     },
     setFeaturedImage(url: string) {
@@ -235,7 +233,7 @@ export const useEditorStore = defineStore('editor', {
     },
     resetEditor() {
       this.title = '';
-      this.content = {};
+      this.content = '';
       this.excerpt = '';
       this.slug = '';
       this.featuredImage = '';

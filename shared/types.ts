@@ -7,11 +7,10 @@ export type CommentStatus = "pending" | "approved" | "rejected" | "spam";
 export type EditorState = Post & {
   wordCount: number;
   lastSaved: string | null;
-  contentText: string;
   view: EditorView;
   isFeatured: boolean;
   history: Array<{
-    content: JSONContent;
+    content: any;
     timestamp: string;
   }>;
   isDirty: boolean;
@@ -67,7 +66,7 @@ export type Post = {
   slug: string;
   title: string;
   excerpt?: string;
-  content: JSONContent; // TipTap JSON
+  content: any; // Markdown string now
   status: PostStatus;
   visibility: PostVisibility;
   featuredImage?: string;

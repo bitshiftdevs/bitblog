@@ -2,7 +2,6 @@
 import type { DropdownMenuItem, NavigationMenuItem } from '@nuxt/ui';
 
 const editorStore = useEditorStore();
-const seoStore = useSeoStore();
 const auth = useAuth();
 const toast = useToast();
 
@@ -108,15 +107,6 @@ const items = computed<NavigationMenuItem[][]>(() => [
     },
   ],
   [
-    {
-      badge: {
-        label: `SEO: ${seoStore.score}`,
-        icon: 'i-lucide-heart-pulse',
-        variant: 'outline',
-        size: 'md',
-        color: getStatusColor(seoStore.score),
-      },
-    },
     {
       label: 'Save',
       icon: 'i-lucide-save',
