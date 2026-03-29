@@ -2,147 +2,125 @@
 import type { PostResponse } from '~~/shared/types';
 
 const { post } = defineProps<{ post: PostResponse }>();
+const parsed = await parseMarkdown(post.content);
 </script>
 
 <template>
-  <div>
-    <!-- Post Header -->
-    <div
-      class="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700"
-    >
-      <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <!-- Categories -->
-        <div v-if="post.categories?.length" class="mb-4">
-          <UBadge
-            v-for="category in post.categories"
-            :key="category.id"
-            :label="category.name"
-            variant="soft"
-            class="mr-2"
-          />
-        </div>
+  <!-- Header (full width, outside UPage grid) -->
+  <div class="border-b border-default bg-default">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+      <!-- Categories -->
+      <div v-if="post.categories?.length" class="flex flex-wrap gap-2 mb-4">
+        <UBadge
+          v-for="category in post.categories"
+          :key="category.id"
+          :label="category.name"
+          variant="soft"
+        />
+      </div>
 
-        <!-- Title -->
-        <h1 class="text-4xl font-bold text-gray-900 dark:text-white mb-4">
-          {{ post.title }}
-        </h1>
+      <!-- Title -->
+      <h1 class="text-4xl font-bold text-highlighted mb-3">
+        {{ post.title }}
+      </h1>
 
-        <!-- Excerpt -->
-        <p
-          v-if="post.excerpt"
-          class="text-xl text-gray-600 dark:text-gray-300 mb-6"
-        >
-          {{ post.excerpt }}
-        </p>
+      <!-- Excerpt -->
+      <p v-if="post.excerpt" class="text-xl text-muted mb-6">
+        {{ post.excerpt }}
+      </p>
 
-        <!-- Meta Info -->
-        <div
-          class="flex items-center justify-between text-sm text-gray-500 dark:text-gray-400"
-        >
-          <div class="flex items-center space-x-4">
-            <div class="flex items-center space-x-2">
-              <UAvatar
-                :src="post.author?.avatarUrl"
-                :alt="post.author?.name"
-                size="sm"
-              />
-              <div>
-                <p class="font-medium text-gray-900 dark:text-white">
-                  {{ post.author?.name }}
-                </p>
-                <p class="text-xs">{{ formatDate(post.publishedAt) }}</p>
-              </div>
-            </div>
-          </div>
+      <!-- Author + Meta -->
+      <div class="flex items-center justify-between gap-4 flex-wrap">
+        <UUser
+          :name="post.author?.name"
+          :description="formatDate(post.publishedAt)"
+          :avatar="{ src: post.author?.avatarUrl, alt: post.author?.name }"
+        />
 
-          <div class="flex items-center space-x-4">
-            <span v-if="post.readingTime">{{ post.readingTime }} min read</span>
-            <span>{{ post.viewCount }} views</span>
-          </div>
+        <div class="flex items-center gap-3 text-sm text-muted">
+          <span v-if="post.readingTime" class="flex items-center gap-1">
+            <UIcon name="i-lucide-clock" class="size-4" />
+            {{ post.readingTime }} min read
+          </span>
+          <span class="flex items-center gap-1">
+            <UIcon name="i-lucide-eye" class="size-4" />
+            {{ post.viewCount }} views
+          </span>
         </div>
       </div>
     </div>
+  </div>
 
-    <!-- Featured Image -->
-    <div v-if="post.featuredImage" class="aspect-video max-w-4xl mx-auto">
-      <NuxtImg
-        :src="post.featuredImage"
-        :alt="post.title"
-        class="w-full h-full object-cover"
+  <!-- Featured Image (full width, outside UPage grid) -->
+  <div
+    v-if="post.featuredImage"
+    class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 mt-8"
+  >
+    <NuxtImg
+      :src="post.featuredImage"
+      :alt="post.title"
+      class="w-full aspect-video object-cover rounded-lg"
+    />
+  </div>
+
+  <!-- Main content + TOC -->
+  <UPage>
+    <template #right>
+      <UContentToc
+        v-if="parsed.toc?.links?.length"
+        :links="parsed.toc.links"
+        highlight
+      />
+    </template>
+
+    <!-- Article body -->
+    <UPageBody prose>
+      <MDCRenderer :body="parsed.body" :data="parsed.data ?? {}" />
+    </UPageBody>
+
+    <!-- Tags -->
+    <div v-if="post.tags?.length" class="mt-8 pt-8 border-t border-default">
+      <p class="text-sm font-medium text-highlighted mb-3">Tags</p>
+      <div class="flex flex-wrap gap-2">
+        <UBadge
+          v-for="tag in post.tags"
+          :key="tag.id"
+          :label="tag.name"
+          variant="outline"
+          :style="{ borderColor: tag.color, color: tag.color }"
+        />
+      </div>
+    </div>
+
+    <!-- Author Bio -->
+    <div v-if="post.author?.bio" class="mt-8 pt-8 border-t border-default">
+      <UUser
+        :name="post.author.name"
+        :description="post.author.bio"
+        :avatar="{ src: post.author.avatarUrl, alt: post.author.name }"
+        size="lg"
+        :ui="{ description: 'line-clamp-none mt-1' }"
       />
     </div>
 
-    <!-- Post Content -->
-    <article class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-      <div class="prose prose-lg dark:prose-invert max-w-none">
-        <TipTapRenderer :content="post.content" />
-      </div>
-
-      <!-- Tags -->
-      <div
-        v-if="post.tags?.length"
-        class="mt-8 pt-8 border-t border-gray-200 dark:border-gray-700"
-      >
-        <h3 class="text-sm font-medium text-gray-900 dark:text-white mb-3">
-          Tags
-        </h3>
-        <div class="flex flex-wrap gap-2">
-          <UBadge
-            v-for="tag in post.tags"
-            :key="tag.id"
-            :label="tag.name"
-            variant="outline"
-            :style="{ borderColor: tag.color, color: tag.color }"
-          />
-        </div>
-      </div>
-
-      <!-- Author Bio -->
-      <div class="mt-8 pt-8 border-t border-gray-200 dark:border-gray-700">
-        <div class="flex items-start space-x-4">
-          <UAvatar
-            :src="post.author?.avatarUrl"
-            :alt="post.author?.name"
-            size="lg"
-          />
-          <div class="flex-1">
-            <h3 class="text-lg font-medium text-gray-900 dark:text-white">
-              {{ post.author?.name }}
-            </h3>
-            <p
-              v-if="post.author?.bio"
-              class="text-gray-600 dark:text-gray-300 mt-1"
-            >
-              {{ post.author.bio }}
-            </p>
-          </div>
-        </div>
-      </div>
-    </article>
-
-    <!-- Related Posts -->
-    <div
-      v-if="post.relatedPosts?.length"
-      class="bg-gray-50 dark:bg-gray-800 py-12"
-    >
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-8">
-          Related Posts
-        </h2>
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-          <PostCard
-            v-for="relatedPost in post.relatedPosts"
-            :key="relatedPost.id"
-            :post="relatedPost"
-            :show-excerpt="false"
-          />
-        </div>
-      </div>
+    <!-- Comments -->
+    <div v-if="post.isLive" class="mt-8 pt-8 border-t border-default">
+      <CommentsSection :post-id="post.id" :comments-enabled="true" />
     </div>
+  </UPage>
 
-    <!-- Comments Section -->
-    <div v-if="true" class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-      <CommentsSection :post-id="post.id" :commentsEnabled="true" />
+  <!-- Related Posts (full width, outside UPage grid) -->
+  <div v-if="post.relatedPosts?.length" class="bg-muted mt-12 py-12">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <h2 class="text-2xl font-bold text-highlighted mb-8">Related Posts</h2>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <PostCard
+          v-for="relatedPost in post.relatedPosts"
+          :key="relatedPost.id"
+          :post="relatedPost"
+          :show-excerpt="false"
+        />
+      </div>
     </div>
   </div>
 </template>

@@ -44,6 +44,7 @@ export interface User {
 }
 
 export type PostResponse = Post & {
+  isLive: boolean;
   relatedPosts: {
     id: string;
     slug: string;

@@ -55,7 +55,7 @@ export const useEditorStore = defineStore('editor', {
     },
     getPost: (state) => {
       return {
-        id: state.id,
+        id: state.id || '',
         title: state.title,
         excerpt: state.excerpt,
         content: state.content,
@@ -63,7 +63,7 @@ export const useEditorStore = defineStore('editor', {
         author: state.author,
         tags: state.tags,
         slug: state.slug,
-        publishedAt: state.publishedAt,
+        publishedAt: state.publishedAt || new Date().toISOString(),
         featuredImage: state.featuredImage,
         readingTime: Math.ceil(state.wordCount / 200),
         updatedAt: new Date().toISOString(),
@@ -72,6 +72,7 @@ export const useEditorStore = defineStore('editor', {
         authorId: state.authorId,
         coAuthors: state.coAuthors,
         viewCount: state.viewCount,
+        isLive: false,
         createdAt: new Date().toISOString(),
         relatedPosts: [],
       } as PostResponse;
@@ -104,27 +105,14 @@ export const useEditorStore = defineStore('editor', {
       this.status = status;
       this.isDirty = true;
     },
-    async saveContent(status: PostStatus) {
-      // Create a snapshot for history
-      if (this.content) {
-        this.history.push({
-          content: this.content,
-          timestamp: new Date().toISOString(),
-        });
-
-        // Keep only the last 10 versions
-        if (this.history.length > 10) {
-          this.history.shift();
-        }
-      }
-
+    async saveContent() {
       try {
         const postData = {
           title: this.title,
           slug: this.getSlug,
           excerpt: this.excerpt,
           content: this.content,
-          status: status,
+          status: this.status,
           visibility: this.visibility,
           featuredImage: this.featuredImage || undefined,
           seoTitle: undefined,
@@ -136,7 +124,6 @@ export const useEditorStore = defineStore('editor', {
           categoryIds: this.categories.filter((cat) => cat.id && !cat.id.includes('-')).map((cat) => cat.id),
           newTagNames: this.tags.filter((tag) => !tag.id || tag.id.includes('-')).map((tag) => tag.name),
           newCategoryNames: this.categories.filter((cat) => !cat.id || cat.id.includes('-')).map((cat) => cat.name),
-          scheduledAt: status === 'scheduled' ? this.publishedAt : undefined,
         };
 
         let response: any;

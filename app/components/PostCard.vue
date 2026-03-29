@@ -1,3 +1,15 @@
+<script setup lang="ts">
+import type { PostSummary } from '~~/shared/types';
+
+interface Props {
+  post: PostSummary;
+  showExcerpt?: boolean;
+}
+
+withDefaults(defineProps<Props>(), {
+  showExcerpt: true,
+});
+</script>
 <template>
   <article
     class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden hover:shadow-md transition-shadow duration-200"
@@ -103,16 +115,3 @@
     </div>
   </article>
 </template>
-
-<script setup lang="ts">
-import type { PostSummary } from '~~/shared/types';
-
-interface Props {
-  post: PostSummary;
-  showExcerpt?: boolean;
-}
-
-withDefaults(defineProps<Props>(), {
-  showExcerpt: true,
-});
-</script>
