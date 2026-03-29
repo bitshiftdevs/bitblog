@@ -74,7 +74,7 @@ model Post {
 model PostRevision {
   id        String   @id @default(uuid())
   postId    String
-  content   Json
+  content   String
   title     String
   excerpt   String?
   note      String?
