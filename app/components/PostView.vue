@@ -2,7 +2,10 @@
 import type { PostResponse } from '~~/shared/types';
 
 const { post } = defineProps<{ post: PostResponse }>();
-const parsed = await parseMarkdown(post.content);
+const { data: parsed } = useAsyncData(
+  `parsed-post-${post.id}`,
+  () => parseMarkdown(post.content),
+);
 </script>
 
 <template>
@@ -75,7 +78,7 @@ const parsed = await parseMarkdown(post.content);
       <UPage>
         <template #right>
           <UContentToc
-            v-if="parsed.toc?.links?.length"
+            v-if="parsed?.toc?.links?.length"
             :links="parsed.toc.links"
             highlight
             class="sticky top-24"
@@ -84,7 +87,7 @@ const parsed = await parseMarkdown(post.content);
 
         <!-- Article body -->
         <UPageBody prose class="prose-lg prose-highlighted max-w-none">
-          <MDCRenderer :body="parsed.body" :data="parsed.data ?? {}" />
+          <MDCRenderer v-if="parsed" :body="parsed.body" :data="parsed.data ?? {}" />
         </UPageBody>
 
         <!-- Tags -->
