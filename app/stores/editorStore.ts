@@ -1,4 +1,4 @@
-import type { Editor, JSONContent } from '@tiptap/vue-3';
+import type { Editor } from '@tiptap/vue-3';
 import { defineStore } from 'pinia';
 import ImageModal from '~/components/TipTap/ImageModal.vue';
 import LinkModal from '~/components/TipTap/LinkModal.vue';
@@ -14,8 +14,7 @@ export const useEditorStore = defineStore('editor', {
       id: '',
       authorId: auth.user?.id,
       author: auth.user ?? undefined,
-      content: {},
-      contentText: '',
+      content: '',
       wordCount: 0,
       excerpt: '',
       visibility: 'public',
@@ -38,7 +37,7 @@ export const useEditorStore = defineStore('editor', {
     getWordCount: (state) => {
       if (!state.content) return 0;
       // Remove HTML tags and count words
-      const text = state.content.replace(/<\/?[^>]+(>|$)/g, ' ');
+      const text = typeof state.content === 'string' ? state.content.replace(/<\/?[^>]+(>|$)/g, ' ') : state.content;
       return text.split(/\s+/).filter((word: string) => word.length > 0).length;
     },
     readingTime: (state) => {
@@ -56,7 +55,7 @@ export const useEditorStore = defineStore('editor', {
     },
     getPost: (state) => {
       return {
-        id: state.id,
+        id: state.id || '',
         title: state.title,
         excerpt: state.excerpt,
         content: state.content,
@@ -64,7 +63,7 @@ export const useEditorStore = defineStore('editor', {
         author: state.author,
         tags: state.tags,
         slug: state.slug,
-        publishedAt: state.publishedAt,
+        publishedAt: state.publishedAt || new Date().toISOString(),
         featuredImage: state.featuredImage,
         readingTime: Math.ceil(state.wordCount / 200),
         updatedAt: new Date().toISOString(),
@@ -73,6 +72,7 @@ export const useEditorStore = defineStore('editor', {
         authorId: state.authorId,
         coAuthors: state.coAuthors,
         viewCount: state.viewCount,
+        isLive: false,
         createdAt: new Date().toISOString(),
         relatedPosts: [],
       } as PostResponse;
@@ -93,9 +93,8 @@ export const useEditorStore = defineStore('editor', {
         .replace(/^-+|-+$/g, '');
     },
 
-    setContent(content: JSONContent, text: string) {
+    setContent(content: string) {
       this.content = content;
-      this.contentText = text;
       this.isDirty = true;
     },
     setFeaturedImage(url: string) {
@@ -106,27 +105,17 @@ export const useEditorStore = defineStore('editor', {
       this.status = status;
       this.isDirty = true;
     },
-    async saveContent(status: PostStatus) {
-      // Create a snapshot for history
-      if (this.content) {
-        this.history.push({
-          content: this.content,
-          timestamp: new Date().toISOString(),
-        });
-
-        // Keep only the last 10 versions
-        if (this.history.length > 10) {
-          this.history.shift();
-        }
+    async saveContent(newStatus?: PostStatus) {
+      if (newStatus) {
+        this.status = newStatus;
       }
-
       try {
         const postData = {
           title: this.title,
           slug: this.getSlug,
           excerpt: this.excerpt,
           content: this.content,
-          status: status,
+          status: this.status,
           visibility: this.visibility,
           featuredImage: this.featuredImage || undefined,
           seoTitle: undefined,
@@ -138,7 +127,6 @@ export const useEditorStore = defineStore('editor', {
           categoryIds: this.categories.filter((cat) => cat.id && !cat.id.includes('-')).map((cat) => cat.id),
           newTagNames: this.tags.filter((tag) => !tag.id || tag.id.includes('-')).map((tag) => tag.name),
           newCategoryNames: this.categories.filter((cat) => !cat.id || cat.id.includes('-')).map((cat) => cat.name),
-          scheduledAt: status === 'scheduled' ? this.publishedAt : undefined,
         };
 
         let response: any;
@@ -150,14 +138,14 @@ export const useEditorStore = defineStore('editor', {
             method: 'PUT',
             body: postData,
           });
-          msg = `Post updated as ${status.toLowerCase()}`;
+          msg = `Post updated as ${this.status.toLowerCase()}`;
         } else {
           // Create new post
           response = await $fetch('/api/posts', {
             method: 'POST',
             body: postData,
           });
-          msg = `Post created as ${status.toLowerCase()}`;
+          msg = `Post created as ${this.status.toLowerCase()}`;
 
           // Update store with new post ID and data
           if (response.success && response.data) {
@@ -235,7 +223,7 @@ export const useEditorStore = defineStore('editor', {
     },
     resetEditor() {
       this.title = '';
-      this.content = {};
+      this.content = '';
       this.excerpt = '';
       this.slug = '';
       this.featuredImage = '';

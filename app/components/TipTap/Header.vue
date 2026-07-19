@@ -2,28 +2,32 @@
 import type { DropdownMenuItem, NavigationMenuItem } from '@nuxt/ui';
 
 const editorStore = useEditorStore();
-const seoStore = useSeoStore();
 const auth = useAuth();
 const toast = useToast();
 
-// Save handlers with notifications
-const handleSave = async (status: 'draft' | 'published' | 'archived') => {
-  const result = await editorStore.saveContent(status);
+defineShortcuts({
+  meta_s: {
+    usingInput: true,
+    handler: async (e) => {
+      e.preventDefault();
+      const result = await editorStore.saveContent();
 
-  if (result.success) {
-    toast.add({
-      title: 'Success',
-      description: result.msg,
-      color: 'success',
-    });
-  } else {
-    toast.add({
-      title: 'Error',
-      description: result.msg,
-      color: 'error',
-    });
-  }
-};
+      if (result.success) {
+        toast.add({
+          title: 'Success',
+          description: result.msg,
+          color: 'success',
+        });
+      } else {
+        toast.add({
+          title: 'Error',
+          description: result.msg,
+          color: 'error',
+        });
+      }
+    },
+  },
+});
 
 const userMenuItems = computed<DropdownMenuItem[][]>(() => [
   [
@@ -108,37 +112,6 @@ const items = computed<NavigationMenuItem[][]>(() => [
     },
   ],
   [
-    {
-      badge: {
-        label: `SEO: ${seoStore.score}`,
-        icon: 'i-lucide-heart-pulse',
-        variant: 'outline',
-        size: 'md',
-        color: getStatusColor(seoStore.score),
-      },
-    },
-    {
-      label: 'Save',
-      icon: 'i-lucide-save',
-      children: [
-        {
-          label: 'Save Draft',
-          icon: 'i-lucide-save',
-          onSelect: () => handleSave('draft'),
-        },
-        {
-          label: 'Save Version',
-          icon: 'i-lucide-save',
-          onSelect: () => handleSave('archived'),
-        },
-        {
-          label: 'Save & Publish',
-          icon: 'i-lucide-save',
-          onSelect: () => handleSave('published'),
-        },
-      ],
-      class: 'cursor-pointer',
-    },
     {
       label: 'Templates',
       icon: 'i-lucide-backpack',

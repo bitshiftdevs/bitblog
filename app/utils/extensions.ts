@@ -1,19 +1,19 @@
 import { Node } from '@tiptap/vue-3';
 
-export { Typography } from '@tiptap/extension-typography';
-export { Underline } from '@tiptap/extension-underline';
-export { Image as TipTapImage } from '@tiptap/extension-image';
-export { TextAlign } from '@tiptap/extension-text-align';
-export { Placeholder } from '@tiptap/extension-placeholder';
-export { Color } from '@tiptap/extension-color';
-export { TextStyle } from '@tiptap/extension-text-style';
-export { Focus } from '@tiptap/extension-focus';
-export { Highlight } from '@tiptap/extension-highlight';
-export { Youtube } from '@tiptap/extension-youtube';
-export { TaskList } from '@tiptap/extension-task-list';
-export { TaskItem } from '@tiptap/extension-task-item';
-export { CharacterCount } from '@tiptap/extension-character-count';
-export { Mention } from '@tiptap/extension-mention';
+// export { Typography } from '@tiptap/extension-typography';
+// export { Underline } from '@tiptap/extension-underline';
+// export { Image as TipTapImage } from '@tiptap/extension-image';
+// export { TextAlign } from '@tiptap/extension-text-align';
+// export { Placeholder } from '@tiptap/extension-placeholder';
+// export { Color } from '@tiptap/extension-color';
+// export { TextStyle } from '@tiptap/extension-text-style';
+// export { Focus } from '@tiptap/extension-focus';
+// export { Highlight } from '@tiptap/extension-highlight';
+// export { Youtube } from '@tiptap/extension-youtube';
+// export { TaskList } from '@tiptap/extension-task-list';
+// export { TaskItem } from '@tiptap/extension-task-item';
+// export { CharacterCount } from '@tiptap/extension-character-count';
+// export { Mention } from '@tiptap/extension-mention';
 
 import Callout from '@/utils/extensions/callout';
 export { Callout };
@@ -46,11 +46,7 @@ export const Shortcode = Node.create({
   },
 
   renderHTML({ node }) {
-    return [
-      'span',
-      { 'data-shortcode': node.attrs.name },
-      `[${node.attrs.name}]`,
-    ];
+    return ['span', { 'data-shortcode': node.attrs.name }, `[${node.attrs.name}]`];
   },
 });
 
@@ -79,10 +75,6 @@ export const Widget = Node.create({
   },
 
   renderHTML({ node }) {
-    return [
-      'div',
-      { 'data-widget': node.attrs.type, class: 'widget-container' },
-      'Widget: ' + node.attrs.type,
-    ];
+    return ['div', { 'data-widget': node.attrs.type, class: 'widget-container' }, 'Widget: ' + node.attrs.type];
   },
 });

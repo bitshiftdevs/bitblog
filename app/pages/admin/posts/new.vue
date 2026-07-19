@@ -3,43 +3,34 @@ import { MutationType } from 'pinia';
 
 definePageMeta({ layout: 'editor', middleware: ['admin'] });
 const editorStore = useEditorStore();
-const { analyzeSeo } = useSeo();
 
 onMounted(() => {
-  // // Auto-save every 30 seconds
-  // const autoSaveInterval = setInterval(() => {
-  //   editorStore.saveContent('draft');
-  // }, 30000);
+  // Auto-save every 30 seconds
+  const autoSaveInterval = setInterval(() => {
+    editorStore.saveContent('draft');
+  }, 30000);
   // Clean up on unmount
-  // onBeforeUnmount(() => {
-  //   clearInterval(autoSaveInterval);
-  //   blog.destroyEditor();
-  // });
-});
-
-// Watch editor content and analyze SEO when content changes
-editorStore.$subscribe((mutation, state) => {
-  if (mutation.type === MutationType.direct) {
-    analyzeSeo(state.contentText);
-  }
+  onBeforeUnmount(() => {
+    clearInterval(autoSaveInterval);
+    editorStore.$reset();
+  });
 });
 </script>
 
 <template>
   <div
-    class="flex flex-col"
+    class="flex flex-col bg-muted/10"
     :class="editorStore.view !== 'preview' && 'h-screen'"
   >
-    <!-- <TipTapPostView v-if="view === 'preview'" :post="editorStore.getPost" /> -->
-    <div v-if="editorStore.view === 'preview'" class="flex-1 overflow-auto p-6">
-      <div class="max-w-4xl mx-auto bg-base-200 shadow-md rounded-lg p-6">
+    <div v-if="editorStore.view === 'preview'" class="flex-1 overflow-auto p-4 sm:p-8">
+      <div class="max-w-5xl mx-auto bg-default shadow-2xl rounded-2xl border border-default/20 overflow-hidden">
         <PostView :post="editorStore.getPost" />
       </div>
     </div>
     <div v-else class="flex-1 flex overflow-hidden">
-      <TipTapSidebar />
-      <section class="flex-1 overflow-auto p-6">
-        <div class="max-w-4xl mx-auto bg-base-200 shadow-md rounded-lg">
+      <TipTapSidebar class="border-r border-default bg-default shadow-sm z-10" />
+      <section class="flex-1 overflow-auto p-4 sm:p-8 relative">
+        <div class="max-w-4xl mx-auto bg-default shadow-xl rounded-2xl border border-default/20 p-8 min-h-full transition-all duration-300">
           <TipTapContent v-if="editorStore.view === 'editor'" />
           <pre
             class="prose prose-slate dark:prose-invert"
@@ -47,7 +38,7 @@ editorStore.$subscribe((mutation, state) => {
           ><code>{{ editorStore.content }}</code></pre>
         </div>
       </section>
-      <TipTapSeoPanel />
+      <TipTapSeoPanel class="border-l border-default bg-default shadow-sm z-10" />
     </div>
   </div>
 </template>

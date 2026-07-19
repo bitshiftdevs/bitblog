@@ -68,188 +68,181 @@ const setBreadcrumbs = inject('setBreadcrumbs', () => {});
 setBreadcrumbs([{ label: 'Dashboard', to: '/admin' }, { label: 'Posts' }]);
 </script>
 <template>
-  <div class="space-y-6">
+  <div class="space-y-8 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
     <!-- Page Header -->
-    <div class="flex items-center justify-between">
+    <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
       <div>
-        <h1 class="text-2xl font-semibold text-gray-900 dark:text-white">
+        <h1 class="text-3xl font-extrabold text-highlighted tracking-tight">
           Posts
         </h1>
-        <p class="text-gray-600 dark:text-gray-400">Manage your blog posts</p>
+        <p class="text-muted mt-1">Manage and organize your blog content</p>
       </div>
-      <UButton to="/admin/posts/new" icon="i-lucide-plus" size="lg">
+      <UButton to="/admin/posts/new" icon="i-lucide-plus" size="lg" class="shadow-md hover:shadow-lg transition-shadow">
         New Post
       </UButton>
     </div>
 
     <!-- Filters -->
-    <UCard>
-      <div class="flex flex-wrap gap-4">
+    <UCard class="bg-default shadow-sm border-default/10 rounded-2xl ring-1 ring-default/10">
+      <div class="flex flex-wrap items-center gap-4">
         <USelectMenu
           v-model="selectedStatus"
           :options="statusOptions"
           placeholder="All Statuses"
-          class="w-40"
+          class="w-full sm:w-48"
+          size="lg"
         />
 
         <USelectMenu
           v-model="selectedAuthor"
           :options="authorOptions"
           placeholder="All Authors"
-          class="w-40"
+          class="w-full sm:w-48"
+          size="lg"
         />
 
         <UInput
           v-model="searchQuery"
           placeholder="Search posts..."
           icon="i-lucide-search"
-          class="flex-1 max-w-md"
-        />
+          class="flex-1 min-w-[200px]"
+          size="lg"
+        >
+          <template #trailing>
+            <UButton
+              v-show="searchQuery !== ''"
+              color="gray"
+              variant="link"
+              icon="i-lucide-x"
+              :padded="false"
+              @click="searchQuery = ''"
+            />
+          </template>
+        </UInput>
 
-        <UButton variant="outline" @click="clearFilters">
-          Clear Filters
+        <UButton v-if="selectedStatus || selectedAuthor || searchQuery" variant="soft" size="lg" @click="clearFilters">
+          Clear
         </UButton>
       </div>
     </UCard>
 
     <!-- Posts Table -->
-    <UCard>
+    <UCard class="bg-default shadow-lg border-default/10 rounded-2xl overflow-hidden ring-1 ring-default/10">
       <div v-if="postsLoading" class="p-8">
         <div class="animate-pulse space-y-4">
-          <div class="h-4 bg-gray-300 dark:bg-gray-600 rounded w-3/4"></div>
-          <div class="h-4 bg-gray-300 dark:bg-gray-600 rounded w-1/2"></div>
-          <div class="h-4 bg-gray-300 dark:bg-gray-600 rounded w-2/3"></div>
-          <div class="h-4 bg-gray-300 dark:bg-gray-600 rounded w-full"></div>
+          <div class="h-12 bg-muted/20 rounded-xl w-full"></div>
+          <div class="h-16 bg-muted/20 rounded-xl w-full"></div>
+          <div class="h-16 bg-muted/20 rounded-xl w-full"></div>
+          <div class="h-16 bg-muted/20 rounded-xl w-full"></div>
         </div>
       </div>
       <div v-else class="overflow-x-auto">
         <table class="w-full">
-          <thead class="bg-gray-50 dark:bg-gray-800">
+          <thead class="bg-muted/10 border-b border-default/20">
             <tr>
-              <th
-                class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider"
-              >
+              <th class="px-6 py-4 text-left text-xs font-bold text-muted uppercase tracking-wider">
                 Title
               </th>
-              <th
-                class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider"
-              >
+              <th class="px-6 py-4 text-left text-xs font-bold text-muted uppercase tracking-wider">
                 Author
               </th>
-              <th
-                class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider"
-              >
+              <th class="px-6 py-4 text-left text-xs font-bold text-muted uppercase tracking-wider">
                 Status
               </th>
-              <th
-                class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider"
-              >
+              <th class="px-6 py-4 text-left text-xs font-bold text-muted uppercase tracking-wider">
                 Published
               </th>
-              <th
-                class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider"
-              >
+              <th class="px-6 py-4 text-left text-xs font-bold text-muted uppercase tracking-wider">
                 Views
               </th>
-              <th
-                class="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider"
-              >
+              <th class="px-6 py-4 text-right text-xs font-bold text-muted uppercase tracking-wider">
                 Actions
               </th>
             </tr>
           </thead>
-          <tbody
-            class="bg-white dark:bg-gray-900 divide-y divide-gray-200 dark:divide-gray-700"
-          >
+          <tbody class="divide-y divide-default/10">
             <tr
               v-for="post in filteredPosts"
               :key="post.id"
-              class="hover:bg-gray-50 dark:hover:bg-gray-800"
+              class="hover:bg-muted/5 transition-colors duration-200 group"
             >
               <td class="px-6 py-4 whitespace-nowrap">
-                <div class="flex items-center">
-                  <div class="flex-shrink-0 h-10 w-10">
+                <div class="flex items-center gap-4">
+                  <div class="flex-shrink-0 h-12 w-12 rounded-xl overflow-hidden shadow-sm">
                     <NuxtImg
                       v-if="post.featuredImage"
                       :src="post.featuredImage"
                       :alt="post.title"
-                      class="h-10 w-10 rounded-lg object-cover"
+                      class="h-full w-full object-cover"
                     />
                     <div
                       v-else
-                      class="h-10 w-10 rounded-lg bg-gray-200 dark:bg-gray-700 flex items-center justify-center"
+                      class="h-full w-full bg-primary/10 flex items-center justify-center"
                     >
                       <UIcon
-                        name="i-lucide-file-text"
-                        class="h-5 w-5 text-gray-400"
+                        name="i-lucide-image"
+                        class="h-5 w-5 text-primary/50"
                       />
                     </div>
                   </div>
-                  <div class="ml-4">
-                    <div
-                      class="text-sm font-medium text-gray-900 dark:text-white"
-                    >
+                  <div>
+                    <div class="text-sm font-bold text-highlighted group-hover:text-primary transition-colors">
                       {{ post.title }}
                     </div>
-                    <div class="text-sm text-gray-500 dark:text-gray-400">
+                    <div class="text-xs text-muted max-w-[200px] lg:max-w-xs truncate mt-0.5">
                       {{ post.excerpt || "No excerpt" }}
                     </div>
                   </div>
                 </div>
               </td>
               <td class="px-6 py-4 whitespace-nowrap">
-                <div class="flex items-center">
+                <div class="flex items-center gap-2">
                   <UAvatar
                     :src="post.author.avatarUrl"
                     :alt="post.author.name"
-                    size="xs"
+                    size="sm"
                   />
-                  <span class="ml-2 text-sm text-gray-900 dark:text-white">{{
-                    post.author.name
-                  }}</span>
+                  <span class="text-sm font-medium text-highlighted">{{ post.author.name }}</span>
                 </div>
               </td>
               <td class="px-6 py-4 whitespace-nowrap">
                 <UBadge
                   :label="post.status"
                   :color="getStatusColor(post.status)"
-                  variant="soft"
+                  variant="subtle"
+                  class="capitalize font-semibold shadow-sm"
                 />
               </td>
-              <td
-                class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400"
-              >
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-muted font-medium">
                 {{ post.publishedAt ? formatDate(post.publishedAt) : "-" }}
               </td>
-              <td
-                class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400"
-              >
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-muted font-medium">
                 {{ post.viewCount || 0 }}
               </td>
-              <td
-                class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium"
-              >
-                <div class="flex items-center justify-end space-x-2">
+              <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                <div class="flex items-center justify-end space-x-2 opacity-0 group-hover:opacity-100 transition-opacity">
                   <UButton
                     :to="`/posts/${post.slug}`"
                     target="_blank"
                     variant="ghost"
                     size="sm"
-                    icon="i-lucide-eye"
+                    icon="i-lucide-external-link"
                     title="View Post"
+                    color="gray"
                   />
                   <UButton
                     :to="`/admin/posts/${post.slug}`"
                     variant="ghost"
                     size="sm"
-                    icon="i-lucide-square-pen"
+                    icon="i-lucide-edit-3"
                     title="Edit Post"
+                    color="primary"
                   />
                   <UButton
                     variant="ghost"
                     size="sm"
-                    icon="i-lucide-trash"
-                    color="error"
+                    icon="i-lucide-trash-2"
+                    color="red"
                     @click="deletePost(post)"
                     title="Delete Post"
                   />
@@ -259,26 +252,29 @@ setBreadcrumbs([{ label: 'Dashboard', to: '/admin' }, { label: 'Posts' }]);
           </tbody>
         </table>
 
-        <div v-if="!filteredPosts.length" class="text-center py-12">
-          <UIcon
-            name="i-lucide-file-text"
-            class="h-12 w-12 text-gray-400 mx-auto mb-4"
-          />
-          <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-2">
+        <div v-if="!filteredPosts.length" class="text-center py-16 bg-muted/5">
+          <div class="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
+            <UIcon
+              name="i-lucide-file-x"
+              class="h-8 w-8 text-primary"
+            />
+          </div>
+          <h3 class="text-xl font-bold text-highlighted mb-2">
             No posts found
           </h3>
-          <p class="text-gray-500 dark:text-gray-400 mb-4">
+          <p class="text-muted mb-6">
             {{
               searchQuery || selectedStatus || selectedAuthor
-                ? "Try adjusting your filters"
-                : "Get started by creating your first post"
+                ? "Try adjusting your filters to find what you're looking for."
+                : "Get started by creating your very first post!"
             }}
           </p>
           <UButton
             v-if="!searchQuery && !selectedStatus && !selectedAuthor"
             to="/admin/posts/new"
+            size="lg"
           >
-            Create your first post
+            Create First Post
           </UButton>
         </div>
       </div>

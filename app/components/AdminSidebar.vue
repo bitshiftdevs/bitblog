@@ -22,28 +22,28 @@ if (statsData.value?.data) {
 const navigationItems = computed<NavigationMenuItem[]>(() => [
   {
     label: 'Dashboard',
-    icon: 'i-lucide-home',
+    icon: 'i-lucide-layout-dashboard',
     to: '/admin',
   },
   {
     label: 'Content',
-    icon: 'i-lucide-folder',
+    icon: 'i-lucide-folder-open',
     defaultOpen: true,
     children: [
       {
         label: 'Posts',
-        icon: 'i-lucide-notebook-text',
+        icon: 'i-lucide-file-text',
         to: '/admin/posts',
         badge: postStats.value.draft > 0 ? postStats.value.draft.toString() : undefined,
       },
       {
         label: 'Categories',
-        icon: 'i-lucide-folder',
+        icon: 'i-lucide-grid',
         to: '/admin/categories',
       },
       {
         label: 'Tags',
-        icon: 'i-lucide-tag',
+        icon: 'i-lucide-tags',
         to: '/admin/tags',
       },
     ],
@@ -59,13 +59,13 @@ const navigationItems = computed<NavigationMenuItem[]>(() => [
     children: [
       {
         label: 'Comments',
-        icon: 'i-lucide-message-circle-dashed',
+        icon: 'i-lucide-message-square',
         to: '/admin/comments',
         badge: commentStats.value.pending > 0 ? commentStats.value.pending.toString() : undefined,
       },
       {
         label: 'Newsletter',
-        icon: 'i-lucide-mail-check',
+        icon: 'i-lucide-mail',
         to: '/admin/newsletter',
       },
     ],
@@ -76,7 +76,7 @@ const navigationItems = computed<NavigationMenuItem[]>(() => [
     children: [
       {
         label: 'Users',
-        icon: 'i-lucide-users',
+        icon: 'i-lucide-users-2',
         to: '/admin/users',
       },
       {
@@ -86,7 +86,7 @@ const navigationItems = computed<NavigationMenuItem[]>(() => [
       },
       {
         label: 'Reports',
-        icon: 'i-lucide-file-chart-line',
+        icon: 'i-lucide-flag',
         to: '/admin/reports',
       },
       {
@@ -103,7 +103,7 @@ const userMenuItems = computed(() => [
   [
     {
       label: 'View Site',
-      icon: 'i-lucide-square-arrow-up-right',
+      icon: 'i-lucide-external-link',
       to: '/',
       target: '_blank',
     },
@@ -125,19 +125,21 @@ const userMenuItems = computed(() => [
 ]);
 </script>
 <template>
-  <UDashboardSidebar collapsible class="w-96">
+  <UDashboardSidebar collapsible class="w-72 border-r border-default/20 bg-muted/5 shadow-lg backdrop-blur-xl">
     <!-- Logo -->
     <template #header>
-      <NuxtLink to="/admin" class="flex items-center space-x-2">
-        <UIcon name="i-lucide-settings" class="h-5 w-5 text-white" />
-        <span class="text-white font-semibold">Admin Panel</span>
+      <NuxtLink to="/admin" class="flex items-center space-x-3 p-2 group">
+        <div class="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center group-hover:scale-105 transition-transform">
+          <UIcon name="i-lucide-command" class="h-6 w-6 text-primary" />
+        </div>
+        <span class="text-xl font-bold text-highlighted tracking-tight">Admin Panel</span>
       </NuxtLink>
 
       <UButton
         variant="ghost"
         size="sm"
         icon="i-lucide-x"
-        class="lg:hidden text-gray-400 hover:text-white"
+        class="lg:hidden text-muted hover:text-highlighted"
         @click="$emit('close')"
       />
     </template>
@@ -146,7 +148,8 @@ const userMenuItems = computed(() => [
     <UNavigationMenu
       :items="navigationItems"
       orientation="vertical"
-      class="px-2 py-4"
+      class="px-4 py-6"
+      :ui="{ wrapper: 'space-y-2', item: 'rounded-xl hover:bg-muted/10 transition-colors font-medium', active: 'bg-primary/10 text-primary' }"
     />
   </UDashboardSidebar>
 </template>
