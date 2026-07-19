@@ -39,7 +39,7 @@ model Post {
   slug           String         @unique
   title          String
   excerpt        String?
-  content        Json           @db.JsonB // TipTap JSON content
+  content        String
   status         PostStatus     @default(draft)
   visibility     PostVisibility @default(public)
   featuredImage  String?
@@ -74,7 +74,7 @@ model Post {
 model PostRevision {
   id        String   @id @default(uuid())
   postId    String
-  content   Json
+  content   String
   title     String
   excerpt   String?
   note      String?

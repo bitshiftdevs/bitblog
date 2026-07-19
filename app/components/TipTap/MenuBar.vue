@@ -23,14 +23,6 @@ const blockItems: DropdownMenuItem[] = [
 
 const colorItems: any = [];
 
-watch(
-  () => editorStore.content,
-  (content) => {
-    editor.commands.setContent(content);
-  },
-  { once: true },
-);
-
 const insertCallout = () => {
   editor.chain().focus().insertCallout({}).run();
 };

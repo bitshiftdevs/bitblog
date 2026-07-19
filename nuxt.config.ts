@@ -3,14 +3,14 @@ import tailwindcss from '@tailwindcss/vite';
 export default defineNuxtConfig({
   compatibilityDate: '2025-07-15',
   devtools: { enabled: true },
-  debug: true,
+  // debug: true,
   modules: [
     '@nuxt/image',
     '@nuxt/scripts',
     '@nuxt/ui',
+    '@nuxt/content',
     '@pinia/nuxt',
     '@vueuse/nuxt',
-    'nuxt-tiptap-editor',
     'nuxt-auth-utils',
     '@nuxtjs/mdc',
   ],
@@ -26,12 +26,7 @@ export default defineNuxtConfig({
       },
     },
   },
-  tiptap: {
-    prefix: '',
-    lowlight: {
-      theme: 'tokyo-night-dark',
-    },
-  },
+
   pinia: { storesDirs: ['./app/stores/**'] },
   ui: {
     theme: {
@@ -41,6 +36,20 @@ export default defineNuxtConfig({
 
   vite: {
     plugins: [tailwindcss()],
+    optimizeDeps: {
+      include: [
+        '@tiptap/extension-emoji',
+        '@tiptap/core',
+        '@tiptap/vue-3',
+        'zod',
+        '@nuxt/ui > prosemirror-state',
+        '@nuxt/ui > prosemirror-transform',
+        '@nuxt/ui > prosemirror-model',
+        '@nuxt/ui > prosemirror-view',
+        '@nuxt/ui > prosemirror-gapcursor',
+        'tiptap-extension-code-block-shiki',
+      ],
+    },
     build: {
       rollupOptions: {
         output: { manualChunks: { vendor: ['vue', 'vue-router', 'pinia'] } },
@@ -109,49 +118,48 @@ export default defineNuxtConfig({
   },
   routeRules: {
     // Homepage pre-rendered at build time
-    '/': { prerender: true },
-
+    // '/': { prerender: true },
     // Blog post pages cached for 1 hour
-    '/posts/**': {
-      headers: { 'cache-control': 's-maxage=3600' },
-      prerender: true,
-    },
-
-    // Tag and category pages cached
-    '/tags/**': {
-      headers: { 'cache-control': 's-maxage=1800' },
-      prerender: true,
-    },
-    '/categories/**': {
-      headers: { 'cache-control': 's-maxage=1800' },
-      prerender: true,
-    },
-
-    // Author pages cached
-    '/authors/**': {
-      headers: { 'cache-control': 's-maxage=1800' },
-      prerender: true,
-    },
-
-    // Admin pages - SPA mode, no caching
-    '/admin/**': {
-      ssr: false,
-      headers: { 'cache-control': 'no-cache' },
-    },
-
-    // API routes
-    '/api/**': {
-      headers: { 'cache-control': 'no-cache' },
-      cors: true,
-    },
-    '/api/authors/**': {
-      headers: { 'cache-control': 's-maxage=3600' },
-      cors: true,
-    },
-
-    // Static assets cached for 1 year
-    '/assets/**': {
-      headers: { 'cache-control': 'max-age=31536000' },
-    },
+    // '/posts/**': {
+    //   headers: { 'cache-control': 's-maxage=3600' },
+    //   prerender: true,
+    // },
+    //
+    // // Tag and category pages cached
+    // '/tags/**': {
+    //   headers: { 'cache-control': 's-maxage=1800' },
+    //   prerender: true,
+    // },
+    // '/categories/**': {
+    //   headers: { 'cache-control': 's-maxage=1800' },
+    //   prerender: true,
+    // },
+    //
+    // // Author pages cached
+    // '/authors/**': {
+    //   headers: { 'cache-control': 's-maxage=1800' },
+    //   prerender: true,
+    // },
+    //
+    // // Admin pages - SPA mode, no caching
+    // '/admin/**': {
+    //   ssr: false,
+    //   headers: { 'cache-control': 'no-cache' },
+    // },
+    //
+    // // API routes
+    // '/api/**': {
+    //   headers: { 'cache-control': 'no-cache' },
+    //   cors: true,
+    // },
+    // '/api/authors/**': {
+    //   headers: { 'cache-control': 's-maxage=3600' },
+    //   cors: true,
+    // },
+    //
+    // // Static assets cached for 1 year
+    // '/assets/**': {
+    //   headers: { 'cache-control': 'max-age=31536000' },
+    // },
   },
 });

@@ -1,33 +1,11 @@
 <script setup lang="ts">
-const seoStore = useSeoStore();
 const editorStore = useEditorStore();
-
-const focusKeyword = ref(seoStore.focusKeyword);
-
-// Computed properties for styling
-const metaTitleLengthClass = computed(() => {
-  const length = seoStore.analysis.titleLength;
-  if (length === 0) return 'text-gray-500';
-  if (length < 30 || length > 60) return 'text-red-500';
-  return 'text-green-500';
-});
 
 const previewUrl = computed(() => {
   const baseUrl = 'kratosgado.pages.dev/articles/';
   const slug = editorStore.slug || 'sample-post';
   return baseUrl + slug;
 });
-
-const updateFocusKeyword = () => {
-  seoStore.updateFocusKeyword(focusKeyword.value);
-};
-
-watch(
-  () => seoStore.focusKeyword,
-  (newValue) => {
-    focusKeyword.value = newValue;
-  },
-);
 </script>
 
 <template>
@@ -40,42 +18,6 @@ watch(
 
     <div class="flex-1 overflow-y-auto">
       <div class="p-4">
-        <!-- SEO Score -->
-        <UFormField label="SEO Score">
-          <UProgress
-            v-model="seoStore.score"
-            status
-            :color="getStatusColor(seoStore.score)"
-          />
-        </UFormField>
-
-        <!-- Readability Score -->
-        <UFormField label="Readability">
-          <UProgress
-            v-model="seoStore.readabilityScore"
-            status
-            :color="getStatusColor(seoStore.readabilityScore)"
-          />
-        </UFormField>
-
-        <UFormField label="Focus Keywork">
-          <UInput
-            type="text"
-            v-model="focusKeyword"
-            @input="updateFocusKeyword"
-            placeholder="Enter focus keyword"
-          />
-        </UFormField>
-
-        <UFormField :label="`Meta Title: ${seoStore.analysis.titleLength}/60`">
-          <UInput
-            type="text"
-            v-model="focusKeyword"
-            @input="updateFocusKeyword"
-            placeholder="Enter focus keyword"
-          />
-        </UFormField>
-
         <!-- SEO Preview -->
         <UFormField label="Google Preview">
           <div class="mb-6 p-3 border border-gray-500 rounded-md">
@@ -95,29 +37,6 @@ watch(
               </div>
             </div>
           </div>
-        </UFormField>
-
-        <!-- SEO Analysis -->
-        <UFormField label="SEO Analysis" class="mb-6">
-          <div v-if="seoStore.analysis.improvements.length > 0">
-            <UAlert
-              v-for="(improvement, index) in seoStore.analysis.improvements"
-              :key="index"
-              icon="i-lucide-badge-x"
-              color="error"
-              variant="subtle"
-              class="mt-1"
-              :description="improvement"
-            />
-          </div>
-          <UAlert
-            v-else
-            color="success"
-            variant="subtle"
-            title="Great job!"
-            icon="i-lucide-check-check"
-            description="No SEO improvements needed"
-          />
         </UFormField>
       </div>
     </div>

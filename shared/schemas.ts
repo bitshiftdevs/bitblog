@@ -7,7 +7,7 @@ export const PostStatusSchema = z.enum([
   "published",
   "archived",
 ]);
-export const PostVisibilitySchema = z.enum(["public", "PRIVATE", "UNLISTED"]);
+export const PostVisibilitySchema = z.enum(["public", "private", "unlisted"]);
 export const CommentStatusSchema = z.enum([
   "PENDING",
   "approved",
