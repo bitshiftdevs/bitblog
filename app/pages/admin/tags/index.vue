@@ -42,7 +42,7 @@ const createTag = async () => {
     tags: (tags.value as unknown as Tag[]) ?? [],
     onSubmit: async (formData) => {
       try {
-        await $fetch('/api/admin/tags', {
+        await $fetch('/api/tags', {
           method: 'POST',
           body: {
             name: formData.name,
@@ -79,7 +79,7 @@ const editTag = async (tag: Tag) => {
     tags: (tags.value as unknown as Tag[]) ?? [],
     onSubmit: async (formData) => {
       try {
-        await $fetch(`/api/admin/tags/${tag.id}`, {
+        await $fetch(`/api/tags/${tag.id}`, {
           method: 'PUT',
           body: {
             name: formData.name,
@@ -114,7 +114,7 @@ const deleteTag = async (tag: Tag) => {
     question: `Are you sure you want to delete "${tag.name}"? This action cannot be undone.`,
     onConfirm: async () => {
       try {
-        await $fetch(`/api/admin/tags/${tag.id}`, {
+        await $fetch(`/api/tags/${tag.id}`, {
           method: 'DELETE',
         });
 

@@ -41,7 +41,7 @@ const createCategory = async () => {
     categories: (categories.value as unknown as Category[]) ?? [],
     onSubmit: async (data) => {
       try {
-        await $fetch('/api/admin/categories', {
+        await $fetch('/api/categories', {
           method: 'POST',
           body: {
             name: data.name,
@@ -78,7 +78,7 @@ const editCategory = async (category: Category) => {
     title: 'Edit Category',
     onSubmit: async (data) => {
       try {
-        await $fetch(`/api/admin/categories/${category.id}`, {
+        await $fetch(`/api/categories/${category.id}`, {
           method: 'PUT',
           body: {
             name: data.name,
@@ -113,7 +113,7 @@ const deleteCategory = async (category: Category) => {
     question: `Are you sure you want to delete "${category.name}"? This action cannot be undone.`,
     onConfirm: async () => {
       try {
-        await $fetch(`/api/admin/categories/${category.id}`, {
+        await $fetch(`/api/categories/${category.id}`, {
           method: 'DELETE',
         });
 
