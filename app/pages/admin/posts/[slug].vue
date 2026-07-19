@@ -41,7 +41,7 @@ onMounted(() => {
 // Watch editor content and analyze SEO when content changes
 editorStore.$subscribe((mutation, state) => {
   if (mutation.type === MutationType.direct) {
-    analyzeSeo(state.contentText);
+    analyzeSeo(state.content ?? '');
   }
 });
 </script>
