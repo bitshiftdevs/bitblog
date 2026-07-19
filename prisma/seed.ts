@@ -63,11 +63,31 @@ async function main() {
   // Create categories
   console.log("Creating categories...");
   const categoriesData = [
-    { name: "Technology", id: "technology", description: "Latest technology trends and innovations" },
-    { name: "Design", id: "design", description: "UI/UX design principles and best practices" },
-    { name: "Development", id: "development", description: "Programming tutorials and development guides" },
-    { name: "Business", id: "business", description: "Business strategies and entrepreneurship" },
-    { name: "Lifestyle", id: "lifestyle", description: "Work-life balance and productivity tips" },
+    {
+      name: "Technology",
+      id: "technology",
+      description: "Latest technology trends and innovations",
+    },
+    {
+      name: "Design",
+      id: "design",
+      description: "UI/UX design principles and best practices",
+    },
+    {
+      name: "Development",
+      id: "development",
+      description: "Programming tutorials and development guides",
+    },
+    {
+      name: "Business",
+      id: "business",
+      description: "Business strategies and entrepreneurship",
+    },
+    {
+      name: "Lifestyle",
+      id: "lifestyle",
+      description: "Work-life balance and productivity tips",
+    },
   ];
 
   const createdCategories: any[] = [];
@@ -142,7 +162,7 @@ async function main() {
   // Create sample posts (25 posts)
   console.log("Creating 25 sample posts...");
   const authors = [adminUser, ...createdUsers];
-  
+
   const markdownTemplate = (title: string, imgUrl: string, topic: string) => `
 # ${title}
 
@@ -190,12 +210,31 @@ To wrap things up, investing time in ${topic} yields exponential returns over th
 `;
 
   const titles = [
-    "Getting Started with TypeScript", "Modern CSS Layout Techniques", "Building Scalable React Applications", "The Future of Web Development",
-    "Mastering Nuxt 3", "Tailwind CSS Best Practices", "Understanding Vue Reactivity", "Node.js Performance Tuning",
-    "A Guide to PostgreSQL", "Prisma ORM Deep Dive", "Web Accessibility Essentials", "State Management in 2024",
-    "Deploying on Vercel", "Building Beautiful UIs with Nuxt UI", "The Rise of Edge Computing", "Serverless Architecture Explained",
-    "GraphQL vs REST", "Understanding Docker", "CI/CD Pipelines", "Next.js App Router",
-    "SvelteKit Innovations", "Animations in Web Apps", "Microservices vs Monoliths", "Secure Authentication", "Optimizing Web Fonts"
+    "Getting Started with TypeScript",
+    "Modern CSS Layout Techniques",
+    "Building Scalable React Applications",
+    "The Future of Web Development",
+    "Mastering Nuxt 3",
+    "Tailwind CSS Best Practices",
+    "Understanding Vue Reactivity",
+    "Node.js Performance Tuning",
+    "A Guide to PostgreSQL",
+    "Prisma ORM Deep Dive",
+    "Web Accessibility Essentials",
+    "State Management in 2024",
+    "Deploying on Vercel",
+    "Building Beautiful UIs with Nuxt UI",
+    "The Rise of Edge Computing",
+    "Serverless Architecture Explained",
+    "GraphQL vs REST",
+    "Understanding Docker",
+    "CI/CD Pipelines",
+    "Next.js App Router",
+    "SvelteKit Innovations",
+    "Animations in Web Apps",
+    "Microservices vs Monoliths",
+    "Secure Authentication",
+    "Optimizing Web Fonts",
   ];
 
   for (let i = 0; i < 25; i++) {
@@ -206,8 +245,12 @@ To wrap things up, investing time in ${topic} yields exponential returns over th
     const tag1 = createdTags[i % createdTags.length].id;
     const tag2 = createdTags[(i + 1) % createdTags.length].id;
     const featuredImage = createdMedia[i % createdMedia.length].url;
-    
-    const content = markdownTemplate(title, featuredImage, title.split(' ').slice(0, 2).join(' '));
+
+    const content = markdownTemplate(
+      title,
+      featuredImage,
+      title.split(" ").slice(0, 2).join(" "),
+    );
 
     const post = await prisma.post.upsert({
       where: { slug },
@@ -234,9 +277,9 @@ To wrap things up, investing time in ${topic} yields exponential returns over th
 
     // Create initial revision
     const existingRevision = await prisma.postRevision.findFirst({
-      where: { postId: post.id, version: 1 }
+      where: { postId: post.id, version: 1 },
     });
-    
+
     if (!existingRevision) {
       await prisma.postRevision.create({
         data: {

@@ -105,7 +105,10 @@ export const useEditorStore = defineStore('editor', {
       this.status = status;
       this.isDirty = true;
     },
-    async saveContent() {
+    async saveContent(newStatus?: PostStatus) {
+      if (newStatus) {
+        this.status = newStatus;
+      }
       try {
         const postData = {
           title: this.title,
@@ -135,14 +138,14 @@ export const useEditorStore = defineStore('editor', {
             method: 'PUT',
             body: postData,
           });
-          msg = `Post updated as ${status.toLowerCase()}`;
+          msg = `Post updated as ${this.status.toLowerCase()}`;
         } else {
           // Create new post
           response = await $fetch('/api/posts', {
             method: 'POST',
             body: postData,
           });
-          msg = `Post created as ${status.toLowerCase()}`;
+          msg = `Post created as ${this.status.toLowerCase()}`;
 
           // Update store with new post ID and data
           if (response.success && response.data) {

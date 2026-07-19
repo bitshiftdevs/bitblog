@@ -47,30 +47,29 @@ editorStore.$subscribe((mutation, state) => {
 </script>
 
 <template>
-  <div v-if="postLoading" class="flex items-center justify-center h-screen">
-    <div class="animate-pulse text-center">
-      <div
-        class="w-16 h-16 bg-gray-300 dark:bg-gray-600 rounded-lg mx-auto mb-4"
-      ></div>
-      <p class="text-gray-600 dark:text-gray-400">Loading post...</p>
+  <div v-if="postLoading" class="flex flex-col items-center justify-center h-screen bg-muted/10">
+    <div class="animate-pulse flex flex-col items-center">
+      <div class="w-20 h-20 bg-primary/20 rounded-2xl mb-6 shadow-inner flex items-center justify-center">
+        <UIcon name="i-lucide-file-edit" class="w-10 h-10 text-primary" />
+      </div>
+      <p class="text-lg font-medium text-muted">Loading your masterpiece...</p>
     </div>
   </div>
 
   <div
     v-else
-    class="flex flex-col"
+    class="flex flex-col bg-muted/10"
     :class="editorStore.view !== 'preview' && 'h-screen'"
   >
-    <!-- <TipTapPostView v-if="view === 'preview'" :post="editorStore.getPost" /> -->
-    <div v-if="editorStore.view === 'preview'" class="flex-1 overflow-auto p-6">
-      <div class="max-w-4xl mx-auto bg-base-200 shadow-md rounded-lg p-6">
+    <div v-if="editorStore.view === 'preview'" class="flex-1 overflow-auto p-4 sm:p-8">
+      <div class="max-w-5xl mx-auto bg-default shadow-2xl rounded-2xl border border-default/20 overflow-hidden">
         <PostView :post="editorStore.getPost" />
       </div>
     </div>
     <div v-else class="flex-1 flex overflow-hidden">
-      <TipTapSidebar />
-      <section class="flex-1 overflow-auto p-6">
-        <div class="max-w-4xl mx-auto bg-base-200 shadow-md rounded-lg">
+      <TipTapSidebar class="border-r border-default bg-default shadow-sm z-10" />
+      <section class="flex-1 overflow-auto p-4 sm:p-8 relative">
+        <div class="max-w-4xl mx-auto bg-default shadow-xl rounded-2xl border border-default/20 p-8 min-h-full transition-all duration-300">
           <TipTapContent v-if="editorStore.view === 'editor'" />
           <pre
             class="prose prose-slate dark:prose-invert"
@@ -78,7 +77,7 @@ editorStore.$subscribe((mutation, state) => {
           ><code>{{ editorStore.content }}</code></pre>
         </div>
       </section>
-      <TipTapSeoPanel />
+      <TipTapSeoPanel class="border-l border-default bg-default shadow-sm z-10" />
     </div>
   </div>
 </template>
