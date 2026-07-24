@@ -1,7 +1,9 @@
 <script setup lang="ts">
 const route = useRoute();
+const config = useRuntimeConfig();
 const id = route.params.id as string;
 const currentPage = ref(1);
+const siteUrl = config.public.siteUrl || 'https://blog.bitshiftdevs.com';
 
 // Fetch category (non-blocking)
 const { data: categoryData, pending: categoryLoading } = useLazyFetch(`/api/categories/${id}`, {
@@ -32,7 +34,9 @@ useSeoMeta({
       category.value?.description ||
       `Posts in ${category.value?.name} category`,
   ),
+  ogUrl: `${siteUrl}/categories/${id}`,
 });
+useHead({ link: [{ rel: 'canonical', href: `${siteUrl}/categories/${id}` }] });
 
 </script>
 

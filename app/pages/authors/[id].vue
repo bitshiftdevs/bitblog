@@ -1,7 +1,9 @@
 <script setup lang="ts">
 const route = useRoute();
+const config = useRuntimeConfig();
 const id = route.params.id as string;
 const currentPage = ref(1);
+const siteUrl = config.public.siteUrl || 'https://blog.bitshiftdevs.com';
 
 // Fetch author (non-blocking)
 const { data: authorData, pending: authorLoading } = useLazyFetch(`/api/authors/${id}`, {
@@ -28,7 +30,26 @@ const pagination = computed(() => postsData.value?.data?.pagination || {});
 useSeoMeta({
   title: computed(() => author.value?.name),
   description: computed(() => author.value?.bio || `Posts by ${author.value?.name}`),
+  ogTitle: computed(() => author.value?.name),
+  ogDescription: computed(() => author.value?.bio || `Posts by ${author.value?.name}`),
+  ogUrl: `${siteUrl}/authors/${id}`,
+  ogImage: computed(() => author.value?.avatarUrl),
 });
+
+// Canonical URL
+useHead({
+  link: [{ rel: 'canonical', href: `${siteUrl}/authors/${id}` }],
+});
+
+// Structured data (Person schema)
+useSchemaOrg([
+  definePerson({
+    name: computed(() => author.value?.name || ''),
+    description: computed(() => author.value?.bio || ''),
+    image: computed(() => author.value?.avatarUrl || ''),
+    url: `${siteUrl}/authors/${id}`,
+  }),
+]);
 </script>
 <template>
   <div v-if="author" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">

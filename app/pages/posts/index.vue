@@ -1,9 +1,14 @@
 <script setup lang="ts">
+const config = useRuntimeConfig();
+const siteUrl = config.public.siteUrl || 'https://blog.bitshiftdevs.com';
+
 // Meta tags
 useSeoMeta({
   title: 'All Posts',
   description: 'Browse all our latest articles and insights',
+  ogUrl: `${siteUrl}/posts`,
 });
+useHead({ link: [{ rel: 'canonical', href: `${siteUrl}/posts` }] });
 
 // Reactive filters
 const currentPage = ref(1);

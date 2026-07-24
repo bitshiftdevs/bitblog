@@ -1,8 +1,13 @@
 <script setup lang="ts">
+const config = useRuntimeConfig();
+const siteUrl = config.public.siteUrl || 'https://blog.bitshiftdevs.com';
+
 useSeoMeta({
   title: 'Authors',
   description: 'Meet our talented writers and contributors',
+  ogUrl: `${siteUrl}/authors`,
 });
+useHead({ link: [{ rel: 'canonical', href: `${siteUrl}/authors` }] });
 
 const { data: authorsData, pending } = useLazyFetch('/api/authors', {
   key: 'authors-list',

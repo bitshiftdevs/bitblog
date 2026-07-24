@@ -13,10 +13,27 @@ export default defineNuxtConfig({
     '@vueuse/nuxt',
     'nuxt-auth-utils',
     '@nuxtjs/mdc',
+    '@nuxtjs/sitemap',
+    'nuxt-schema-org',
   ],
   mdc: {
     components: {
       prose: true,
+    },
+  },
+  site: {
+    url: process.env.NUXT_PUBLIC_SITE_URL || 'https://blog.bitshiftdevs.com',
+    name: 'BitShift',
+  },
+  sitemap: {
+    sources: ['/api/__sitemap__/urls'],
+    exclude: ['/admin/**', '/auth', '/profile'],
+  },
+  schemaOrg: {
+    identity: {
+      type: 'Organization',
+      name: 'BitShift',
+      logo: '/favicon.ico',
     },
   },
   typescript: {
@@ -98,6 +115,7 @@ export default defineNuxtConfig({
   },
   app: {
     head: {
+      htmlAttrs: { lang: 'en' },
       titleTemplate: '%s - BitShift',
       meta: [
         { name: 'viewport', content: 'width=device-width, initial-scale=1' },

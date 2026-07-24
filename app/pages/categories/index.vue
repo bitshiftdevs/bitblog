@@ -36,10 +36,15 @@
 </template>
 
 <script setup lang="ts">
+const config = useRuntimeConfig();
+const siteUrl = config.public.siteUrl || 'https://blog.bitshiftdevs.com';
+
 useSeoMeta({
   title: 'Categories',
   description: 'Browse all post categories',
+  ogUrl: `${siteUrl}/categories`,
 });
+useHead({ link: [{ rel: 'canonical', href: `${siteUrl}/categories` }] });
 
 const { data: categoriesData, pending } = useLazyFetch('/api/categories', {
   key: 'categories-list'

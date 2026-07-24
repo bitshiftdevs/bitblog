@@ -3,10 +3,9 @@ import prisma from "~~/server/db";
 
 export default defineEventHandler(async (event) => {
   try {
-    const config = useRuntimeConfig();
-    const siteUrl = config.public.siteUrl || "https://localhost:3000";
+    const siteUrl = "https://blog.bitshiftdevs.com";
 
-    const siteName = "BitShift";
+    const siteName = "BitBlog";
     const siteDescription =
       "Blog Platform for BitShift for sharing amazing stories and insights.";
 

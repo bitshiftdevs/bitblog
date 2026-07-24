@@ -1,8 +1,13 @@
 <script setup lang="ts">
+const config = useRuntimeConfig();
+const siteUrl = config.public.siteUrl || 'https://blog.bitshiftdevs.com';
+
 useSeoMeta({
   title: 'Tags',
   description: 'Explore posts by topic and tag',
+  ogUrl: `${siteUrl}/tags`,
 });
+useHead({ link: [{ rel: 'canonical', href: `${siteUrl}/tags` }] });
 
 const { data: tagsData, pending } = useLazyFetch('/api/tags', {
   key: 'tags-list',

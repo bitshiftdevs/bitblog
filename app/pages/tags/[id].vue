@@ -1,7 +1,9 @@
 <script setup lang="ts">
 const route = useRoute();
+const config = useRuntimeConfig();
 const id = route.params.id as string;
 const currentPage = ref(1);
+const siteUrl = config.public.siteUrl || 'https://blog.bitshiftdevs.com';
 
 // Fetch tag (non-blocking)
 const { data: tagData, pending: tagLoading } = useLazyFetch(`/api/tags/${id}`, {
@@ -28,7 +30,9 @@ const pagination = computed(() => postsData.value?.data?.pagination || {});
 useSeoMeta({
   title: computed(() => tag.value?.name),
   description: computed(() => tag.value?.description || `Posts in ${tag.value?.name} tag`),
+  ogUrl: `${siteUrl}/tags/${id}`,
 });
+useHead({ link: [{ rel: 'canonical', href: `${siteUrl}/tags/${id}` }] });
 </script>
 
 <template>

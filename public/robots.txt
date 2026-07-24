@@ -1,2 +1,7 @@
 User-Agent: *
-Disallow:
+Disallow: /admin/
+Disallow: /auth
+Disallow: /profile
+Allow: /
+
+Sitemap: https://blog.bitshiftdevs.com/sitemap.xml

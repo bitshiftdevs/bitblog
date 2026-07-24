@@ -1,7 +1,9 @@
 <script setup lang="ts">
 const route = useRoute();
+const config = useRuntimeConfig();
 
 const slug = route.params.slug as string;
+const siteUrl = config.public.siteUrl || 'https://blog.bitshiftdevs.com';
 
 // Fetch post (non-blocking)
 const { data: postData, pending: postLoading } = useLazyFetch(`/api/posts/${slug}`, {
@@ -16,12 +18,41 @@ useSeoMeta({
   ogTitle: computed(() => post.value?.title),
   ogDescription: computed(() => post.value?.excerpt),
   ogImage: computed(() => post.value?.featuredImage),
+  ogUrl: computed(() => `${siteUrl}/posts/${slug}`),
   ogType: 'article',
   articleAuthor: computed(() => post.value?.coAuthors.concat(post.value.author || []).map((au) => au.name)),
   author: computed(() => post.value?.author?.name),
   articlePublishedTime: computed(() => post.value?.publishedAt),
   articleModifiedTime: computed(() => post.value?.updatedAt),
 });
+
+// Canonical URL
+useHead({
+  link: [
+    { rel: 'canonical', href: computed(() => post.value?.canonicalUrl || `${siteUrl}/posts/${slug}`) },
+  ],
+});
+
+// Structured data (JSON-LD) - Article schema
+useSchemaOrg([
+  defineArticle({
+    '@type': 'BlogPosting',
+    headline: computed(() => post.value?.title || ''),
+    description: computed(() => post.value?.seoDescription || post.value?.excerpt || ''),
+    image: computed(() => post.value?.featuredImage || ''),
+    datePublished: computed(() => post.value?.publishedAt || ''),
+    dateModified: computed(() => post.value?.updatedAt || ''),
+    author: computed(() => ({
+      '@type': 'Person' as const,
+      name: post.value?.author?.name || '',
+      url: `${siteUrl}/authors/${post.value?.author?.id || ''}`,
+    })),
+    wordCount: computed(() => {
+      const content = (post.value as any)?.content || '';
+      return content.split(/\s+/).length;
+    }),
+  }),
+]);
 </script>
 <template>
   <div v-if="postLoading" class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">

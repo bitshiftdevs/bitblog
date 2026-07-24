@@ -1,4 +1,7 @@
 <script setup lang="ts">
+const config = useRuntimeConfig();
+const siteUrl = config.public.siteUrl || 'https://blog.bitshiftdevs.com';
+
 // Meta tags
 useSeoMeta({
   title: 'Home',
@@ -6,8 +9,10 @@ useSeoMeta({
   description: 'Welcome to our blog platform where great stories are shared',
   ogDescription: 'Welcome to our blog platform where great stories are shared',
   ogImage: '/og-image.png',
+  ogUrl: siteUrl,
   twitterCard: 'summary_large_image',
 });
+useHead({ link: [{ rel: 'canonical', href: siteUrl }] });
 
 // Stores
 const auth = useAuth();
