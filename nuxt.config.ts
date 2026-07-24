@@ -105,6 +105,8 @@ export default defineNuxtConfig({
       ],
       link: [
         { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' },
+        { rel: 'alternate', type: 'application/rss+xml', title: 'BitShift RSS Feed', href: '/api/rss.xml' },
+        { rel: 'alternate', type: 'application/feed+json', title: 'BitShift JSON Feed', href: '/api/feed.json' },
         { rel: 'preconnect', href: 'https://fonts.googleapis.com' },
         {
           rel: 'preconnect',

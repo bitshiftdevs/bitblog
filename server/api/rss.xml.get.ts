@@ -1,4 +1,3 @@
-// apps/api/server/api/rss.xml.get.ts
 import { Feed } from "feed";
 import prisma from "~~/server/db";
 
@@ -7,37 +6,24 @@ export default defineEventHandler(async (event) => {
     const config = useRuntimeConfig();
     const siteUrl = config.public.siteUrl || "https://localhost:3000";
 
-    // Get site settings
-    const siteSettings = await prisma.siteSettings.findMany();
-    const settings = siteSettings.reduce(
-      (acc, setting) => {
-        acc[setting.key] = setting.value;
-        return acc;
-      },
-      {} as Record<string, any>,
-    );
-
-    const general = settings.general || {};
-    const seo = settings.seo || {};
+    const siteName = "BitShift";
+    const siteDescription =
+      "Blog Platform for BitShift for sharing amazing stories and insights.";
 
     // Create feed
     const feed = new Feed({
-      title: general.title || "BitBlog",
-      description: general.description || "Blog Platform RSS Feed",
+      title: siteName,
+      description: siteDescription,
       id: siteUrl,
       link: siteUrl,
       language: "en",
-      image: seo.defaultImage ? `${siteUrl}${seo.defaultImage}` : undefined,
-      favicon: general.favicon
-        ? `${siteUrl}${general.favicon}`
-        : `${siteUrl}/favicon.ico`,
-      copyright: `All rights reserved ${new Date().getFullYear()}, ${general.title || "BitBlog"}`,
+      favicon: `${siteUrl}/favicon.ico`,
+      copyright: `All rights reserved ${new Date().getFullYear()}, ${siteName}`,
       updated: new Date(),
-      generator: "Blog Platform RSS Generator",
+      generator: "BitShift RSS Generator",
       feedLinks: {
-        rss2: `${siteUrl}/rss.xml`,
-        json: `${siteUrl}/feed.json`,
-        atom: `${siteUrl}/atom.xml`,
+        rss2: `${siteUrl}/api/rss.xml`,
+        json: `${siteUrl}/api/feed.json`,
       },
     });
 
@@ -56,29 +42,13 @@ export default defineEventHandler(async (event) => {
             avatarUrl: true,
           },
         },
-        tags: {
-          include: {
-            tag: {
-              select: {
-                name: true,
-              },
-            },
-          },
-        },
-        categories: {
-          include: {
-            category: {
-              select: {
-                name: true,
-              },
-            },
-          },
-        },
+        tags: true,
+        categories: true,
       },
       orderBy: {
         publishedAt: "desc",
       },
-      take: 50, // Limit to latest 50 posts
+      take: 50,
     });
 
     // Add posts to feed
@@ -98,16 +68,17 @@ export default defineEventHandler(async (event) => {
           },
         ],
         date: new Date(post.publishedAt || post.createdAt),
-        image: post.featuredImage,
+        image: post.featuredImage || undefined,
         category: [
-          ...post.categories.map((pc) => ({ name: pc.category.name })),
-          ...post.tags.map((pt) => ({ name: pt.tag.name })),
+          ...post.categories.map((c) => ({ name: c.name })),
+          ...post.tags.map((t) => ({ name: t.name })),
         ],
       });
     }
 
     // Set content type and return RSS XML
     setHeader(event, "content-type", "application/rss+xml");
+    setHeader(event, "cache-control", "s-maxage=600, stale-while-revalidate");
     return feed.rss2();
   } catch (error) {
     console.error("Error generating RSS feed:", error);

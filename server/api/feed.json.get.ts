@@ -1,4 +1,3 @@
-// apps/api/server/api/feed.json.get.ts
 import { Feed } from "feed";
 import prisma from "~~/server/db";
 
@@ -7,27 +6,24 @@ export default defineEventHandler(async (event) => {
     const config = useRuntimeConfig();
     const siteUrl = config.public.siteUrl || "https://localhost:3000";
 
-    // Get site settings
-    const siteSettings = await prisma.siteSettings.findMany();
-    const settings = siteSettings.reduce(
-      (acc, setting) => {
-        acc[setting.key] = setting.value;
-        return acc;
-      },
-      {} as Record<string, any>,
-    );
-
-    const general = settings.general || {};
+    const siteName = "BitShift";
+    const siteDescription =
+      "Blog Platform for BitShift for sharing amazing stories and insights.";
 
     // Create feed
     const feed = new Feed({
-      title: general.title || "Blog Platform",
-      description: general.description || "A modern multi-admin blog platform",
+      title: siteName,
+      description: siteDescription,
       id: siteUrl,
       link: siteUrl,
       language: "en",
+      copyright: `All rights reserved ${new Date().getFullYear()}, ${siteName}`,
       updated: new Date(),
-      generator: "Blog Platform JSON Feed Generator",
+      generator: "BitShift JSON Feed Generator",
+      feedLinks: {
+        rss2: `${siteUrl}/api/rss.xml`,
+        json: `${siteUrl}/api/feed.json`,
+      },
     });
 
     // Get published posts
@@ -72,6 +68,7 @@ export default defineEventHandler(async (event) => {
 
     // Set content type and return JSON feed
     setHeader(event, "content-type", "application/feed+json");
+    setHeader(event, "cache-control", "s-maxage=600, stale-while-revalidate");
     return feed.json1();
   } catch (error) {
     console.error("Error generating JSON feed:", error);
