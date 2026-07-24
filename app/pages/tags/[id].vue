@@ -13,7 +13,7 @@ const tag = computed(() => tagData.value?.data);
 const { data: postsData, pending } = useLazyFetch('/api/posts', {
   key: `tag-${id}-posts`,
   query: computed(() => ({
-    tagId: tag.value?.id,
+    tagId: id,
     page: currentPage.value,
     limit: 12,
     status: 'published',
