@@ -15,8 +15,9 @@ const socialLinks = {
         <div class="col-span-1 md:col-span-2">
           <div class="flex items-center space-x-2 mb-4">
             <NuxtImg
-              src="/favicon.ico"
-              format="webp"
+              src="/logo-48.png"
+              width="32"
+              height="24"
               alt="BitShift Logo"
               class="h-6 w-auto"
             />

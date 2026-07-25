@@ -4,10 +4,12 @@ import type { PostSummary } from '~~/shared/types';
 interface Props {
   post: PostSummary;
   showExcerpt?: boolean;
+  priority?: boolean;
 }
 
 withDefaults(defineProps<Props>(), {
   showExcerpt: true,
+  priority: false,
 });
 </script>
 <template>
@@ -15,10 +17,16 @@ withDefaults(defineProps<Props>(), {
     <!-- Featured Image -->
     <div class="relative aspect-[16/10] overflow-hidden bg-muted/10">
       <NuxtLink :to="`/posts/${post.slug}`" class="block w-full h-full">
-        <img
-          :src="post.featuredImage || '/favicon.ico'"
+        <NuxtImg
+          :src="post.featuredImage || '/logo.png'"
           :alt="post.title"
+          :loading="priority ? 'eager' : 'lazy'"
+          :fetchpriority="priority ? 'high' : undefined"
+          format="webp"
+          quality="75"
+          sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
           class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+          placeholder
         />
         <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-black/0 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
       </NuxtLink>

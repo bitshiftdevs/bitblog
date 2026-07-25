@@ -33,7 +33,7 @@ export default defineNuxtConfig({
     identity: {
       type: 'Organization',
       name: 'BitShift',
-      logo: '/favicon.ico',
+      logo: '/logo.png',
     },
   },
   typescript: {
@@ -55,27 +55,16 @@ export default defineNuxtConfig({
     plugins: [tailwindcss()],
     optimizeDeps: {
       include: [
-        '@tiptap/extension-emoji',
-        '@tiptap/core',
-        '@tiptap/vue-3',
         'zod',
-        '@nuxt/ui > prosemirror-state',
-        '@nuxt/ui > prosemirror-transform',
-        '@nuxt/ui > prosemirror-model',
-        '@nuxt/ui > prosemirror-view',
-        '@nuxt/ui > prosemirror-gapcursor',
-        'tiptap-extension-code-block-shiki',
       ],
     },
-    build: {
-      rollupOptions: {
-        output: { manualChunks: { vendor: ['vue', 'vue-router', 'pinia'] } },
-      },
-    },
   },
-  fonts: { families: [{ name: 'Inter', provider: 'google' }] },
+  fonts: {
+    families: [{ name: 'Inter', provider: 'google', weights: [400, 500, 600, 700, 800] }],
+    defaults: { weights: [400, 500, 600, 700], display: 'swap' },
+  },
   nitro: { preset: 'vercel' },
-  experimental: { typedPages: true, viewTransition: true },
+  experimental: { typedPages: true },
   serverDir: './server/',
   css: ['~/assets/css/global.css'],
   vue: { propsDestructure: true },
@@ -122,64 +111,59 @@ export default defineNuxtConfig({
         { name: 'theme-color', content: '#000000' },
       ],
       link: [
-        { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' },
+        { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico', sizes: 'any' },
+        { rel: 'icon', type: 'image/png', href: '/icon-192.png', sizes: '192x192' },
+        { rel: 'icon', type: 'image/png', href: '/icon-512.png', sizes: '512x512' },
+        { rel: 'apple-touch-icon', href: '/apple-touch-icon.png' },
         { rel: 'alternate', type: 'application/rss+xml', title: 'BitShift RSS Feed', href: '/api/rss.xml' },
         { rel: 'alternate', type: 'application/feed+json', title: 'BitShift JSON Feed', href: '/api/feed.json' },
-        { rel: 'preconnect', href: 'https://fonts.googleapis.com' },
-        {
-          rel: 'preconnect',
-          href: 'https://fonts.gstatic.com',
-          crossorigin: '',
-        },
       ],
     },
-    pageTransition: { name: 'page', mode: 'out-in' },
-    layoutTransition: { name: 'layout', mode: 'out-in' },
+    pageTransition: false,
+    layoutTransition: false,
   },
   routeRules: {
-    // Homepage pre-rendered at build time
-    // '/': { prerender: true },
-    // Blog post pages cached for 1 hour
-    // '/posts/**': {
-    //   headers: { 'cache-control': 's-maxage=3600' },
-    //   prerender: true,
-    // },
-    //
-    // // Tag and category pages cached
-    // '/tags/**': {
-    //   headers: { 'cache-control': 's-maxage=1800' },
-    //   prerender: true,
-    // },
-    // '/categories/**': {
-    //   headers: { 'cache-control': 's-maxage=1800' },
-    //   prerender: true,
-    // },
-    //
-    // // Author pages cached
-    // '/authors/**': {
-    //   headers: { 'cache-control': 's-maxage=1800' },
-    //   prerender: true,
-    // },
-    //
-    // // Admin pages - SPA mode, no caching
-    // '/admin/**': {
-    //   ssr: false,
-    //   headers: { 'cache-control': 'no-cache' },
-    // },
-    //
-    // // API routes
-    // '/api/**': {
-    //   headers: { 'cache-control': 'no-cache' },
-    //   cors: true,
-    // },
-    // '/api/authors/**': {
-    //   headers: { 'cache-control': 's-maxage=3600' },
-    //   cors: true,
-    // },
-    //
-    // // Static assets cached for 1 year
-    // '/assets/**': {
-    //   headers: { 'cache-control': 'max-age=31536000' },
-    // },
+    // Homepage - ISR with 10 min revalidation
+    '/': { isr: 600 },
+
+    // Blog post pages - ISR with 1 hour revalidation
+    '/posts/**': { isr: 3600 },
+
+    // Tag and category pages - ISR with 30 min revalidation
+    '/tags/**': { isr: 1800 },
+    '/categories/**': { isr: 1800 },
+
+    // Author pages - ISR with 30 min revalidation
+    '/authors/**': { isr: 1800 },
+
+    // Admin pages - SPA mode, no SSR (saves bundle from shipping to public)
+    '/admin/**': {
+      ssr: false,
+      headers: { 'cache-control': 'no-cache, no-store' },
+    },
+
+    // API routes - no caching by default
+    '/api/**': {
+      headers: { 'cache-control': 'no-cache' },
+      cors: true,
+    },
+    // Public read APIs - cache at CDN
+    '/api/posts/**': {
+      headers: { 'cache-control': 's-maxage=300, stale-while-revalidate=600' },
+      cors: true,
+    },
+    '/api/categories/**': {
+      headers: { 'cache-control': 's-maxage=600, stale-while-revalidate=1200' },
+      cors: true,
+    },
+    '/api/authors/**': {
+      headers: { 'cache-control': 's-maxage=3600, stale-while-revalidate=7200' },
+      cors: true,
+    },
+
+    // Static assets cached for 1 year (fingerprinted by Nuxt)
+    '/_nuxt/**': {
+      headers: { 'cache-control': 'public, max-age=31536000, immutable' },
+    },
   },
 });

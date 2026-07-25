@@ -3,13 +3,11 @@
 case "$1" in
 start)
   echo "Starting development environment for $(basename $(pwd))"
-  # Example: Start docker containers, set environment variables, etc.
-  docker start postgis
+  docker compose up -d
   ;;
 exit)
   echo "Stopping development environment for $(basename $(pwd))"
-  # Example: Stop docker containers, cleanup, etc.
-  docker stop postgis
+  docker compose down
   ;;
 *)
   echo "Usage: $0 {start|exit}"

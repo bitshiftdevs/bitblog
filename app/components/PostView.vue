@@ -69,6 +69,11 @@ const { data: parsed } = useAsyncData(
       <NuxtImg
         :src="post.featuredImage"
         :alt="post.title"
+        loading="eager"
+        fetchpriority="high"
+        format="webp"
+        quality="80"
+        sizes="(max-width: 768px) 100vw, 80vw"
         class="w-full aspect-[21/9] object-cover rounded-2xl shadow-2xl border border-default/20"
       />
     </div>
@@ -122,7 +127,7 @@ const { data: parsed } = useAsyncData(
         <!-- Comments -->
         <div v-if="post.isLive" class="mt-16 pt-8 border-t border-default">
           <h3 class="text-2xl font-bold text-highlighted mb-8">Comments</h3>
-          <CommentsSection :post-id="post.id" :comments-enabled="true" />
+          <LazyCommentsSection :post-id="post.id" :comments-enabled="true" />
         </div>
       </UPage>
     </div>

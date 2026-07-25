@@ -5,7 +5,8 @@ const auth = useAuth();
 
 // Close mobile menu on route change
 const route = useRoute();
-const { data: categoriesData, pending: categoriesLoading } = await useFetch('/api/categories', {
+const { data: categoriesData } = useLazyFetch('/api/categories', {
+  key: 'header-categories',
   query: {
     limit: 8,
     sortBy: 'posts',
@@ -93,7 +94,7 @@ const userMenuItems = computed<DropdownMenuItem[]>(() => [
 <template>
   <UHeader mode="drawer" :menu="{ direction: 'top', inset: true }">
     <template #title>
-      <NuxtImg src="/favicon.ico" class="h-6 w-auto" format="webp" />
+      <NuxtImg src="/logo-48.png" class="h-6 w-auto" width="32" height="24" alt="BitShift" />
     </template>
 
     <UNavigationMenu :items="navItems" />

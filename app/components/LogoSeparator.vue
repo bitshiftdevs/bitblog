@@ -1,7 +1,7 @@
 <template>
   <USeparator type="dashed" class="h-px">
     <NuxtImg
-      src="/favicon.ico"
+      src="/logo.png"
       format="webp"
       alt="BitShift Logo"
       class="h-6 w-20"

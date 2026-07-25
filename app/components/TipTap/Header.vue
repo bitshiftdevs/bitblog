@@ -123,7 +123,7 @@ const items = computed<NavigationMenuItem[][]>(() => [
 <template>
   <UHeader>
     <template #title>
-      <NuxtImg src="/favicon.ico" class="h-6 w-auto" format="webp" />
+      <NuxtImg src="/logo.png" class="h-6 w-auto" format="webp" alt="BitShift" />
     </template>
     <UNavigationMenu :items="items" highlight class="flex-1" />
     <template #right>
