@@ -8,15 +8,17 @@ export default defineOAuthGoogleEventHandler({
         where: { email: user.email! },
         omit: { createdAt: true, updatedAt: true },
         create: {
-          name: user.name || user.login || "GitHub User",
+          name: user.name || "Google User",
           email: user.email!,
-          avatarUrl: user.avatar_url,
+          avatarUrl: user.picture,
           bio: user.bio,
-          emailVerified: true, // GitHub emails are verified
+          emailVerified: true,
           isActive: true,
           isAdmin: false,
         },
         update: {
+          name: user.name || "Google User",
+          avatarUrl: user.picture,
           emailVerified: true,
         },
       });

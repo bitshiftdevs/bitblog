@@ -17,6 +17,8 @@ export default defineOAuthGitHubEventHandler({
           isAdmin: false,
         },
         update: {
+          name: user.name || user.login || "GitHub User",
+          avatarUrl: user.avatar_url,
           emailVerified: true,
         },
       });
