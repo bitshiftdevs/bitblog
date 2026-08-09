@@ -1,6 +1,6 @@
 services:
   db:
-    image: postgis/postgis
+    image: postgres:17-alpine
     container_name: postgis
     restart: unless-stopped
     ports:
