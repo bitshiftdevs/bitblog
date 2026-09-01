@@ -132,15 +132,12 @@ const fetchSuggestions = async () => {
     quickResults.value = postsData?.items || [];
 
     // Generate search suggestions based on popular searches or tags
-    const { data: suggestionsData } = await $fetch<{ data: string[] }>(
-      '/api/search/suggestions',
-      {
-        query: {
-          q: searchQuery.value,
-          limit: 5,
-        },
+    const { data: suggestionsData } = await $fetch<{ data: string[] }>('/api/search/suggestions', {
+      query: {
+        q: searchQuery.value,
+        limit: 5,
       },
-    ).catch(() => ({ data: [] }));
+    }).catch(() => ({ data: [] }));
 
     searchSuggestions.value = suggestionsData || [];
 

@@ -1,4 +1,52 @@
-<!-- apps/web/pages/search.vue -->
+<script setup lang="ts">
+const route = useRoute();
+const router = useRouter();
+
+const searchQuery = ref((route.query.q as string) || '');
+const currentPage = ref(1);
+
+// SEO
+useSeoMeta({
+  title: computed(() => (searchQuery.value ? `Search results for "${searchQuery.value}"` : 'Search')),
+  description: 'Search our blog for articles and insights',
+});
+
+// Fetch search results (non-blocking)
+const { data: searchData, pending } = useLazyFetch('/api/search', {
+  key: 'search-results',
+  query: computed(() => ({
+    q: searchQuery.value,
+    page: currentPage.value,
+    limit: 12,
+    type: 'posts',
+  })),
+  server: false,
+});
+
+const searchResults = computed(() => searchData.value?.data?.items || []);
+const pagination = computed(() => searchData.value?.data?.pagination || {});
+const totalResults = computed(() => pagination.value.total || 0);
+
+const performSearch = () => {
+  if (searchQuery.value.trim()) {
+    router.push({ query: { q: searchQuery.value } });
+    currentPage.value = 1;
+  }
+};
+
+// Watch for query parameter changes
+watch(
+  () => route.query.q,
+  (newQuery) => {
+    searchQuery.value = (newQuery as string) || '';
+  },
+);
+
+// Reset page when search query changes
+watch(searchQuery, () => {
+  currentPage.value = 1;
+});
+</script>
 <template>
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
     <!-- Search Header -->
@@ -44,8 +92,8 @@
       <!-- Pagination -->
       <div v-if="pagination.totalPages > 1" class="flex justify-center">
         <UPagination
-          v-model="currentPage"
-          :page-count="pagination.totalPages"
+          v-model:page="currentPage"
+          :items-per-page="pagination.limit"
           :total="pagination.total"
         />
       </div>
@@ -78,55 +126,3 @@
     </div>
   </div>
 </template>
-
-<script setup lang="ts">
-const route = useRoute();
-const router = useRouter();
-
-const searchQuery = ref((route.query.q as string) || '');
-const currentPage = ref(1);
-
-// SEO
-useSeoMeta({
-  title: computed(() =>
-    searchQuery.value ? `Search results for "${searchQuery.value}"` : 'Search',
-  ),
-  description: 'Search our blog for articles and insights',
-});
-
-// Fetch search results (non-blocking)
-const { data: searchData, pending } = useLazyFetch('/api/search', {
-  key: 'search-results',
-  query: computed(() => ({
-    q: searchQuery.value,
-    page: currentPage.value,
-    limit: 12,
-    type: 'posts',
-  })),
-  server: false,
-});
-
-const searchResults = computed(() => searchData.value?.data?.items || []);
-const pagination = computed(() => searchData.value?.data?.pagination || {});
-const totalResults = computed(() => pagination.value.total || 0);
-
-const performSearch = () => {
-  if (searchQuery.value.trim()) {
-    router.push({ query: { q: searchQuery.value } });
-    currentPage.value = 1;
-  }
-};
-
-// Watch for query parameter changes
-watch(
-  () => route.query.q,
-  (newQuery) => {
-    searchQuery.value = (newQuery as string) || '';
-  },
-);
-
-// Reset page when search query changes
-watch(searchQuery, () => {
-  currentPage.value = 1;
-});
-</script>

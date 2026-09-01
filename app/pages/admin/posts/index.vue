@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import type { PostSummary } from '~~/shared/types';
+
 definePageMeta({
   layout: 'admin',
 });
@@ -8,7 +10,7 @@ const selectedStatus = ref(null);
 const selectedAuthor = ref(null);
 const searchQuery = ref('');
 const postsLoading = ref(false);
-const posts = ref([]);
+const posts = ref<PostSummary[]>([]);
 const pagination = ref({
   page: 1,
   limit: 20,
@@ -93,24 +95,34 @@ setBreadcrumbs([{ label: 'Dashboard', to: '/admin' }, { label: 'Posts' }]);
 <template>
   <div class="space-y-8 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
     <!-- Page Header -->
-    <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+    <div
+      class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4"
+    >
       <div>
         <h1 class="text-3xl font-extrabold text-highlighted tracking-tight">
           Posts
         </h1>
         <p class="text-muted mt-1">Manage and organize your blog content</p>
       </div>
-      <UButton to="/admin/posts/new" icon="i-lucide-plus" size="lg" class="shadow-md hover:shadow-lg transition-shadow">
+      <UButton
+        to="/admin/posts/new"
+        icon="i-lucide-plus"
+        size="lg"
+        class="shadow-md hover:shadow-lg transition-shadow"
+      >
         New Post
       </UButton>
     </div>
 
     <!-- Filters -->
-    <UCard class="bg-default shadow-sm border-default/10 rounded-2xl ring-1 ring-default/10">
+    <UCard
+      class="bg-default shadow-sm border-default/10 rounded-2xl ring-1 ring-default/10"
+    >
       <div class="flex flex-wrap items-center gap-4">
         <USelectMenu
           v-model="selectedStatus"
-          :options="statusOptions"
+          :items="statusOptions"
+          value-key="value"
           placeholder="All Statuses"
           class="w-full sm:w-48"
           size="lg"
@@ -118,7 +130,8 @@ setBreadcrumbs([{ label: 'Dashboard', to: '/admin' }, { label: 'Posts' }]);
 
         <USelectMenu
           v-model="selectedAuthor"
-          :options="authorOptions"
+          value-key="value"
+          :items="authorOptions"
           placeholder="All Authors"
           class="w-full sm:w-48"
           size="lg"
@@ -134,7 +147,7 @@ setBreadcrumbs([{ label: 'Dashboard', to: '/admin' }, { label: 'Posts' }]);
           <template #trailing>
             <UButton
               v-show="searchQuery !== ''"
-              color="gray"
+              color="neutral"
               variant="link"
               icon="i-lucide-x"
               :padded="false"
@@ -143,14 +156,21 @@ setBreadcrumbs([{ label: 'Dashboard', to: '/admin' }, { label: 'Posts' }]);
           </template>
         </UInput>
 
-        <UButton v-if="selectedStatus || selectedAuthor || searchQuery" variant="soft" size="lg" @click="clearFilters">
+        <UButton
+          v-if="selectedStatus || selectedAuthor || searchQuery"
+          variant="soft"
+          size="lg"
+          @click="clearFilters"
+        >
           Clear
         </UButton>
       </div>
     </UCard>
 
     <!-- Posts Table -->
-    <UCard class="bg-default shadow-lg border-default/10 rounded-2xl overflow-hidden ring-1 ring-default/10">
+    <UCard
+      class="bg-default shadow-lg border-default/10 rounded-2xl overflow-hidden ring-1 ring-default/10"
+    >
       <div v-if="postsLoading" class="p-8">
         <div class="animate-pulse space-y-4">
           <div class="h-12 bg-muted/20 rounded-xl w-full"></div>
@@ -163,22 +183,34 @@ setBreadcrumbs([{ label: 'Dashboard', to: '/admin' }, { label: 'Posts' }]);
         <table class="w-full">
           <thead class="bg-muted/10 border-b border-default/20">
             <tr>
-              <th class="px-6 py-4 text-left text-xs font-bold text-muted uppercase tracking-wider">
+              <th
+                class="px-6 py-4 text-left text-xs font-bold text-muted uppercase tracking-wider"
+              >
                 Title
               </th>
-              <th class="px-6 py-4 text-left text-xs font-bold text-muted uppercase tracking-wider">
+              <th
+                class="px-6 py-4 text-left text-xs font-bold text-muted uppercase tracking-wider"
+              >
                 Author
               </th>
-              <th class="px-6 py-4 text-left text-xs font-bold text-muted uppercase tracking-wider">
+              <th
+                class="px-6 py-4 text-left text-xs font-bold text-muted uppercase tracking-wider"
+              >
                 Status
               </th>
-              <th class="px-6 py-4 text-left text-xs font-bold text-muted uppercase tracking-wider">
+              <th
+                class="px-6 py-4 text-left text-xs font-bold text-muted uppercase tracking-wider"
+              >
                 Published
               </th>
-              <th class="px-6 py-4 text-left text-xs font-bold text-muted uppercase tracking-wider">
+              <th
+                class="px-6 py-4 text-left text-xs font-bold text-muted uppercase tracking-wider"
+              >
                 Views
               </th>
-              <th class="px-6 py-4 text-right text-xs font-bold text-muted uppercase tracking-wider">
+              <th
+                class="px-6 py-4 text-right text-xs font-bold text-muted uppercase tracking-wider"
+              >
                 Actions
               </th>
             </tr>
@@ -191,7 +223,9 @@ setBreadcrumbs([{ label: 'Dashboard', to: '/admin' }, { label: 'Posts' }]);
             >
               <td class="px-6 py-4 whitespace-nowrap">
                 <div class="flex items-center gap-4">
-                  <div class="flex-shrink-0 h-12 w-12 rounded-xl overflow-hidden shadow-sm">
+                  <div
+                    class="flex-shrink-0 h-12 w-12 rounded-xl overflow-hidden shadow-sm"
+                  >
                     <NuxtImg
                       v-if="post.featuredImage"
                       :src="post.featuredImage"
@@ -209,10 +243,14 @@ setBreadcrumbs([{ label: 'Dashboard', to: '/admin' }, { label: 'Posts' }]);
                     </div>
                   </div>
                   <div>
-                    <div class="text-sm font-bold text-highlighted group-hover:text-primary transition-colors">
+                    <div
+                      class="text-sm font-bold text-highlighted group-hover:text-primary transition-colors"
+                    >
                       {{ post.title }}
                     </div>
-                    <div class="text-xs text-muted max-w-[200px] lg:max-w-xs truncate mt-0.5">
+                    <div
+                      class="text-xs text-muted max-w-[200px] lg:max-w-xs truncate mt-0.5"
+                    >
                       {{ post.excerpt || "No excerpt" }}
                     </div>
                   </div>
@@ -225,7 +263,9 @@ setBreadcrumbs([{ label: 'Dashboard', to: '/admin' }, { label: 'Posts' }]);
                     :alt="post.author.name"
                     size="sm"
                   />
-                  <span class="text-sm font-medium text-highlighted">{{ post.author.name }}</span>
+                  <span class="text-sm font-medium text-highlighted">{{
+                    post.author.name
+                  }}</span>
                 </div>
               </td>
               <td class="px-6 py-4 whitespace-nowrap">
@@ -236,14 +276,22 @@ setBreadcrumbs([{ label: 'Dashboard', to: '/admin' }, { label: 'Posts' }]);
                   class="capitalize font-semibold shadow-sm"
                 />
               </td>
-              <td class="px-6 py-4 whitespace-nowrap text-sm text-muted font-medium">
+              <td
+                class="px-6 py-4 whitespace-nowrap text-sm text-muted font-medium"
+              >
                 {{ post.publishedAt ? formatDate(post.publishedAt) : "-" }}
               </td>
-              <td class="px-6 py-4 whitespace-nowrap text-sm text-muted font-medium">
+              <td
+                class="px-6 py-4 whitespace-nowrap text-sm text-muted font-medium"
+              >
                 {{ post.viewCount || 0 }}
               </td>
-              <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                <div class="flex items-center justify-end space-x-2 opacity-0 group-hover:opacity-100 transition-opacity">
+              <td
+                class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium"
+              >
+                <div
+                  class="flex items-center justify-end space-x-2 opacity-0 group-hover:opacity-100 transition-opacity"
+                >
                   <UButton
                     :to="`/posts/${post.slug}`"
                     target="_blank"
@@ -251,7 +299,7 @@ setBreadcrumbs([{ label: 'Dashboard', to: '/admin' }, { label: 'Posts' }]);
                     size="sm"
                     icon="i-lucide-external-link"
                     title="View Post"
-                    color="gray"
+                    color="neutral"
                   />
                   <UButton
                     :to="`/admin/posts/${post.slug}`"
@@ -265,7 +313,7 @@ setBreadcrumbs([{ label: 'Dashboard', to: '/admin' }, { label: 'Posts' }]);
                     variant="ghost"
                     size="sm"
                     icon="i-lucide-trash-2"
-                    color="red"
+                    color="error"
                     @click="deletePost(post)"
                     title="Delete Post"
                   />
@@ -276,11 +324,10 @@ setBreadcrumbs([{ label: 'Dashboard', to: '/admin' }, { label: 'Posts' }]);
         </table>
 
         <div v-if="!filteredPosts.length" class="text-center py-16 bg-muted/5">
-          <div class="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
-            <UIcon
-              name="i-lucide-file-x"
-              class="h-8 w-8 text-primary"
-            />
+          <div
+            class="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4"
+          >
+            <UIcon name="i-lucide-file-x" class="h-8 w-8 text-primary" />
           </div>
           <h3 class="text-xl font-bold text-highlighted mb-2">
             No posts found
@@ -302,7 +349,10 @@ setBreadcrumbs([{ label: 'Dashboard', to: '/admin' }, { label: 'Posts' }]);
         </div>
       </div>
 
-      <div v-if="pagination.totalPages > 1" class="flex justify-center border-t border-default/20 px-6 py-4">
+      <div
+        v-if="pagination.totalPages > 1"
+        class="flex justify-center border-t border-default/20 px-6 py-4"
+      >
         <UPagination
           v-model:page="pagination.page"
           :items-per-page="pagination.limit"

@@ -149,12 +149,12 @@ const socialLinks = {
         </p>
 
         <div class="flex items-center space-x-4 mt-4 sm:mt-0">
-          <NuxtLink
-            to="/api/rss.xml"
+          <a
+            href="/api/rss.xml"
             class="text-gray-400 hover:text-white transition-colors text-sm"
           >
             RSS Feed
-          </NuxtLink>
+          </a>
           <span class="text-gray-600">•</span>
           <span class="text-gray-400 text-sm"> Built with ❤ using Nuxt </span>
         </div>

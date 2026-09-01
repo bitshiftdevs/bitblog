@@ -150,11 +150,11 @@ export default defineNuxtConfig({
     // '/': { isr: 600 },
     //
     // Blog post pages - ISR with 1 hour revalidation
-    '/posts/**': { isr: 3600 },
+    // '/posts/**': { isr: 3600 },
 
     // Tag and category pages - ISR with 30 min revalidation
-    '/tags/**': { isr: 1800 },
-    '/categories/**': { isr: 1800 },
+    // '/tags/**': { isr: 1800 },
+    // '/categories/**': { isr: 1800 },
 
     // Author pages - ISR with 30 min revalidation
     '/authors/**': { isr: 1800 },
@@ -171,10 +171,10 @@ export default defineNuxtConfig({
     //   cors: true,
     // },
     // Public read APIs - cache at CDN
-    '/api/posts/**': {
-      headers: { 'cache-control': 's-maxage=300, stale-while-revalidate=600' },
-      cors: true,
-    },
+    // '/api/posts/**': {
+    //   headers: { 'cache-control': 's-maxage=300, stale-while-revalidate=600' },
+    //   cors: true,
+    // },
     // '/api/categories/**': {
     //   headers: { 'cache-control': 's-maxage=600, stale-while-revalidate=1200' },
     //   cors: true,

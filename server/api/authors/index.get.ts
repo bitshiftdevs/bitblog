@@ -76,7 +76,7 @@ export default defineEventHandler(async (event) => {
       bio: author.bio,
       createdAt: author.createdAt.toISOString(),
       updatedAt: author.updatedAt.toISOString(),
-      ...(includePostCount && { _count: author._count }),
+      ...(includePostCount && { _count: { posts: author._count?.authoredPosts ?? 0 } }),
     }));
 
     const result = createPaginationResult(transformedAuthors, total, {

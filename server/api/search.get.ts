@@ -2,91 +2,97 @@ import { z } from "zod";
 import {
   createPaginationOptions,
   createPaginationResult,
-  createSearchFilter,
 } from "~~/server/utils/database";
-import { SearchSchema } from "~~/shared/schemas";
+import { PaginationSchema } from "~~/shared/schemas";
 import prisma from "../db";
+
+const QuerySchema = PaginationSchema.extend({
+  q: z.string().min(1).max(100),
+  type: z.enum(["posts", "all"]).default("posts"),
+});
 
 export default defineEventHandler(async (event) => {
   try {
-    const query = await getValidatedQuery(event, SearchSchema.parse);
-    const { query: searchQuery, type, filters, ...paginationOptions } = query;
+    const query = await getValidatedQuery(event, QuerySchema.parse);
+    const { q: searchQuery, type, ...paginationOptions } = query;
     const { page, limit } = createPaginationOptions(paginationOptions);
 
-    let results = [];
+    let results: any[] = [];
     let total = 0;
 
     if (type === "posts" || type === "all") {
-      // Build where clause for posts
+      // Resolve matching IDs via tsvector full-text search
+      const isShortQuery = searchQuery.length < 6;
+      let ids: string[] = [];
+
+      if (isShortQuery) {
+        // For short queries, tsvector dictionary won't match — use ILIKE fallback
+        const pattern = `%${searchQuery}%`;
+        const matchingIds = await prisma.$queryRaw<{ id: string }[]>`
+          SELECT id FROM posts
+          WHERE (
+            title ILIKE ${pattern}
+            OR excerpt ILIKE ${pattern}
+            OR content ILIKE ${pattern}
+          )
+            AND status = 'published'
+            AND visibility = 'public'
+        `;
+        ids = matchingIds.map((r) => r.id);
+      } else {
+        const tsRows = await prisma.$queryRaw<{ id: string }[]>`
+          SELECT id FROM posts
+          WHERE search_vector @@ plainto_tsquery('english', ${searchQuery})
+            AND status = 'published'
+            AND visibility = 'public'
+        `;
+
+        if (tsRows.length > 0) {
+          ids = tsRows.map((r) => r.id);
+        } else {
+          // tsvector returned nothing — fall back to ILIKE
+          const pattern = `%${searchQuery}%`;
+          const ilikeRows = await prisma.$queryRaw<{ id: string }[]>`
+            SELECT id FROM posts
+            WHERE (
+              title ILIKE ${pattern}
+              OR excerpt ILIKE ${pattern}
+              OR content ILIKE ${pattern}
+            )
+              AND status = 'published'
+              AND visibility = 'public'
+          `;
+          ids = ilikeRows.map((r) => r.id);
+        }
+      }
+
       const where: any = {
+        id: { in: ids },
         status: "published",
         visibility: "public",
       };
 
-      // Apply filters
-      if (filters?.status) where.status = filters.status;
-      if (filters?.authorId) where.authorId = filters.authorId;
-      if (filters?.tagId) {
-        where.tags = { some: { tagId: filters.tagId } };
-      }
-      if (filters?.categoryId) {
-        where.categories = { some: { categoryId: filters.categoryId } };
-      }
-      if (filters?.fromDate || filters?.toDate) {
-        where.publishedAt = {};
-        if (filters.fromDate)
-          where.publishedAt.gte = new Date(filters.fromDate);
-        if (filters.toDate) where.publishedAt.lte = new Date(filters.toDate);
-      }
-
-      // Add search filter
-      const searchFilter = createSearchFilter(searchQuery, [
-        "title",
-        "excerpt",
-      ]);
-      if (searchFilter.OR) {
-        where.OR = searchFilter.OR;
-      }
-
-      // Get posts
       const [posts, postsTotal] = await Promise.all([
         prisma.post.findMany({
           where,
-          include: {
+          select: {
+            id: true,
+            slug: true,
+            title: true,
+            excerpt: true,
+            featuredImage: true,
+            readingTime: true,
+            viewCount: true,
+            publishedAt: true,
+            createdAt: true,
+            updatedAt: true,
             author: {
-              select: {
-                id: true,
-                name: true,
-                avatarUrl: true,
-              },
+              select: { id: true, name: true, avatarUrl: true },
             },
-            tags: {
-              include: {
-                tag: {
-                  select: {
-                    id: true,
-                    name: true,
-                    slug: true,
-                    color: true,
-                  },
-                },
-              },
-            },
-            categories: {
-              include: {
-                category: {
-                  select: {
-                    id: true,
-                    name: true,
-                    slug: true,
-                  },
-                },
-              },
-            },
+            tags: { select: { id: true, name: true, color: true } },
+            categories: { select: { id: true, name: true } },
           },
-          orderBy: {
-            publishedAt: "desc",
-          },
+          orderBy: { publishedAt: "desc" },
           skip: (page - 1) * limit,
           take: limit,
         }),
@@ -94,19 +100,10 @@ export default defineEventHandler(async (event) => {
       ]);
 
       results = posts.map((post) => ({
-        id: post.id,
-        slug: post.slug,
-        title: post.title,
-        excerpt: post.excerpt,
-        featuredImage: post.featuredImage,
-        readingTime: post.readingTime,
-        viewCount: post.viewCount,
+        ...post,
         publishedAt: post.publishedAt?.toISOString(),
         createdAt: post.createdAt.toISOString(),
         updatedAt: post.updatedAt.toISOString(),
-        author: post.author,
-        tags: post.tags,
-        categories: post.categories,
       }));
 
       total = postsTotal;
@@ -114,10 +111,7 @@ export default defineEventHandler(async (event) => {
 
     const result = createPaginationResult(results, total, { page, limit });
 
-    return {
-      success: true,
-      data: result,
-    };
+    return { success: true, data: result };
   } catch (error) {
     console.error("Search error:", error);
 
@@ -129,9 +123,6 @@ export default defineEventHandler(async (event) => {
       });
     }
 
-    throw createError({
-      statusCode: 500,
-      statusMessage: "Search failed",
-    });
+    throw createError({ statusCode: 500, statusMessage: "Search failed" });
   }
 });

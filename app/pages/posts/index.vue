@@ -15,6 +15,16 @@ const currentPage = ref(1);
 const selectedCategory = ref(null);
 const selectedTag = ref(null);
 const searchQuery = ref('');
+const debouncedSearch = ref('');
+
+const applySearch = useDebounceFn(() => {
+  debouncedSearch.value = searchQuery.value;
+  currentPage.value = 1;
+}, 300);
+
+watch(searchQuery, () => {
+  applySearch();
+});
 
 // Fetch posts with filters (non-blocking)
 const { data: postsData, pending } = useLazyFetch('/api/posts', {
@@ -22,9 +32,9 @@ const { data: postsData, pending } = useLazyFetch('/api/posts', {
   query: computed(() => ({
     page: currentPage.value,
     limit: 12,
-    categoryId: selectedCategory.value?.id,
-    tagId: selectedTag.value?.id,
-    search: searchQuery.value || undefined,
+    categoryId: selectedCategory.value,
+    tagId: selectedTag.value,
+    search: debouncedSearch.value || undefined,
     status: 'published',
     visibility: 'public',
   })),
@@ -44,22 +54,27 @@ const pagination = computed(
 );
 
 // Fetch categories for filter (non-blocking)
-const { data: categoriesData } = useLazyFetch('/api/categories', {
-  key: 'posts-filter-categories',
+const { data } = useLazyFetch('/api/filter', {
+  key: 'posts-filter',
 });
 const categoryOptions = computed(() => [
-  { id: null, name: 'All Categories' },
-  ...(categoriesData.value?.data?.items || []),
+  { label: 'All Categories', value: null },
+  ...(data.value?.data?.categories || []).map((c) => ({
+    label: c.name,
+    value: c.id,
+  })),
 ]);
 
-// Fetch tags for filter (non-blocking)
-const { data: tagsData } = useLazyFetch('/api/tags', {
-  key: 'posts-filter-tags',
-});
-const tagOptions = computed(() => [{ id: null, name: 'All Tags' }, ...(tagsData.value?.data?.items || [])]);
+const tagOptions = computed(() => [
+  { label: 'All Tags', value: null },
+  ...(data.value?.data?.tags || []).map((t) => ({
+    label: t.name,
+    value: t.id,
+  })),
+]);
 
-// Reset page when filters change
-watch([selectedCategory, selectedTag, searchQuery], () => {
+// Reset page when category or tag changes (search reset is handled by applySearch)
+watch([selectedCategory, selectedTag], () => {
   currentPage.value = 1;
 });
 </script>
@@ -68,20 +83,26 @@ watch([selectedCategory, selectedTag, searchQuery], () => {
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 lg:py-24">
       <!-- Header -->
       <div class="mb-12 text-center max-w-3xl mx-auto">
-        <h1 class="text-4xl sm:text-5xl font-extrabold text-highlighted tracking-tight mb-6">
+        <h1
+          class="text-4xl sm:text-5xl font-extrabold text-highlighted tracking-tight mb-6"
+        >
           Explore the Blog
         </h1>
         <p class="text-xl text-muted leading-relaxed">
-          Dive into our latest articles, insights, and stories. Find exactly what you're looking for.
+          Dive into our latest articles, insights, and stories. Find exactly
+          what you're looking for.
         </p>
       </div>
 
       <!-- Filters -->
-      <div class="mb-16 bg-muted/10 p-6 rounded-2xl border border-default/50 shadow-sm backdrop-blur-md flex flex-wrap gap-4 items-center justify-between">
+      <div
+        class="mb-16 bg-muted/10 p-6 rounded-2xl border border-default/50 shadow-sm backdrop-blur-md flex flex-wrap gap-4 items-center justify-between"
+      >
         <div class="flex flex-wrap gap-4 w-full md:w-auto flex-1">
           <USelectMenu
             v-model="selectedCategory"
-            :options="categoryOptions"
+            value-key="value"
+            :items="categoryOptions"
             placeholder="All Categories"
             class="w-full sm:w-56"
             size="lg"
@@ -90,7 +111,8 @@ watch([selectedCategory, selectedTag, searchQuery], () => {
 
           <USelectMenu
             v-model="selectedTag"
-            :options="tagOptions"
+            value-key="value"
+            :items="tagOptions"
             placeholder="All Tags"
             class="w-full sm:w-56"
             size="lg"
@@ -105,12 +127,11 @@ watch([selectedCategory, selectedTag, searchQuery], () => {
             icon="i-lucide-search"
             size="lg"
             class="w-full"
-            :ui="{ icon: { trailing: { pointer: '' } } }"
           >
             <template #trailing>
               <UButton
                 v-show="searchQuery !== ''"
-                color="gray"
+                color="neutral"
                 variant="link"
                 icon="i-lucide-x"
                 :padded="false"
@@ -141,7 +162,10 @@ watch([selectedCategory, selectedTag, searchQuery], () => {
         </div>
 
         <!-- Pagination -->
-        <div v-if="pagination.totalPages > 1" class="flex justify-center border-t border-default/50 pt-10">
+        <div
+          v-if="pagination.totalPages > 1"
+          class="flex justify-center border-t border-default/50 pt-10"
+        >
           <UPagination
             v-model:page="currentPage"
             :items-per-page="pagination.limit"
@@ -149,27 +173,31 @@ watch([selectedCategory, selectedTag, searchQuery], () => {
             show-last
             show-first
             size="lg"
-            :ui="{ rounded: 'rounded-xl' }"
           />
         </div>
       </div>
 
-      <div v-else class="text-center py-20 bg-muted/5 rounded-3xl border border-dashed border-default/50 max-w-3xl mx-auto">
-        <div class="bg-primary/10 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6">
-          <UIcon
-            name="i-lucide-search-x"
-            class="h-10 w-10 text-primary"
-          />
+      <div
+        v-else
+        class="text-center py-20 bg-muted/5 rounded-3xl border border-dashed border-default/50 max-w-3xl mx-auto"
+      >
+        <div
+          class="bg-primary/10 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6"
+        >
+          <UIcon name="i-lucide-search-x" class="h-10 w-10 text-primary" />
         </div>
-        <h3 class="text-2xl font-bold text-highlighted mb-3">
-          No posts found
-        </h3>
+        <h3 class="text-2xl font-bold text-highlighted mb-3">No posts found</h3>
         <p class="text-lg text-muted">
-          Try adjusting your filters or search terms to find what you're looking for.
+          Try adjusting your filters or search terms to find what you're looking
+          for.
         </p>
         <UButton
           v-if="selectedCategory || selectedTag || searchQuery"
-          @click="selectedCategory = null; selectedTag = null; searchQuery = ''"
+          @click="
+            selectedCategory = null;
+            selectedTag = null;
+            searchQuery = '';
+          "
           variant="soft"
           class="mt-8"
           size="lg"

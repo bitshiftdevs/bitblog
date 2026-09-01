@@ -2,7 +2,6 @@ import { z } from "zod";
 import {
   createPaginationOptions,
   createPaginationResult,
-  createSearchFilter,
 } from "~~/server/utils/database";
 import { PostFiltersSchema, PaginationSchema } from "~~/shared/schemas";
 import prisma from "~~/server/db";
@@ -48,14 +47,45 @@ export default defineEventHandler(async (event) => {
       if (toDate) where.publishedAt.lte = new Date(toDate);
     }
 
-    // Search filter
+    // Full-text search via pre-computed tsvector column
     if (search) {
-      const searchFilter = createSearchFilter(search, [
-        "title",
-        "excerpt",
-        "content",
-      ]);
-      where.OR = searchFilter.OR;
+      const isShortQuery = search.length < 6;
+
+      if (isShortQuery) {
+        // For short queries, tsvector dictionary won't match — use ILIKE fallback
+        const pattern = `%${search}%`;
+        const rows = await prisma.$queryRaw<{ id: string }[]>`
+          SELECT id FROM posts
+          WHERE (
+            title ILIKE ${pattern}
+            OR excerpt ILIKE ${pattern}
+            OR content ILIKE ${pattern}
+          )
+        `;
+        where.id = { in: rows.map((r) => r.id) };
+      } else {
+        // For longer queries, use tsvector full-text search with ILIKE fallback
+        const tsRows = await prisma.$queryRaw<{ id: string }[]>`
+          SELECT id FROM posts
+          WHERE search_vector @@ plainto_tsquery('english', ${search})
+        `;
+
+        if (tsRows.length > 0) {
+          where.id = { in: tsRows.map((r) => r.id) };
+        } else {
+          // tsvector returned nothing (e.g. unrecognized word) — fall back to ILIKE
+          const pattern = `%${search}%`;
+          const ilikeRows = await prisma.$queryRaw<{ id: string }[]>`
+            SELECT id FROM posts
+            WHERE (
+              title ILIKE ${pattern}
+              OR excerpt ILIKE ${pattern}
+              OR content ILIKE ${pattern}
+            )
+          `;
+          where.id = { in: ilikeRows.map((r) => r.id) };
+        }
+      }
     }
 
     // Create order by

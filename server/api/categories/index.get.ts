@@ -1,4 +1,3 @@
-// apps/api/server/api/categories/index.get.ts
 import { z } from "zod";
 import {
   createPaginationOptions,
