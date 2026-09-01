@@ -35,7 +35,7 @@ export default defineEventHandler(async (event) => {
     // Build where clause
     const where: PostWhereInput = {
       ...(status && { status }),
-      visibility: visibility ?? "public",
+      ...(visibility !== undefined ? { visibility } : {}),
       ...(authorId && { authorId }),
       ...(tagId && { tags: { some: { id: tagId } } }),
       ...(categoryId && { categories: { some: { id: categoryId } } }),

@@ -143,8 +143,8 @@ watch([selectedCategory, selectedTag, searchQuery], () => {
         <!-- Pagination -->
         <div v-if="pagination.totalPages > 1" class="flex justify-center border-t border-default/50 pt-10">
           <UPagination
-            v-model="currentPage"
-            :page-count="pagination.totalPages"
+            v-model:page="currentPage"
+            :items-per-page="pagination.limit"
             :total="pagination.total"
             show-last
             show-first

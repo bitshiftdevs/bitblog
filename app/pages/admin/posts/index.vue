@@ -7,13 +7,16 @@ definePageMeta({
 const selectedStatus = ref(null);
 const selectedAuthor = ref(null);
 const searchQuery = ref('');
-
-const { data, pending: postsLoading } = useLazyFetch('/api/posts', {
-  query: { limit: 12 },
-  key: 'admin-posts-list',
+const postsLoading = ref(false);
+const posts = ref([]);
+const pagination = ref({
+  page: 1,
+  limit: 20,
+  total: 0,
+  totalPages: 0,
+  hasNext: false,
+  hasPrev: false,
 });
-
-const posts = computed(() => data.value?.data?.items || []);
 
 // Filter options
 const statusOptions = [
@@ -32,18 +35,39 @@ const authorOptions = computed(() => [
   })),
 ]);
 
-// Filtered posts
+// Client-side author filter only (status/search are server-side)
 const filteredPosts = computed(() => {
-  return posts.value.filter((post) => {
-    const matchesStatus = !selectedStatus.value || post.status === selectedStatus.value;
-    const matchesAuthor = !selectedAuthor.value || post.author.name === selectedAuthor.value;
-    const matchesSearch =
-      !searchQuery.value ||
-      post.title.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
-      post.excerpt?.toLowerCase().includes(searchQuery.value.toLowerCase());
+  if (!selectedAuthor.value) return posts.value;
+  return posts.value.filter((post) => post.author.name === selectedAuthor.value);
+});
 
-    return matchesStatus && matchesAuthor && matchesSearch;
-  });
+const loadPosts = async () => {
+  postsLoading.value = true;
+  try {
+    const query: any = {
+      page: pagination.value.page,
+      limit: pagination.value.limit,
+    };
+    if (selectedStatus.value) query.status = selectedStatus.value;
+    if (searchQuery.value) query.search = searchQuery.value;
+
+    const response = await $fetch('/api/posts', { query });
+    if (response.success) {
+      posts.value = response.data.items;
+      pagination.value = response.data.pagination;
+    }
+  } catch (e) {
+    console.error('Failed to load posts:', e);
+  } finally {
+    postsLoading.value = false;
+  }
+};
+
+onMounted(() => loadPosts());
+
+watch([selectedStatus, searchQuery], () => {
+  pagination.value.page = 1;
+  loadPosts();
 });
 
 const clearFilters = () => {
@@ -53,7 +77,6 @@ const clearFilters = () => {
 };
 
 const deletePost = async (post: any) => {
-  // Show confirmation dialog and delete post
   confirmAction({
     title: 'Confirm Deletion',
     question: `Are you sure you want to delete "${post.title}"?`,
@@ -277,6 +300,17 @@ setBreadcrumbs([{ label: 'Dashboard', to: '/admin' }, { label: 'Posts' }]);
             Create First Post
           </UButton>
         </div>
+      </div>
+
+      <div v-if="pagination.totalPages > 1" class="flex justify-center border-t border-default/20 px-6 py-4">
+        <UPagination
+          v-model:page="pagination.page"
+          :items-per-page="pagination.limit"
+          :total="pagination.total"
+          show-last
+          show-first
+          @update:page="loadPosts"
+        />
       </div>
     </UCard>
   </div>

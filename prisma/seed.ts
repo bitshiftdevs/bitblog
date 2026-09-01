@@ -15,25 +15,19 @@ async function main() {
     where: { email: "gado@gmail.com" },
     update: {},
     create: {
-      name: "Kratosgado",
-      email: "gado@gmail.com",
       passwordHash,
-      bio: "Platform administrator",
       emailVerified: true,
       isAdmin: true,
+      name: "Prince Essilfie",
+      email: "mbeahessilfieprince@gmail.com",
+      avatarUrl: "https://avatars.githubusercontent.com/u/93322394?v=4",
+      bio: "Technology enthusiast and software developer",
     },
   });
 
   // Create author users
   console.log("Creating author users...");
   const usersData = [
-    {
-      name: "Prince Essilfie",
-      email: "mbeahessilfieprince@gmail.com",
-      avatarUrl: "https://avatars.githubusercontent.com/u/93322394?v=4",
-      bio: "Technology enthusiast and software developer",
-      passwordHash,
-    },
     {
       name: "Sarah Johnson",
       email: "sarah@blogplatform.com",

@@ -54,9 +54,7 @@ export default defineNuxtConfig({
   vite: {
     plugins: [tailwindcss()],
     optimizeDeps: {
-      include: [
-        'zod',
-      ],
+      include: ['zod'],
     },
   },
   fonts: {
@@ -111,12 +109,37 @@ export default defineNuxtConfig({
         { name: 'theme-color', content: '#000000' },
       ],
       link: [
-        { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico', sizes: 'any' },
-        { rel: 'icon', type: 'image/png', href: '/icon-192.png', sizes: '192x192' },
-        { rel: 'icon', type: 'image/png', href: '/icon-512.png', sizes: '512x512' },
+        {
+          rel: 'icon',
+          type: 'image/x-icon',
+          href: '/favicon.ico',
+          sizes: 'any',
+        },
+        {
+          rel: 'icon',
+          type: 'image/png',
+          href: '/icon-192.png',
+          sizes: '192x192',
+        },
+        {
+          rel: 'icon',
+          type: 'image/png',
+          href: '/icon-512.png',
+          sizes: '512x512',
+        },
         { rel: 'apple-touch-icon', href: '/apple-touch-icon.png' },
-        { rel: 'alternate', type: 'application/rss+xml', title: 'BitShift RSS Feed', href: '/api/rss.xml' },
-        { rel: 'alternate', type: 'application/feed+json', title: 'BitShift JSON Feed', href: '/api/feed.json' },
+        {
+          rel: 'alternate',
+          type: 'application/rss+xml',
+          title: 'BitShift RSS Feed',
+          href: '/api/rss.xml',
+        },
+        {
+          rel: 'alternate',
+          type: 'application/feed+json',
+          title: 'BitShift JSON Feed',
+          href: '/api/feed.json',
+        },
       ],
     },
     pageTransition: false,
@@ -124,8 +147,8 @@ export default defineNuxtConfig({
   },
   routeRules: {
     // Homepage - ISR with 10 min revalidation
-    '/': { isr: 600 },
-
+    // '/': { isr: 600 },
+    //
     // Blog post pages - ISR with 1 hour revalidation
     '/posts/**': { isr: 3600 },
 
@@ -136,30 +159,30 @@ export default defineNuxtConfig({
     // Author pages - ISR with 30 min revalidation
     '/authors/**': { isr: 1800 },
 
-    // Admin pages - SPA mode, no SSR (saves bundle from shipping to public)
-    '/admin/**': {
-      ssr: false,
-      headers: { 'cache-control': 'no-cache, no-store' },
-    },
-
-    // API routes - no caching by default
-    '/api/**': {
-      headers: { 'cache-control': 'no-cache' },
-      cors: true,
-    },
+    // // Admin pages - SPA mode, no SSR (saves bundle from shipping to public)
+    // '/admin/**': {
+    //   ssr: false,
+    //   headers: { 'cache-control': 'no-cache, no-store' },
+    // },
+    //
+    // // API routes - no caching by default
+    // '/api/**': {
+    //   headers: { 'cache-control': 'no-cache' },
+    //   cors: true,
+    // },
     // Public read APIs - cache at CDN
     '/api/posts/**': {
       headers: { 'cache-control': 's-maxage=300, stale-while-revalidate=600' },
       cors: true,
     },
-    '/api/categories/**': {
-      headers: { 'cache-control': 's-maxage=600, stale-while-revalidate=1200' },
-      cors: true,
-    },
-    '/api/authors/**': {
-      headers: { 'cache-control': 's-maxage=3600, stale-while-revalidate=7200' },
-      cors: true,
-    },
+    // '/api/categories/**': {
+    //   headers: { 'cache-control': 's-maxage=600, stale-while-revalidate=1200' },
+    //   cors: true,
+    // },
+    // '/api/authors/**': {
+    //   headers: { 'cache-control': 's-maxage=3600, stale-while-revalidate=7200' },
+    //   cors: true,
+    // },
 
     // Static assets cached for 1 year (fingerprinted by Nuxt)
     '/_nuxt/**': {
