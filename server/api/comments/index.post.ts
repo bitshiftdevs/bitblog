@@ -1,9 +1,16 @@
 import { CreateCommentSchema } from "~~/shared/schemas";
+import { sanitizeHtml } from "~~/shared/sanitize";
 import { requireAuth } from "~~/server/utils/auth";
 import prisma from "~~/server/db";
 
 export default defineEventHandler(async (event) => {
   try {
+    enforceRateLimit(event, {
+      scope: "comment:create",
+      windowMs: 60_000,
+      max: 5,
+    });
+
     // Validate request body
     const validatedData = await readValidatedBody(
       event,
@@ -73,12 +80,7 @@ export default defineEventHandler(async (event) => {
       }
     }
 
-    // Basic content sanitization (remove script tags and other dangerous content)
-    const sanitizedContent = validatedData.content
-      .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, "")
-      .replace(/<iframe\b[^<]*(?:(?!<\/iframe>)<[^<]*)*<\/iframe>/gi, "")
-      .replace(/javascript:/gi, "")
-      .replace(/on\w+\s*=/gi, "");
+    const sanitizedContent = sanitizeHtml(validatedData.content);
 
     // Create the comment
     const comment = await prisma.comment.create({

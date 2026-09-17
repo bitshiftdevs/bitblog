@@ -10,11 +10,34 @@ export default defineEventHandler(
   async (event): Promise<ApiResponse<PostResponse>> => {
     try {
       const slug = getRouterParam(event, "id");
-      const { isEditing } = getQuery(event);
+      const { isEditing: isEditingRaw } = getQuery(event);
+      const isEditing = isEditingRaw === "true" || isEditingRaw === "1";
+
+      // Editing mode exposes drafts/scheduled/archived — must be authenticated
+      // as the author, a co-author, or an admin.
+      if (isEditing) {
+        const user = await requireAuth(event);
+        const existing = await prisma.post.findUnique({
+          where: { slug },
+          select: { authorId: true, coAuthors: { select: { id: true } } },
+        });
+        if (!existing) {
+          throw createError({ statusCode: 404, statusMessage: "Post not found" });
+        }
+        const isAuthor = existing.authorId === user.id;
+        const isCoAuthor = existing.coAuthors.some((c) => c.id === user.id);
+        if (!isAuthor && !isCoAuthor && !user.isAdmin) {
+          throw createError({ statusCode: 403, statusMessage: "Forbidden" });
+        }
+      }
+
       const post = await prisma.post.update({
         where: {
           slug,
-          ...(!isEditing && { status: "published" }),
+          ...(!isEditing && {
+            status: "published",
+            visibility: { in: ["public", "unlisted"] },
+          }),
         },
         data: { ...(!isEditing && { viewCount: { increment: 1 } }) },
         include: isEditing ? postEditInclude : postInclude,

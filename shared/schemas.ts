@@ -153,10 +153,10 @@ export const UpdateMediaSchema = z.object({
 // Comment schemas
 export const CreateCommentSchema = z.object({
   postId: z.uuid(),
-  content: z.string().min(10).max(2000),
+  content: z.string().min(2).max(2000),
   parentId: z.uuid().nullable().optional(),
-  guestName: z.string().min(4).max(50),
-  guestEmail: z.email(),
+  guestName: z.string().min(2).max(50).optional(),
+  guestEmail: z.email().optional(),
 });
 
 export type CommentSchema = z.output<typeof CreateCommentSchema>;

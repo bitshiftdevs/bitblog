@@ -9,7 +9,6 @@ export default defineEventHandler(async (event) => {
     // Parse request body
     const body = await readBody(event);
 
-    console.log(body);
     const validatedData = CreatePostSchema.parse(body);
 
     // Check if slug already exists

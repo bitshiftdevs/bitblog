@@ -11,6 +11,13 @@ export default defineEventHandler(async (event) => {
   // Require authentication
   const user = await requireAdmin(event);
 
+  enforceRateLimit(event, {
+    scope: "media:upload",
+    windowMs: 60_000,
+    max: 20,
+    keyFn: () => user.id,
+  });
+
   try {
     const form = await readMultipartFormData(event);
 

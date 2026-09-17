@@ -69,6 +69,7 @@ export default defineNuxtConfig({
   runtimeConfig: {
     // Private keys (only available on server-side)
     jwtSecret: '',
+    cronSecret: '',
     databaseUrl: '',
     r2BucketName: '',
     r2AccessKeyId: '',

@@ -22,24 +22,7 @@ export function truncateText(text: string, length: number, suffix: string = '...
   return text.substring(0, length - suffix.length) + suffix;
 }
 
-/**
- * Sanitize HTML content for safe display
- * @param html - HTML string
- * @returns Sanitized HTML string
- */
-export function sanitizeHtml(html: string): string {
-  // Remove dangerous elements and attributes
-  return html
-    .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '')
-    .replace(/<iframe\b[^<]*(?:(?!<\/iframe>)<[^<]*)*<\/iframe>/gi, '')
-    .replace(/<object\b[^<]*(?:(?!<\/object>)<[^<]*)*<\/object>/gi, '')
-    .replace(/<embed\b[^<]*(?:(?!<\/embed>)<[^<]*)*<\/embed>/gi, '')
-    .replace(/<link\b[^>]*>/gi, '')
-    .replace(/<meta\b[^>]*>/gi, '')
-    .replace(/javascript:/gi, '')
-    .replace(/on\w+\s*=/gi, '')
-    .replace(/style\s*=/gi, ''); // Remove inline styles for security
-}
+export { sanitizeHtml } from '~~/shared/sanitize';
 
 /**
  * Format a file size in bytes to human-readable format
