@@ -9,14 +9,29 @@ useSeoMeta({
 });
 useHead({ link: [{ rel: 'canonical', href: `${siteUrl}/tags` }] });
 
+const currentPage = ref(1);
+const limit = 40;
+
 const { data: tagsData, pending } = useLazyFetch('/api/tags', {
   key: 'tags-list',
+  query: computed(() => ({
+    page: currentPage.value,
+    limit,
+  })),
 });
+
 const tags = computed(() => tagsData.value?.data?.items || []);
-
-const popularTags = computed(() => tags.value.filter((tag) => (tag._count?.posts || 0) >= 2).slice(0, 10));
-
-const allTags = computed(() => tags.value);
+const pagination = computed(
+  () =>
+    tagsData.value?.data?.pagination || {
+      page: 1,
+      limit,
+      total: 0,
+      totalPages: 0,
+      hasNext: false,
+      hasPrev: false,
+    },
+);
 </script>
 
 <template>
@@ -36,57 +51,35 @@ const allTags = computed(() => tags.value);
       </div>
     </div>
 
-    <div v-else-if="tags?.length" class="space-y-6">
-      <!-- Popular tags -->
-      <div>
-        <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">
-          Popular Tags
-        </h2>
-        <div class="flex flex-wrap gap-3">
-          <NuxtLink
-            v-for="tag in popularTags"
-            :key="tag.id"
-            :to="`/tags/${tag.id}`"
-            class="inline-flex items-center px-4 py-2 rounded-full text-sm font-medium transition-colors hover:scale-105"
-            :style="{
-              backgroundColor: tag.color + '20',
-              color: tag.color,
-              borderColor: tag.color,
-            }"
-            :class="'border'"
+    <div v-else-if="tags?.length" class="space-y-8">
+      <div class="flex flex-wrap gap-2">
+        <NuxtLink
+          v-for="tag in tags"
+          :key="tag.id"
+          :to="`/tags/${tag.id}`"
+          class="inline-flex items-center px-3 py-1 rounded-full text-sm transition-colors hover:scale-105"
+          :style="{
+            backgroundColor: tag.color + '15',
+            color: tag.color,
+            borderColor: tag.color + '40',
+          }"
+          :class="'border'"
+        >
+          {{ tag.name }}
+          <span class="ml-1 text-xs opacity-75"
+            >({{ tag._count?.posts || 0 }})</span
           >
-            {{ tag.name }}
-            <span class="ml-2 text-xs opacity-75"
-              >({{ tag._count?.posts || 0 }})</span
-            >
-          </NuxtLink>
-        </div>
+        </NuxtLink>
       </div>
 
-      <!-- All tags -->
-      <div>
-        <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">
-          All Tags
-        </h2>
-        <div class="flex flex-wrap gap-2">
-          <NuxtLink
-            v-for="tag in allTags"
-            :key="tag.id"
-            :to="`/tags/${tag.id}`"
-            class="inline-flex items-center px-3 py-1 rounded-full text-sm transition-colors hover:scale-105"
-            :style="{
-              backgroundColor: tag.color + '15',
-              color: tag.color,
-              borderColor: tag.color + '40',
-            }"
-            :class="'border'"
-          >
-            {{ tag.name }}
-            <span class="ml-1 text-xs opacity-75"
-              >({{ tag._count?.posts || 0 }})</span
-            >
-          </NuxtLink>
-        </div>
+      <div v-if="pagination.totalPages > 1" class="flex justify-center">
+        <UPagination
+          v-model:page="currentPage"
+          :items-per-page="pagination.limit"
+          :total="pagination.total"
+          show-last
+          show-first
+        />
       </div>
     </div>
 

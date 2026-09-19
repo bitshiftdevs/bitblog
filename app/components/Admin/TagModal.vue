@@ -24,7 +24,6 @@ const tagColors = [
 // Form data
 const formData = ref({
   name: tag?.name,
-  description: tag?.description,
   color: tag?.color ?? '#3B82F6',
 });
 const emit = defineEmits<{
@@ -39,14 +38,6 @@ const emit = defineEmits<{
       <UForm @submit.prevent="emit('submit', formData)" class="space-y-4">
         <UFormField label="Name" requierror>
           <UInput v-model="formData.name" placeholder="Tag name" requierror />
-        </UFormField>
-
-        <UFormField label="Description">
-          <UTextarea
-            v-model="formData.description"
-            placeholder="Brief description (optional)"
-            :rows="3"
-          />
         </UFormField>
 
         <UFormField label="Color">

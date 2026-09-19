@@ -42,7 +42,6 @@ export default defineEventHandler(async (event) => {
       data: {
         ...(validatedData.slug && validatedData.slug !== id && { id: validatedData.slug }),
         ...(validatedData.name && { name: validatedData.name }),
-        ...(validatedData.description !== undefined && { description: validatedData.description }),
         ...(validatedData.color !== undefined && { color: validatedData.color }),
       },
     });
@@ -52,7 +51,6 @@ export default defineEventHandler(async (event) => {
       data: {
         id: tag.id,
         name: tag.name,
-        description: tag.description,
         color: tag.color,
         createdAt: tag.createdAt.toISOString(),
         updatedAt: tag.updatedAt.toISOString(),

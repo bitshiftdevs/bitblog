@@ -5,12 +5,11 @@ import type { SelectMenuItem } from '@nuxt/ui';
 
 const editorStore = useEditorStore();
 
-// Fetch available categories and tags
-const { data: categoriesData } = await useFetch('/api/categories');
-const { data: tagsData } = await useFetch('/api/tags');
+// Fetch available categories and tags (all of them, unpaginated)
+const { data: filterData } = await useFetch('/api/filter');
 
-const availableCategories = computed(() => categoriesData.value?.data?.items || []);
-const availableTags = computed(() => tagsData.value?.data?.items || []);
+const availableCategories = computed(() => filterData.value?.data?.categories || []);
+const availableTags = computed(() => filterData.value?.data?.tags || []);
 
 // Transform categories and tags for display
 const selectedCategoryNames = computed({

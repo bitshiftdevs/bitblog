@@ -29,7 +29,7 @@ const pagination = computed(() => postsData.value?.data?.pagination || {});
 // SEO
 useSeoMeta({
   title: computed(() => tag.value?.name),
-  description: computed(() => tag.value?.description || `Posts in ${tag.value?.name} tag`),
+  description: computed(() => `Posts in ${tag.value?.name} tag`),
   ogUrl: `${siteUrl}/tags/${id}`,
 });
 useHead({ link: [{ rel: 'canonical', href: `${siteUrl}/tags/${id}` }] });
@@ -52,9 +52,6 @@ useHead({ link: [{ rel: 'canonical', href: `${siteUrl}/tags/${id}` }] });
       <h1 class="text-3xl font-bold text-gray-900 dark:text-white mb-4">
         {{ tag.name }}
       </h1>
-      <p v-if="tag.description" class="text-gray-600 dark:text-gray-400 mb-4">
-        {{ tag.description }}
-      </p>
       <p class="text-sm text-gray-500 dark:text-gray-400">
         {{ tag._count?.posts || 0 }} posts in this tag
       </p>

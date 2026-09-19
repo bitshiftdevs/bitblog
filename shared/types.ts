@@ -135,7 +135,6 @@ export interface PostRevision {
 export interface Tag {
   id: string;
   name: string;
-  description?: string;
   color?: string;
   createdAt: string;
   updatedAt: string;

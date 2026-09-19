@@ -9,12 +9,13 @@ import prisma from "~~/server/db";
 
 const QuerySchema = PaginationSchema.extend({
   includePostCount: z.boolean().optional().default(true),
+  search: z.string().trim().optional(),
 });
 
 export default defineEventHandler(async (event) => {
   try {
     const query = await getValidatedQuery(event, QuerySchema.parse);
-    const { includePostCount, ...paginationOptions } = query;
+    const { includePostCount, search, ...paginationOptions } = query;
     const { page, limit, sortBy, sortOrder } =
       createPaginationOptions(paginationOptions);
 
@@ -24,11 +25,16 @@ export default defineEventHandler(async (event) => {
       orderBy = { posts: { _count: sortOrder } };
     }
 
+    const where = search
+      ? { name: { contains: search, mode: "insensitive" as const } }
+      : undefined;
+
     // Get total count
-    const total = await prisma.tag.count();
+    const total = await prisma.tag.count({ where });
 
     // Get tags
     const tags = await prisma.tag.findMany({
+      where,
       include: {
         ...(includePostCount && {
           _count: {
@@ -52,7 +58,6 @@ export default defineEventHandler(async (event) => {
     const transformedTags = tags.map((tag) => ({
       id: tag.id,
       name: tag.name,
-      description: tag.description,
       color: tag.color,
       createdAt: tag.createdAt.toISOString(),
       updatedAt: tag.updatedAt.toISOString(),

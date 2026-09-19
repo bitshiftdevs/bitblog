@@ -12,6 +12,20 @@ const toast = useToast();
 const overlay = useOverlay();
 const modal = overlay.create(TagModal);
 
+const currentPage = ref(1);
+const limit = 24;
+const searchQuery = ref('');
+const debouncedSearch = ref('');
+
+const applySearch = useDebounceFn(() => {
+  debouncedSearch.value = searchQuery.value;
+  currentPage.value = 1;
+}, 300);
+
+watch(searchQuery, () => {
+  applySearch();
+});
+
 // Fetch tags (non-blocking)
 const {
   data: tagsData,
@@ -19,21 +33,26 @@ const {
   pending: tagsLoading,
 } = useLazyFetch('/api/tags', {
   key: 'admin-tags-list',
-  default: () => ({ success: false, data: { items: [] } }),
+  query: computed(() => ({
+    page: currentPage.value,
+    limit,
+    search: debouncedSearch.value || undefined,
+  })),
+  default: () => ({ success: false, data: { items: [], pagination: { page: 1, limit, total: 0, totalPages: 0, hasNext: false, hasPrev: false } } }),
 });
 
 const tags = computed(() => tagsData.value?.data?.items || []);
-
-// Search functionality
-const searchQuery = ref('');
-const filteredTags = computed(() => {
-  if (!searchQuery.value) return tags.value;
-  return tags.value.filter(
-    (tag: Tag) =>
-      tag.name.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
-      tag.description?.toLowerCase().includes(searchQuery.value.toLowerCase()),
-  );
-});
+const pagination = computed(
+  () =>
+    tagsData.value?.data?.pagination || {
+      page: 1,
+      limit,
+      total: 0,
+      totalPages: 0,
+      hasNext: false,
+      hasPrev: false,
+    },
+);
 
 // Create tag
 const createTag = async () => {
@@ -47,7 +66,6 @@ const createTag = async () => {
           body: {
             name: formData.name,
             slug: formData.name?.toLowerCase().replace(/\s+/g, '-'),
-            description: formData.description || undefined,
             color: formData.color,
           },
         });
@@ -83,7 +101,6 @@ const editTag = async (tag: Tag) => {
           method: 'PUT',
           body: {
             name: formData.name,
-            description: formData.description || undefined,
             color: formData.color,
           },
         });
@@ -179,7 +196,7 @@ setBreadcrumbs([{ label: 'Dashboard', to: '/admin' }, { label: 'Tags' }]);
     </div>
     <div v-else class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
       <div
-        v-for="tag in filteredTags"
+        v-for="tag in tags"
         :key="tag.id"
         class="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg p-4 hover:shadow-md transition-shadow"
       >
@@ -196,12 +213,6 @@ setBreadcrumbs([{ label: 'Dashboard', to: '/admin' }, { label: 'Tags' }]);
                 {{ tag.name }}
               </h3>
             </div>
-            <p
-              v-if="tag.description"
-              class="text-xs text-gray-500 dark:text-gray-400 line-clamp-2 mb-3"
-            >
-              {{ tag.description }}
-            </p>
             <div
               class="flex items-center justify-between text-xs text-gray-500 dark:text-gray-400"
             >
@@ -239,7 +250,7 @@ setBreadcrumbs([{ label: 'Dashboard', to: '/admin' }, { label: 'Tags' }]);
       </div>
     </div>
 
-    <div v-if="!filteredTags.length && !tagsLoading" class="text-center py-12">
+    <div v-if="!tags.length && !tagsLoading" class="text-center py-12">
       <UIcon name="i-lucide-tag" class="mx-auto h-12 w-12 text-gray-400" />
       <h3 class="mt-2 text-sm font-medium text-gray-900 dark:text-white">
         No tags
@@ -247,6 +258,16 @@ setBreadcrumbs([{ label: 'Dashboard', to: '/admin' }, { label: 'Tags' }]);
       <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
         Get started by creating a new tag.
       </p>
+    </div>
+
+    <div v-if="pagination.totalPages > 1" class="flex justify-center pt-4">
+      <UPagination
+        v-model:page="currentPage"
+        :items-per-page="pagination.limit"
+        :total="pagination.total"
+        show-last
+        show-first
+      />
     </div>
   </UContainer>
 </template>

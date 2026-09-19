@@ -97,7 +97,6 @@ export const CreateTagSchema = z.object({
     .min(1)
     .max(50)
     .regex(/^[a-z0-9-]+$/),
-  description: z.string().max(200).optional(),
   color: z
     .string()
     .regex(/^#[0-9A-Fa-f]{6}$/)
