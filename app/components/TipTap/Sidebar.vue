@@ -35,7 +35,12 @@ const selectedTagNames = computed({
   },
 });
 
-const postStatusList: SelectMenuItem[] = [{ label: 'draft' }, { label: 'published' }, { label: 'scheduled' }];
+const postStatusList: SelectMenuItem[] = [
+  { label: 'Draft', value: 'draft' },
+  { label: 'Published', value: 'published' },
+  { label: 'Scheduled', value: 'scheduled' },
+  { label: 'Archived', value: 'archived' },
+];
 
 const removeFeaturedImage = () => {
   editorStore.setFeaturedImage('');
@@ -56,6 +61,7 @@ const viewRevisions = () => {
         <USelectMenu
           class="w-full"
           :items="postStatusList"
+          value-key="value"
           v-model="editorStore.status"
         />
       </UFormField>

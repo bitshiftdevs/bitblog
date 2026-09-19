@@ -61,6 +61,7 @@ const extensions = [
         v-model="editorStore.content"
         content-type="markdown"
         :extensions
+        :starter-kit="{ codeBlock: false }"
         :handlers="customHandlers"
         placeholder="Write, type '/' for commands..."
         :ui="{ base: 'p-8 sm:px-16 py-13.5' }"

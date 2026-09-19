@@ -25,17 +25,8 @@ watch(
 
 const { analyzeSeo } = useSeo();
 
-onMounted(() => {
-  // Auto-save every 30 seconds
-  const autoSaveInterval = setInterval(() => {
-    editorStore.saveContent('draft');
-  }, 30000);
-
-  // Clean up on unmount
-  onBeforeUnmount(() => {
-    clearInterval(autoSaveInterval);
-    editorStore.$reset();
-  });
+onBeforeUnmount(() => {
+  editorStore.$reset();
 });
 
 // Watch editor content and analyze SEO when content changes
@@ -70,7 +61,7 @@ editorStore.$subscribe((mutation, state) => {
       <TipTapSidebar class="border-r border-default bg-default shadow-sm z-10" />
       <section class="flex-1 overflow-auto p-4 sm:p-8 relative">
         <div class="max-w-4xl mx-auto bg-default shadow-xl rounded-2xl border border-default/20 p-8 min-h-full transition-all duration-300">
-          <TipTapContent v-if="editorStore.view === 'editor'" />
+          <TipTapContent v-if="editorStore.view === 'editor' && editorStore.id" :key="editorStore.id" />
           <pre
             class="prose prose-slate dark:prose-invert"
             v-else-if="editorStore.view === 'code'"

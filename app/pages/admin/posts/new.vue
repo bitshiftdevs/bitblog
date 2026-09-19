@@ -1,19 +1,9 @@
 <script setup lang="ts">
-import { MutationType } from 'pinia';
-
 definePageMeta({ layout: 'editor', middleware: ['admin'] });
 const editorStore = useEditorStore();
 
-onMounted(() => {
-  // Auto-save every 30 seconds
-  const autoSaveInterval = setInterval(() => {
-    editorStore.saveContent('draft');
-  }, 30000);
-  // Clean up on unmount
-  onBeforeUnmount(() => {
-    clearInterval(autoSaveInterval);
-    editorStore.$reset();
-  });
+onBeforeUnmount(() => {
+  editorStore.$reset();
 });
 </script>
 

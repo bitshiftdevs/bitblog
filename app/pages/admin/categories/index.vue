@@ -1,5 +1,7 @@
 <script setup lang="ts">
+import type { TableColumn } from '@nuxt/ui';
 import CategoryModal from '~/components/Admin/CategoryModal.vue';
+import type { ActionItem } from '~/components/AdminDataTable.vue';
 import type { Category } from '~~/shared/types';
 import { confirmAction } from '~/composables/useConfirmModal';
 
@@ -12,33 +14,27 @@ const toast = useToast();
 const overlay = useOverlay();
 const modal = overlay.create(CategoryModal);
 
-// Fetch categories (non-blocking)
 const {
   data: categoriesData,
   refresh,
   pending: categoriesLoading,
-} = useLazyFetch('/api/categories', {
-  key: 'admin-categories-list',
-});
+} = useLazyFetch('/api/categories', { key: 'admin-categories-list' });
 
-const categories = computed(() => categoriesData.value?.data?.items || []);
+const categories = computed<Category[]>(() => categoriesData.value?.data?.items || []);
 
-// Search functionality
 const searchQuery = ref('');
 const filteredCategories = computed(() => {
   if (!searchQuery.value) return categories.value;
+  const q = searchQuery.value.toLowerCase();
   return categories.value.filter(
-    (category: Category) =>
-      category.name.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
-      category.description?.toLowerCase().includes(searchQuery.value.toLowerCase()),
+    (c) => c.name.toLowerCase().includes(q) || c.description?.toLowerCase().includes(q),
   );
 });
 
-// Create category
 const createCategory = async () => {
   const instance = modal.open({
     title: 'Create Category',
-    categories: (categories.value as unknown as Category[]) ?? [],
+    categories: categories.value,
     onSubmit: async (data) => {
       try {
         await $fetch('/api/categories', {
@@ -50,30 +46,19 @@ const createCategory = async () => {
             parentId: data.parentId || undefined,
           },
         });
-
-        toast.add({
-          title: 'Success',
-          description: 'Category created successfully',
-          color: 'success',
-        });
-
+        toast.add({ title: 'Success', description: 'Category created successfully', color: 'success' });
         refresh();
       } catch (error: any) {
-        toast.add({
-          title: 'Error',
-          description: error.data?.message || 'Failed to create category',
-          color: 'error',
-        });
+        toast.add({ title: 'Error', description: error.data?.message || 'Failed to create category', color: 'error' });
       }
     },
   });
   await instance.result;
 };
 
-// Edit category
 const editCategory = async (category: Category) => {
   const instance = modal.open({
-    categories: (categories.value as unknown as Category[]) ?? [],
+    categories: categories.value,
     category,
     title: 'Edit Category',
     onSubmit: async (data) => {
@@ -86,207 +71,102 @@ const editCategory = async (category: Category) => {
             parentId: data.parentId || undefined,
           },
         });
-
-        toast.add({
-          title: 'Success',
-          description: 'Category updated successfully',
-          color: 'success',
-        });
-
+        toast.add({ title: 'Success', description: 'Category updated successfully', color: 'success' });
         refresh();
       } catch (error: any) {
-        toast.add({
-          title: 'Error',
-          description: error.data?.message || 'Failed to update category',
-          color: 'error',
-        });
+        toast.add({ title: 'Error', description: error.data?.message || 'Failed to update category', color: 'error' });
       }
     },
   });
   await instance.result;
 };
 
-// Delete category
-const deleteCategory = async (category: Category) => {
+const deleteCategory = (category: Category) => {
   confirmAction({
     title: 'Delete Category',
     question: `Are you sure you want to delete "${category.name}"? This action cannot be undone.`,
+    confirmLabel: 'Delete',
+    confirmColor: 'error',
     onConfirm: async () => {
       try {
-        await $fetch(`/api/categories/${category.id}`, {
-          method: 'DELETE',
-        });
-
-        toast.add({
-          title: 'Success',
-          description: 'Category deleted successfully',
-          color: 'success',
-        });
-
+        await $fetch(`/api/categories/${category.id}`, { method: 'DELETE' });
+        toast.add({ title: 'Success', description: 'Category deleted successfully', color: 'success' });
         refresh();
       } catch (error: any) {
-        toast.add({
-          title: 'Error',
-          description: error.data?.message || 'Failed to delete category',
-          color: 'error',
-        });
+        toast.add({ title: 'Error', description: error.data?.message || 'Failed to delete category', color: 'error' });
       }
-    }
+    },
   });
 };
 
-// Set breadcrumbs
+const columns: TableColumn<Category>[] = [
+  {
+    accessorKey: 'name',
+    header: 'Name',
+    cell: ({ row }) =>
+      h('div', undefined, [
+        h('div', { class: 'text-sm font-medium text-highlighted' }, row.original.name),
+        row.original.parent
+          ? h('div', { class: 'text-xs text-muted' }, `Parent: ${row.original.parent.name}`)
+          : null,
+      ]),
+  },
+  {
+    accessorKey: 'description',
+    header: 'Description',
+    cell: ({ row }) =>
+      h('div', { class: 'text-sm text-muted max-w-xs truncate' }, row.original.description || 'No description'),
+  },
+  {
+    accessorKey: 'posts',
+    header: 'Posts',
+    cell: ({ row }) => h('span', { class: 'text-sm text-muted' }, String(row.original._count?.posts || 0)),
+  },
+  {
+    accessorKey: 'createdAt',
+    header: 'Created',
+    cell: ({ row }) => h('span', { class: 'text-sm text-muted' }, formatDate(row.original.createdAt)),
+  },
+];
+
+const actions: ActionItem<Category>[] = [
+  { label: 'Edit', icon: 'i-lucide-edit', onClick: (c) => editCategory(c) },
+  { label: 'Delete', icon: 'i-lucide-trash', color: 'error', onClick: (c) => deleteCategory(c) },
+];
+
 const setBreadcrumbs = inject('setBreadcrumbs', () => {});
 setBreadcrumbs([{ label: 'Dashboard', to: '/admin' }, { label: 'Categories' }]);
 </script>
 
 <template>
-  <UContainer class="space-y-6">
-    <!-- Header -->
-    <div class="flex items-center justify-between">
-      <div>
-        <h1 class="text-2xl font-semibold text-gray-900 dark:text-white">
-          Categories
-        </h1>
-        <p class="text-gray-600 dark:text-gray-400">
-          Organize your content with categories
-        </p>
-      </div>
-      <UButton @click="createCategory" icon="i-lucide-plus" size="sm">
-        New Category
-      </UButton>
-    </div>
+  <UContainer class="py-8">
+    <AdminDataTable
+      :data="filteredCategories"
+      :columns="columns"
+      :actions="actions"
+      :loading="categoriesLoading"
+      title="Categories"
+      description="Organize your content with categories"
+      :row-click="editCategory"
+      :show-selection="false"
+      :show-filter="false"
+      :empty-state="{
+        icon: 'i-lucide-folder',
+        title: 'No categories',
+        description: 'Get started by creating a new category.',
+        actions: [{ label: 'New Category', icon: 'i-lucide-plus', onClick: createCategory } as any],
+      }"
+    >
+      <UButton @click="createCategory" icon="i-lucide-plus" size="lg" label="New Category" />
 
-    <!-- Search -->
-    <div class="flex items-center space-x-4">
-      <UInput
-        v-model="searchQuery"
-        placeholder="Search categories..."
-        icon="i-lucide-search"
-        class="max-w-xs"
-      />
-    </div>
-
-    <!-- Categories Table -->
-    <UCard>
-      <div v-if="categoriesLoading" class="p-8">
-        <div class="animate-pulse space-y-4">
-          <div class="h-4 bg-gray-300 dark:bg-gray-600 rounded w-3/4"></div>
-          <div class="h-4 bg-gray-300 dark:bg-gray-600 rounded w-1/2"></div>
-          <div class="h-4 bg-gray-300 dark:bg-gray-600 rounded w-2/3"></div>
-          <div class="h-4 bg-gray-300 dark:bg-gray-600 rounded w-full"></div>
-        </div>
-      </div>
-      <div v-else class="overflow-x-auto">
-        <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-          <thead class="bg-gray-50 dark:bg-gray-800">
-            <tr>
-              <th
-                class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider"
-              >
-                Name
-              </th>
-              <th
-                class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider"
-              >
-                Description
-              </th>
-              <th
-                class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider"
-              >
-                Posts
-              </th>
-              <th
-                class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider"
-              >
-                Created
-              </th>
-              <th
-                class="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider"
-              >
-                Actions
-              </th>
-            </tr>
-          </thead>
-          <tbody
-            class="bg-white dark:bg-gray-900 divide-y divide-gray-200 dark:divide-gray-700"
-          >
-            <tr
-              v-for="category in filteredCategories"
-              :key="category.id"
-              class="hover:bg-gray-50 dark:hover:bg-gray-800"
-            >
-              <td class="px-6 py-4 whitespace-nowrap">
-                <div class="flex items-center">
-                  <div>
-                    <div
-                      class="text-sm font-medium text-gray-900 dark:text-white"
-                    >
-                      {{ category.name }}
-                    </div>
-                    <div
-                      v-if="category.parent"
-                      class="text-xs text-gray-500 dark:text-gray-400"
-                    >
-                      Parent: {{ category.parent.name }}
-                    </div>
-                  </div>
-                </div>
-              </td>
-              <td class="px-6 py-4">
-                <div
-                  class="text-sm text-gray-900 dark:text-white max-w-xs truncate"
-                >
-                  {{ category.description || "No description" }}
-                </div>
-              </td>
-              <td
-                class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400"
-              >
-                {{ category._count?.posts || 0 }}
-              </td>
-              <td
-                class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400"
-              >
-                {{ formatDate(category.createdAt) }}
-              </td>
-              <td
-                class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium"
-              >
-                <div class="flex items-center justify-end space-x-2">
-                  <UButton
-                    @click="editCategory(category)"
-                    icon="i-lucide-edit"
-                    size="2xs"
-                    color="accent"
-                    variant="ghost"
-                  />
-                  <UButton
-                    @click="deleteCategory(category)"
-                    icon="i-lucide-trash"
-                    size="2xs"
-                    color="error"
-                    variant="ghost"
-                  />
-                </div>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-
-        <div v-if="!filteredCategories.length" class="text-center py-12">
-          <UIcon
-            name="i-lucide-folder"
-            class="mx-auto h-12 w-12 text-gray-400"
-          />
-          <h3 class="mt-2 text-sm font-medium text-gray-900 dark:text-white">
-            No categories
-          </h3>
-          <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
-            Get started by creating a new category.
-          </p>
-        </div>
-      </div>
-    </UCard>
+      <template #filters>
+        <UInput
+          v-model="searchQuery"
+          placeholder="Search categories..."
+          icon="i-lucide-search"
+          class="max-w-xs"
+        />
+      </template>
+    </AdminDataTable>
   </UContainer>
 </template>

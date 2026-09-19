@@ -2,7 +2,7 @@ import tailwindcss from '@tailwindcss/vite';
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
   compatibilityDate: '2025-07-15',
-  devtools: { enabled: true },
+  devtools: { enabled: !process.env.NUXT_DEVTOOLS_OFF },
   // debug: true,
   modules: [
     '@nuxt/image',
@@ -54,7 +54,33 @@ export default defineNuxtConfig({
   vite: {
     plugins: [tailwindcss()],
     optimizeDeps: {
-      include: ['zod'],
+      include: [
+        'zod',
+        'tiptap-extension-code-block-shiki',
+        '@tiptap/core',
+        '@tiptap/vue-3',
+        '@tiptap/extension-emoji',
+        'prosemirror-changeset',
+        'prosemirror-collab',
+        'prosemirror-commands',
+        'prosemirror-dropcursor',
+        'prosemirror-gapcursor',
+        'prosemirror-history',
+        'prosemirror-inputrules',
+        'prosemirror-keymap',
+        'prosemirror-markdown',
+        'prosemirror-menu',
+        'prosemirror-model',
+        'prosemirror-schema-basic',
+        'prosemirror-schema-list',
+        'prosemirror-state',
+        'prosemirror-tables',
+        'prosemirror-trailing-node',
+        'prosemirror-transform',
+        'prosemirror-view',
+      ],
+      // Aliased at runtime by nuxt-schema-org — not a real package on disk
+      exclude: ['@unhead/schema-org/vue', '@unhead/schema-org'],
     },
   },
   fonts: {

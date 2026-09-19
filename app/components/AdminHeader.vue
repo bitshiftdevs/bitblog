@@ -59,9 +59,9 @@ const userMenuItems = computed<DropdownMenuItem[][]>(() => [
     <template #title>
       <NuxtImg src="/logo.png" class="h-6 w-auto" format="webp" alt="BitShift" />
     </template>
-    <temmplate #leading>
+    <template #leading>
       <UDashboardSidebarCollapse />
-    </temmplate>
+    </template>
 
     <template #right>
       <UDashboardNavbar title="Admin Dashboard">

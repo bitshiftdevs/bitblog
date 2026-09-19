@@ -157,9 +157,11 @@ const updateCommentStatus = async (
 const deleteComment = async (commentId: string) => {
   console.log("deleting");
   confirmAction({
-    title: "Confirm Deletion",
+    title: "Delete Comment",
     question:
       "Are you sure you want to delete this comment? This action cannot be undone.",
+    confirmLabel: "Delete",
+    confirmColor: "error",
     onConfirm: async () => {
       try {
         isUpdating.value = true;
@@ -207,8 +209,10 @@ const bulkApprove = async () => {
   }
 
   confirmAction({
-    title: "Confirm Aproval",
-    question: `Are you sure you want to approve ${pendingComments.length} pending comments?`,
+    title: "Approve Pending Comments",
+    question: `Approve ${pendingComments.length} pending comments?`,
+    confirmLabel: "Approve All",
+    confirmColor: "success",
     onConfirm: async () => {
       try {
         isUpdating.value = true;

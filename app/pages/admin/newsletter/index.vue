@@ -1,8 +1,21 @@
 <script setup lang="ts">
+import type { TableColumn } from '@nuxt/ui';
+import type { ActionItem } from '~/components/AdminDataTable.vue';
+
 definePageMeta({
   layout: 'admin',
   middleware: ['admin'],
 });
+
+interface Subscriber {
+  id: string;
+  email: string;
+  name: string;
+  status: string;
+  subscribedAt: string;
+  unsubscribedAt?: string;
+  source: string;
+}
 
 const toast = useToast();
 
@@ -165,6 +178,59 @@ const getSubscriberStatusColor = (status: string) => {
     default: return 'gray';
   }
 };
+
+const removeSubscriber = (subscriber: Subscriber) => {
+  confirmAction({
+    title: 'Remove Subscriber',
+    question: `Remove ${subscriber.email} from the list?`,
+    confirmLabel: 'Remove',
+    confirmColor: 'error',
+    onConfirm: () => {
+      newsletter.value.subscribers = newsletter.value.subscribers.filter((s) => s.id !== subscriber.id);
+      toast.add({ title: 'Success', description: 'Subscriber removed', color: 'success' });
+    },
+  });
+};
+
+const UBadge = resolveComponent('UBadge');
+
+const subscriberColumns: TableColumn<Subscriber>[] = [
+  {
+    accessorKey: 'name',
+    header: 'Subscriber',
+    cell: ({ row }) =>
+      h('div', undefined, [
+        h('div', { class: 'text-sm font-medium text-highlighted' }, row.original.name),
+        h('div', { class: 'text-sm text-muted' }, row.original.email),
+      ]),
+  },
+  {
+    accessorKey: 'status',
+    header: 'Status',
+    cell: ({ row }) =>
+      h(UBadge, {
+        label: row.original.status,
+        color: getSubscriberStatusColor(row.original.status),
+        variant: 'subtle',
+        size: 'sm',
+      }),
+  },
+  {
+    accessorKey: 'source',
+    header: 'Source',
+    cell: ({ row }) =>
+      h('span', { class: 'text-sm text-muted capitalize' }, row.original.source.replace('_', ' ')),
+  },
+  {
+    accessorKey: 'subscribedAt',
+    header: 'Subscribed',
+    cell: ({ row }) => h('span', { class: 'text-sm text-muted' }, formatDate(row.original.subscribedAt)),
+  },
+];
+
+const subscriberActions: ActionItem<Subscriber>[] = [
+  { label: 'Remove', icon: 'i-lucide-trash', color: 'error', onClick: (s) => removeSubscriber(s) },
+];
 
 // Set breadcrumbs
 const setBreadcrumbs = inject('setBreadcrumbs', () => {});
@@ -443,70 +509,19 @@ setBreadcrumbs([
         </UButton>
       </div>
 
-      <UCard>
-        <div class="overflow-x-auto">
-          <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-            <thead class="bg-gray-50 dark:bg-gray-800">
-              <tr>
-                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                  Subscriber
-                </th>
-                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                  Status
-                </th>
-                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                  Source
-                </th>
-                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                  Subscribed
-                </th>
-                <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                  Actions
-                </th>
-              </tr>
-            </thead>
-            <tbody class="bg-white dark:bg-gray-900 divide-y divide-gray-200 dark:divide-gray-700">
-              <tr
-                v-for="subscriber in newsletter.subscribers"
-                :key="subscriber.id"
-                class="hover:bg-gray-50 dark:hover:bg-gray-800"
-              >
-                <td class="px-6 py-4 whitespace-nowrap">
-                  <div>
-                    <div class="text-sm font-medium text-gray-900 dark:text-white">
-                      {{ subscriber.name }}
-                    </div>
-                    <div class="text-sm text-gray-500 dark:text-gray-400">
-                      {{ subscriber.email }}
-                    </div>
-                  </div>
-                </td>
-                <td class="px-6 py-4 whitespace-nowrap">
-                  <UBadge
-                    :label="subscriber.status"
-                    :color="getSubscriberStatusColor(subscriber.status)"
-                    size="xs"
-                  />
-                </td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400 capitalize">
-                  {{ subscriber.source.replace('_', ' ') }}
-                </td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
-                  {{ formatDate(subscriber.subscribedAt) }}
-                </td>
-                <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                  <UButton
-                    icon="i-lucide-more-vertical"
-                    size="xs"
-                    color="gray"
-                    variant="ghost"
-                  />
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </UCard>
+      <AdminDataTable
+        :data="newsletter.subscribers"
+        :columns="subscriberColumns"
+        :actions="subscriberActions"
+        title=""
+        :show-selection="false"
+        :show-filter="true"
+        :empty-state="{
+          icon: 'i-lucide-mail',
+          title: 'No subscribers',
+          description: 'Subscribers will show up here.',
+        }"
+      />
     </div>
 
     <!-- Create Campaign Modal -->
