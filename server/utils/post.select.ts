@@ -7,7 +7,7 @@ const userBio = {
   ...user,
 };
 
-export const tag = { id: true, name: true, color: true, description: true };
+export const tag = { id: true, name: true, color: true };
 export const category = { id: true, name: true, description: true };
 export const postRelated = {
   id: true,
